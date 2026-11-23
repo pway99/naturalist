@@ -6,6 +6,8 @@ import com.naturalist.insects.InsectOrderName;
 import com.naturalist.insects.InsectsDomain;
 import org.junit.jupiter.api.Test;
 
+import java.util.List;
+
 import static org.assertj.core.api.Assertions.assertThat;
 
 class CitationAssociationRepositoryMockTest implements CitationAssociationEntityRepositoryTest {
@@ -26,18 +28,18 @@ class CitationAssociationRepositoryMockTest implements CitationAssociationEntity
      */
     @Test
     void save_uniqueConstraintMatch_updatesExistingRowInsteadOfInsertingADuplicate() {
-        var citationName = CitationName.of("eol-battus-philenor-130502");
-        var subject = new EntityRef(new InsectsDomain(), InsectOrderName.of("unobtainium-save-target"));
+        CitationName citationName = CitationName.of("eol-battus-philenor-130502");
+        EntityRef subject = new EntityRef(new InsectsDomain(), InsectOrderName.of("unobtainium-save-target"));
 
-        var first = new CitationAssociation(
+        CitationAssociation first = new CitationAssociation(
                 CitationAssociationId.create(), citationName, subject, "first note");
         repository().save(first);
 
-        var second = new CitationAssociation(
+        CitationAssociation second = new CitationAssociation(
                 CitationAssociationId.create(), citationName, subject, "second note");
         repository().save(second);
 
-        var stored = repository().getBySubject(subject);
+        List<CitationAssociation> stored = repository().getBySubject(subject);
         assertThat(stored).hasSize(1);
         assertThat(stored.getFirst().note()).isEqualTo("second note");
         assertThat(stored.getFirst().id()).isEqualTo(first.id());

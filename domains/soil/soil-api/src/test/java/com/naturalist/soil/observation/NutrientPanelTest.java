@@ -1,6 +1,7 @@
 package com.naturalist.soil.observation;
 
 import com.naturalist.observability.InvariantObservation;
+import com.naturalist.observability.MethodObserver;
 import com.naturalist.observability.Observer;
 import org.junit.jupiter.api.Test;
 
@@ -20,7 +21,7 @@ class NutrientPanelTest {
 
     @Test
     void panelMissingEveryNutrientHasNoViolations() {
-        var mo = observer.forMethod("panelMissingEveryNutrientHasNoViolations");
+        MethodObserver mo = observer.forMethod("panelMissingEveryNutrientHasNoViolations");
 
         InvariantObservation result = mo.observable(emptyPanel(), "panel");
 
@@ -29,8 +30,8 @@ class NutrientPanelTest {
 
     @Test
     void panelReportingSomeNutrientsHasNoViolations() {
-        var mo = observer.forMethod("panelReportingSomeNutrientsHasNoViolations");
-        var panel = new NutrientPanel(
+        MethodObserver mo = observer.forMethod("panelReportingSomeNutrientsHasNoViolations");
+        NutrientPanel panel = new NutrientPanel(
                 new PrimaryNutrients(
                         Optional.of(reading(Nutrients.NITRATE_N, "1.36")),
                         Optional.empty(),
@@ -52,7 +53,7 @@ class NutrientPanelTest {
      */
     @Test
     void reportedZeroIsDistinctFromUnreported() {
-        var panel = new NutrientPanel(
+        NutrientPanel panel = new NutrientPanel(
                 new PrimaryNutrients(
                         Optional.of(reading(Nutrients.NITRATE_N, "0.00")),
                         Optional.empty(),
@@ -69,8 +70,8 @@ class NutrientPanelTest {
     /** A null slot is a caller slip, not a third state — it normalises to absent. */
     @Test
     void nullSlotNormalisesToEmpty() {
-        var mo = observer.forMethod("nullSlotNormalisesToEmpty");
-        var primary = new PrimaryNutrients(null, null, null, null);
+        MethodObserver mo = observer.forMethod("nullSlotNormalisesToEmpty");
+        PrimaryNutrients primary = new PrimaryNutrients(null, null, null, null);
 
         InvariantObservation result = mo.observable(
                 new NutrientPanel(primary, emptyPanel().secondary(), emptyPanel().micro()), "panel");

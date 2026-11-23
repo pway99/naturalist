@@ -3,6 +3,7 @@ package com.naturalist.biogeography;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.naturalist.fieldnotes.Description;
 import com.naturalist.observability.InvariantObservation;
+import com.naturalist.observability.MethodObserver;
 import com.naturalist.observability.Observer;
 import org.junit.jupiter.api.Test;
 
@@ -44,7 +45,7 @@ class BioregionTest {
 
     @Test
     void everyPermitDescriptionPassesInvariants() {
-        var mo = observer.forMethod("everyPermitDescriptionPassesInvariants");
+        MethodObserver mo = observer.forMethod("everyPermitDescriptionPassesInvariants");
         for (Bioregion region : ALL) {
             Description description = region.description();
 

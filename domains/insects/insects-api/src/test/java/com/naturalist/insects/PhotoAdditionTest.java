@@ -53,7 +53,7 @@ class PhotoAdditionTest {
     @Test
     void mismatchedObservationIdReportsViolation() {
         MethodObserver mo = observer.forMethod("mismatchedObservationIdReportsViolation");
-        var differentObsId = InsectObservationId.create();
+        InsectObservationId differentObsId = InsectObservationId.create();
         PhotoAddition addition = new PhotoAddition(image(differentObsId), observation());
 
         InvariantObservation result = mo.observable(addition, "photoAddition");
@@ -76,7 +76,7 @@ class PhotoAdditionTest {
     @Test
     void mismatchedSubjectReportsViolation() {
         MethodObserver mo = observer.forMethod("mismatchedSubjectReportsViolation");
-        var wrongSubject = new OrganismObservation<InsectObservationId, InsectRankName>(
+        OrganismObservation<InsectObservationId, InsectRankName> wrongSubject = new OrganismObservation<InsectObservationId, InsectRankName>(
                 OBSERVATION_ID,
                 NaturalistName.of("pat"),
                 InsectSpeciesName.of("wrong-species"),
@@ -93,12 +93,12 @@ class PhotoAdditionTest {
     @Test
     void genusRankImage_validWithObservation() {
         MethodObserver mo = observer.forMethod("genusRankImage_validWithObservation");
-        var genusName = InsectGenusName.of("vanessa");
-        var obsId = InsectObservationId.create();
-        var genusImage = new OrganismImage<InsectImageId, InsectObservationId, InsectRankName>(
+        InsectGenusName genusName = InsectGenusName.of("vanessa");
+        InsectObservationId obsId = InsectObservationId.create();
+        OrganismImage<InsectImageId, InsectObservationId, InsectRankName> genusImage = new OrganismImage<InsectImageId, InsectObservationId, InsectRankName>(
                 InsectImageId.create(), genusName, Instant.now(),
                 FileName.of("IMG_GENUS.jpg"), obsId);
-        var genusObservation = new OrganismObservation<InsectObservationId, InsectRankName>(
+        OrganismObservation<InsectObservationId, InsectRankName> genusObservation = new OrganismObservation<InsectObservationId, InsectRankName>(
                 obsId, NaturalistName.of("pat"), genusName,
                 Instant.now(), null, null, null, null);
         PhotoAddition addition = new PhotoAddition(genusImage, genusObservation);

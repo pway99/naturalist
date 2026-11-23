@@ -3,6 +3,7 @@ package com.naturalist.library;
 import com.naturalist.RandomValue;
 import com.naturalist.fieldnotes.Description;
 import com.naturalist.observability.InvariantObservation;
+import com.naturalist.observability.MethodObserver;
 import com.naturalist.observability.Observer;
 import org.junit.jupiter.api.Test;
 
@@ -14,7 +15,7 @@ class ConceptTest {
 
     @Test
     void validConceptPassesAllInvariants() {
-        var mo = observer.forMethod("validConceptPassesAllInvariants");
+        MethodObserver mo = observer.forMethod("validConceptPassesAllInvariants");
         Concept concept = new Concept(
                 ConceptName.of("clade"),
                 "What is a clade?",
@@ -27,7 +28,7 @@ class ConceptTest {
 
     @Test
     void nullComponentsProduceExpectedInvariantViolations() {
-        var mo = observer.forMethod("nullComponentsProduceExpectedInvariantViolations");
+        MethodObserver mo = observer.forMethod("nullComponentsProduceExpectedInvariantViolations");
         Concept concept = new Concept(null, null, null);
 
         InvariantObservation result = mo.namedEntity(concept, "concept");

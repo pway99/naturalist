@@ -51,12 +51,12 @@ class UsageControllerWebMvcTest {
 
     @Test
     void usage_showsMonthlyNumberAndPerUserRow() throws Exception {
-        var limits = monitor.snapshot();
+        UsageSnapshot limits = monitor.snapshot();
 
         budget.reserve(TEST_NATURALIST);
         budget.reserve(TEST_NATURALIST);
 
-        var html = mockMvc.perform(get("/admin/usage"))
+        String html = mockMvc.perform(get("/admin/usage"))
                 .andExpect(status().isOk())
                 .andReturn().getResponse().getContentAsString();
 
@@ -71,7 +71,7 @@ class UsageControllerWebMvcTest {
 
     @Test
     void usageJson_returnsSnapshotAndAlerts() throws Exception {
-        var limits = monitor.snapshot();
+        UsageSnapshot limits = monitor.snapshot();
 
         mockMvc.perform(get("/admin/usage.json"))
                 .andExpect(status().isOk())

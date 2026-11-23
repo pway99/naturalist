@@ -23,7 +23,7 @@ class PlantSpeciesRepositoryMock
         MethodObserver getByGenusName = observer().forMethod("getByGenusName");
         getByGenusName.arguments(i -> i.entityName(genusName, "genusName"))
                 .throwWhenInvalid();
-        var result = testEntitySource().entityStream()
+        List<PlantSpecies> result = testEntitySource().entityStream()
                 .filter(s -> genusName.equals(s.genusName()))
                 .toList();
         getByGenusName.state(s -> s.observableCollection(result, "result")).observe(Level.WARN);
@@ -35,7 +35,7 @@ class PlantSpeciesRepositoryMock
         MethodObserver getByGenusNames = observer().forMethod("getByGenusNames");
         getByGenusNames.arguments(i -> i.entityNameCollection(genusNames, "genusNames"))
                 .throwWhenInvalid();
-        var result = testEntitySource().entityStream()
+        List<PlantSpecies> result = testEntitySource().entityStream()
                 .filter(s -> genusNames.contains(s.genusName()))
                 .toList();
         getByGenusNames.state(s -> s.observableCollection(result, "result")).observe(Level.WARN);

@@ -120,14 +120,14 @@ class InsectsDetailTemplateTest {
         InsectSpeciesInfo species = nte.getNamed(InsectSpeciesTestEntitySource.class)
                 .getByName(TestInsectsIdentifiers.InsectSpecies.DrosophilaFunebris.name).orElseThrow();
         InsectGenusInfo genus = nte.getNamed(InsectGenusTestEntitySource.class).getByName(species.genusName()).orElseThrow();
-        var observationId = InsectObservationId.create();
-        var image = new OrganismImage<InsectImageId, InsectObservationId, InsectRankName>(
+        InsectObservationId observationId = InsectObservationId.create();
+        OrganismImage<InsectImageId, InsectObservationId, InsectRankName> image = new OrganismImage<InsectImageId, InsectObservationId, InsectRankName>(
                 InsectImageId.create(),
                 species.name(),
                 Instant.parse("2026-07-16T01:54:24Z"),
                 FileName.of("fly.jpg"),
                 observationId);
-        var observation = new OrganismObservation<InsectObservationId, InsectRankName>(
+        OrganismObservation<InsectObservationId, InsectRankName> observation = new OrganismObservation<InsectObservationId, InsectRankName>(
                 observationId,
                 NaturalistName.of("pat-way"),
                 species.name(),

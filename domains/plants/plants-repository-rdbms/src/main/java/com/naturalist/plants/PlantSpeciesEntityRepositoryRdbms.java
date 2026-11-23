@@ -100,7 +100,7 @@ class PlantSpeciesEntityRepositoryRdbms
                 .throwWhenInvalid();
         List<PlantSpeciesDbo> parents = mapper.selectByGenusName(genusName.value());
         Set<String> names = parents.stream().map(p -> p.name).collect(Collectors.toSet());
-        var result = assemble(parents, names);
+        List<PlantSpecies> result = assemble(parents, names);
         getByGenusName.state(s -> s.observableCollection(result, "result")).observe(Level.WARN);
         return result;
     }
@@ -114,7 +114,7 @@ class PlantSpeciesEntityRepositoryRdbms
         Set<String> genusSlugs = genusNames.stream().map(PlantGenusName::value).collect(Collectors.toSet());
         List<PlantSpeciesDbo> parents = mapper.selectByGenusNames(genusSlugs);
         Set<String> names = parents.stream().map(p -> p.name).collect(Collectors.toSet());
-        var result = assemble(parents, names);
+        List<PlantSpecies> result = assemble(parents, names);
         getByGenusNames.state(s -> s.observableCollection(result, "result")).observe(Level.WARN);
         return result;
     }

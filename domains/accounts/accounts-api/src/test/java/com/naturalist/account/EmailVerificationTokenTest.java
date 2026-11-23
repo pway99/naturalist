@@ -20,7 +20,7 @@ class EmailVerificationTokenTest {
 
     @Test
     void exposesComponentsByValue() {
-        var token = sample();
+        EmailVerificationToken token = sample();
         assertThat(token.account()).isEqualTo(AccountName.of("acct-018f3a2e9b71"));
         assertThat(token.purpose()).isEqualTo(TokenPurpose.VERIFY_EMAIL);
         assertThat(token.expiresAt()).isEqualTo(Instant.parse("2026-09-01T00:00:00Z"));
@@ -29,10 +29,10 @@ class EmailVerificationTokenTest {
 
     @Test
     void withConsumedAt_marksRedeemedAndLeavesIdentityUnchanged() {
-        var token = sample();
-        var consumedAt = Instant.parse("2026-08-31T12:00:00Z");
+        EmailVerificationToken token = sample();
+        Instant consumedAt = Instant.parse("2026-08-31T12:00:00Z");
 
-        var redeemed = token.withConsumedAt(consumedAt);
+        EmailVerificationToken redeemed = token.withConsumedAt(consumedAt);
 
         assertThat(redeemed.consumedAt()).isEqualTo(consumedAt);
         assertThat(redeemed.id()).isEqualTo(token.id());

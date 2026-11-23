@@ -5,7 +5,7 @@ import com.naturalist.data.EntityRepositoryTest;
 import com.naturalist.data.TestEntitySource;
 import com.naturalist.exception.InvariantViolationException;
 import com.naturalist.fieldnotes.Description;
-import com.naturalist.taxonomy.*;
+import com.naturalist.taxonomy.TaxonomicSpecies;
 
 import org.junit.jupiter.api.Test;
 
@@ -126,7 +126,7 @@ interface InsectSpeciesRepositoryTest
                 null, null, null, null, null);
         repository().insert(underHalictus);
 
-        var results = repository().getByGenusName(halictus);
+        List<InsectSpeciesInfo> results = repository().getByGenusName(halictus);
 
         assertThat(results)
                 .extracting(InsectSpeciesInfo::name)
@@ -138,7 +138,7 @@ interface InsectSpeciesRepositoryTest
     default void getByGenusName_returnsEmptyForUnknownGenus() {
         InsectGenusName unknown = TestInsectsIdentifiers.InsectGenus.NotFound.name;
 
-        var results = repository().getByGenusName(unknown);
+        List<InsectSpeciesInfo> results = repository().getByGenusName(unknown);
 
         assertThat(results).isEmpty();
     }
@@ -152,7 +152,7 @@ interface InsectSpeciesRepositoryTest
 
     @Test
     default void getByGenusNames_returnsSpeciesAcrossTheGivenGenera() {
-        var result = repository().getByGenusNames(Set.of(
+        List<InsectSpeciesInfo> result = repository().getByGenusNames(Set.of(
                 TestInsectsIdentifiers.InsectGenus.Drosophila.name,
                 TestInsectsIdentifiers.InsectGenus.Battus.name));
 

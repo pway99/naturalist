@@ -24,7 +24,7 @@ class DepictionEntityRepositoryMock
         getByCompoundName.arguments(i -> i
                         .identifier(compoundName, "compoundName"))
                 .throwWhenInvalid();
-        var result = testEntitySource().entityStream()
+        Optional<CompoundDepiction> result = testEntitySource().entityStream()
                 .filter(depiction -> depiction.compoundName().equals(compoundName))
                 .findFirst();
         getByCompoundName.state(s -> s.namedEntityOrNull(result.orElse(null), "result")).observe(Level.WARN);
@@ -34,7 +34,7 @@ class DepictionEntityRepositoryMock
     @Override
     public List<CompoundName> getAllDepictedCompoundNames() {
         MethodObserver getAllDepictedCompoundNames = observer().forMethod("getAllDepictedCompoundNames");
-        var result = testEntitySource().entityStream()
+        List<CompoundName> result = testEntitySource().entityStream()
                 .map(CompoundDepiction::compoundName)
                 .toList();
         getAllDepictedCompoundNames.state(s -> s.entityNameCollection(result, "result")).observe(Level.WARN);

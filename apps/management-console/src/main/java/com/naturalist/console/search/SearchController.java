@@ -1,6 +1,11 @@
 package com.naturalist.console.search;
 
-import com.naturalist.catalog.*;
+import com.naturalist.catalog.Catalog;
+import com.naturalist.catalog.DomainId;
+import com.naturalist.catalog.EntityRef;
+import com.naturalist.catalog.EntityRefLinker;
+import com.naturalist.catalog.SearchHit;
+import com.naturalist.catalog.SearchResults;
 import com.naturalist.chemistry.ChemistryDomain;
 import com.naturalist.insects.InsectsDomain;
 import com.naturalist.plants.PlantsDomain;
@@ -44,7 +49,7 @@ public class SearchController {
     private List<Group> buildGroups(SearchResults results) {
         Map<DomainId, List<Link>> grouped = new LinkedHashMap<>();
         for (SearchHit hit : results.stream().toList()) {
-            var ref = hit.target();
+            EntityRef ref = hit.target();
             String url = linker.linkFor(ref);
             if (url == null) {
                 continue;

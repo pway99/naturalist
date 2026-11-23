@@ -95,7 +95,7 @@ class NaturalistEntityRepositoryRdbms
         MethodObserver getByAccount = observer().forMethod("getByAccount");
         getByAccount.arguments(i -> i.entityName(account, "account"))
                 .throwWhenInvalid();
-        var result = Optional.ofNullable(mapper.selectByAccount(account.value())).map(NaturalistDbo::toEntity);
+        Optional<Naturalist> result = Optional.ofNullable(mapper.selectByAccount(account.value())).map(NaturalistDbo::toEntity);
         getByAccount.state(s -> s.namedEntityOrNull(result.orElse(null), "result")).observe(Level.WARN);
         return result;
     }

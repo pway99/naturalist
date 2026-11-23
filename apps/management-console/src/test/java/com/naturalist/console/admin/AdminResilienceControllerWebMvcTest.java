@@ -64,16 +64,16 @@ class AdminResilienceControllerWebMvcTest {
 
     @Test
     void admin_resilience_listsEachStrategyUnderItsPrimitive() throws Exception {
-        var html = mockMvc.perform(get("/admin/resilience")
+        String html = mockMvc.perform(get("/admin/resilience")
                         .with(user("naturalist").roles("ADMIN")))
                 .andExpect(status().isOk())
                 .andReturn().getResponse().getContentAsString();
 
-        var retryAt = html.indexOf(">Retry</h2>");
-        var timeoutAt = html.indexOf(">Timeout</h2>");
-        var breakerAt = html.indexOf(">Circuit Breaker</h2>");
-        var bulkheadAt = html.indexOf(">Bulkhead</h2>");
-        var rateLimiterAt = html.indexOf(">Rate Limiter</h2>");
+        int retryAt = html.indexOf(">Retry</h2>");
+        int timeoutAt = html.indexOf(">Timeout</h2>");
+        int breakerAt = html.indexOf(">Circuit Breaker</h2>");
+        int bulkheadAt = html.indexOf(">Bulkhead</h2>");
+        int rateLimiterAt = html.indexOf(">Rate Limiter</h2>");
 
         assertThat(retryAt).as("Retry heading").isGreaterThan(-1);
         assertThat(timeoutAt).as("Timeout heading").isGreaterThan(retryAt);
@@ -81,11 +81,11 @@ class AdminResilienceControllerWebMvcTest {
         assertThat(bulkheadAt).as("Bulkhead heading").isGreaterThan(breakerAt);
         assertThat(rateLimiterAt).as("Rate Limiter heading").isGreaterThan(bulkheadAt);
 
-        var retrySection = html.substring(retryAt, timeoutAt);
-        var timeoutSection = html.substring(timeoutAt, breakerAt);
-        var breakerSection = html.substring(breakerAt, bulkheadAt);
-        var bulkheadSection = html.substring(bulkheadAt, rateLimiterAt);
-        var rateLimiterSection = html.substring(rateLimiterAt);
+        String retrySection = html.substring(retryAt, timeoutAt);
+        String timeoutSection = html.substring(timeoutAt, breakerAt);
+        String breakerSection = html.substring(breakerAt, bulkheadAt);
+        String bulkheadSection = html.substring(bulkheadAt, rateLimiterAt);
+        String rateLimiterSection = html.substring(rateLimiterAt);
 
         assertThat(retrySection).contains("challenge.verify").doesNotContain("None registered.");
         assertThat(timeoutSection)

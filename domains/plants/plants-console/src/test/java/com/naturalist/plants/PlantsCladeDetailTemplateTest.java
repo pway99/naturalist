@@ -3,7 +3,6 @@ package com.naturalist.plants;
 import com.naturalist.spring.console.ConsoleSliceTemplates;
 
 import com.naturalist.clades.Asterids;
-import com.naturalist.clades.Clade;
 import com.naturalist.clades.CladeTraversal;
 import com.naturalist.clades.Superasterids;
 import com.naturalist.data.NaturalistTestExtension;

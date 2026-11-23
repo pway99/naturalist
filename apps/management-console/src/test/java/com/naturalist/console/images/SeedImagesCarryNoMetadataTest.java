@@ -5,6 +5,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 import com.naturalist.observation.ImageUpload;
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
+import java.util.Iterator;
 import java.util.stream.Stream;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
@@ -12,6 +13,8 @@ import org.junit.jupiter.params.provider.MethodSource;
 import org.springframework.core.io.Resource;
 import org.springframework.core.io.support.PathMatchingResourcePatternResolver;
 import javax.imageio.ImageIO;
+import javax.imageio.ImageReader;
+import javax.imageio.stream.ImageInputStream;
 
 /**
  * Every classpath seed photo is already stripped: {@code withoutMetadata()} is the identity on it and it carries no
@@ -32,7 +35,7 @@ class SeedImagesCarryNoMetadataTest {
     @ParameterizedTest(name = "{0}")
     @MethodSource("seedImages")
     void seedImage_isAlreadyStripped(Resource resource) throws IOException {
-        var upload = ImageUpload.of(resource.getContentAsByteArray());
+        ImageUpload upload = ImageUpload.of(resource.getContentAsByteArray());
 
         assertThat(upload.isValid()).as("%s is a valid image", resource.getFilename()).isTrue();
         assertThat(upload.gps()).as("%s GPS", resource.getFilename()).isEmpty();
@@ -50,10 +53,10 @@ class SeedImagesCarryNoMetadataTest {
     @ParameterizedTest(name = "{0}")
     @MethodSource("seedImages")
     void seedImagesAreWithinThePhotoLimit(Resource resource) throws IOException {
-        try (var in = ImageIO.createImageInputStream(new ByteArrayInputStream(resource.getContentAsByteArray()))) {
-            var readers = ImageIO.getImageReaders(in);
+        try (ImageInputStream in = ImageIO.createImageInputStream(new ByteArrayInputStream(resource.getContentAsByteArray()))) {
+            Iterator<ImageReader> readers = ImageIO.getImageReaders(in);
             assertThat(readers.hasNext()).as("%s has an ImageIO reader", resource.getFilename()).isTrue();
-            var reader = readers.next();
+            ImageReader reader = readers.next();
             try {
                 reader.setInput(in, true, true);
                 int longestEdge = Math.max(reader.getWidth(0), reader.getHeight(0));

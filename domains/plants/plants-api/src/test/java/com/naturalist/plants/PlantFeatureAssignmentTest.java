@@ -1,6 +1,7 @@
 package com.naturalist.plants;
 
 import com.fasterxml.jackson.databind.InjectableValues;
+import com.fasterxml.jackson.databind.JavaType;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.naturalist.observability.InvariantObservation;
 import com.naturalist.observability.MethodObserver;
@@ -63,7 +64,7 @@ class PlantFeatureAssignmentTest {
         String json = mapper.writeValueAsString(a);
         assertThat(json).contains("\"rank\":\"FAMILY\"").contains("\"value\":\"asteraceae\"");
 
-        var type = mapper.getTypeFactory().constructParametricType(
+        JavaType type = mapper.getTypeFactory().constructParametricType(
                 OrganismFeatureAssignment.class,
                 PlantFeatureAssignmentId.class, PlantFeatureId.class, PlantRankName.class);
         OrganismFeatureAssignment<PlantFeatureAssignmentId, PlantFeatureId, PlantRankName> decoded =

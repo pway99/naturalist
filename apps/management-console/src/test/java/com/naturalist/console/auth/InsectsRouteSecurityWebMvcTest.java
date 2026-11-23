@@ -58,7 +58,7 @@ class InsectsRouteSecurityWebMvcTest {
 
     @Test
     void identify_anonymous_redirectsToLogin() throws Exception {
-        var file = new MockMultipartFile("image", "test.jpg", "image/jpeg", TINY_JPEG);
+        MockMultipartFile file = new MockMultipartFile("image", "test.jpg", "image/jpeg", TINY_JPEG);
         mockMvc.perform(multipart("/insects/identify").file(file).with(csrf()))
                 .andExpect(status().is3xxRedirection())
                 .andExpect(result ->
@@ -67,7 +67,7 @@ class InsectsRouteSecurityWebMvcTest {
 
     @Test
     void identify_authenticatedWithoutVision_isForbidden() throws Exception {
-        var file = new MockMultipartFile("image", "test.jpg", "image/jpeg", TINY_JPEG);
+        MockMultipartFile file = new MockMultipartFile("image", "test.jpg", "image/jpeg", TINY_JPEG);
         mockMvc.perform(multipart("/insects/identify").file(file).with(csrf())
                         .with(user("naturalist")
                                 .authorities(new SimpleGrantedAuthority("ROLE_NATURALIST"))))
@@ -76,7 +76,7 @@ class InsectsRouteSecurityWebMvcTest {
 
     @Test
     void identify_authenticatedWithVision_passesSecurityGate() throws Exception {
-        var file = new MockMultipartFile("image", "test.jpg", "image/jpeg", TINY_JPEG);
+        MockMultipartFile file = new MockMultipartFile("image", "test.jpg", "image/jpeg", TINY_JPEG);
         mockMvc.perform(multipart("/insects/identify").file(file).with(csrf())
                         .with(user("naturalist").authorities(
                                 new SimpleGrantedAuthority("ROLE_NATURALIST"),
@@ -88,7 +88,7 @@ class InsectsRouteSecurityWebMvcTest {
 
     @Test
     void addImage_anonymous_redirectsToLogin() throws Exception {
-        var file = new MockMultipartFile("image", "test.jpg", "image/jpeg", TINY_JPEG);
+        MockMultipartFile file = new MockMultipartFile("image", "test.jpg", "image/jpeg", TINY_JPEG);
         mockMvc.perform(multipart("/insects/battus-philenor/images").file(file).with(csrf()))
                 .andExpect(status().is3xxRedirection())
                 .andExpect(result ->
@@ -97,7 +97,7 @@ class InsectsRouteSecurityWebMvcTest {
 
     @Test
     void addImage_missingCsrf_isForbidden() throws Exception {
-        var file = new MockMultipartFile("image", "test.jpg", "image/jpeg", TINY_JPEG);
+        MockMultipartFile file = new MockMultipartFile("image", "test.jpg", "image/jpeg", TINY_JPEG);
         mockMvc.perform(multipart("/insects/battus-philenor/images").file(file)
                         .with(user("naturalist").roles("ADMIN")))
                 .andExpect(status().isForbidden());

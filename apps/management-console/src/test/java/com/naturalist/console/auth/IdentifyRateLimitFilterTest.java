@@ -74,8 +74,8 @@ class IdentifyRateLimitFilterTest {
         assertThat(identify("10.0.0.1", "/insects/identify").getStatus()).isEqualTo(200);
         assertThat(identify("10.0.0.1", "/insects/identify").getStatus()).isEqualTo(200);
 
-        var chain = new MockFilterChain();
-        var refused = send("POST", "10.0.0.1", "/insects/identify", chain);
+        MockFilterChain chain = new MockFilterChain();
+        MockHttpServletResponse refused = send("POST", "10.0.0.1", "/insects/identify", chain);
 
         assertThat(refused.getStatus()).isEqualTo(303);
         assertThat(refused.getHeader("Location")).isEqualTo("/insects/identify?limit=RATE");
@@ -97,7 +97,7 @@ class IdentifyRateLimitFilterTest {
         identify("10.0.0.1", "/insects/identify");
         identify("10.0.0.1", "/plants/identify");
 
-        var refused = identify("10.0.0.1", "/insects/identify");
+        MockHttpServletResponse refused = identify("10.0.0.1", "/insects/identify");
         assertThat(refused.getStatus()).isEqualTo(303);
         assertThat(refused.getHeader("Location")).isEqualTo("/insects/identify?limit=RATE");
     }
@@ -121,7 +121,7 @@ class IdentifyRateLimitFilterTest {
      */
     @Test
     void refusal_isRecordedAgainstTheSignedInNaturalist() throws Exception {
-        var pat = NaturalistName.of("pat");
+        NaturalistName pat = NaturalistName.of("pat");
         signedIn = Optional.of(pat);
         identify("10.0.0.1", "/insects/identify");
         identify("10.0.0.1", "/insects/identify");
@@ -147,9 +147,9 @@ class IdentifyRateLimitFilterTest {
 
     private MockHttpServletResponse send(String method, String client, String path, MockFilterChain chain)
             throws Exception {
-        var request = new MockHttpServletRequest(method, path);
+        MockHttpServletRequest request = new MockHttpServletRequest(method, path);
         request.setRemoteAddr(client);
-        var response = new MockHttpServletResponse();
+        MockHttpServletResponse response = new MockHttpServletResponse();
         filter.doFilter(request, response, chain);
         return response;
     }

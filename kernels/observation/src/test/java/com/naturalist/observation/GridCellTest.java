@@ -2,6 +2,7 @@ package com.naturalist.observation;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.naturalist.observability.InvariantObservation;
+import com.naturalist.observability.MethodObserver;
 import com.naturalist.observability.Observer;
 import org.junit.jupiter.api.Test;
 
@@ -13,7 +14,7 @@ class GridCellTest {
 
     @Test
     void portland_snapsToCell1092_minus2945() {
-        var cell = GridCell.of(new Coordinates(45.52, -122.68));
+        GridCell cell = GridCell.of(new Coordinates(45.52, -122.68));
         assertThat(cell).isEqualTo(GridCell.of(1092, -2945));
         assertThat(cell.bounds().south()).isCloseTo(45.5, within(1e-9));
         assertThat(cell.bounds().north()).isCloseTo(45.5 + 1.0 / 24, within(1e-9));
@@ -24,11 +25,11 @@ class GridCellTest {
 
     @Test
     void southernWestern_pointHasNegativeIndices_andSWLetters() {
-        var sydney = GridCell.of(new Coordinates(-33.87, 151.21));
+        GridCell sydney = GridCell.of(new Coordinates(-33.87, 151.21));
         assertThat(sydney).isEqualTo(GridCell.of(-813, 3629));
         assertThat(sydney.describe()).isEqualTo("33.88–33.83°S, 151.21–151.25°E");
 
-        var rio = GridCell.of(new Coordinates(-22.9, -43.2));
+        GridCell rio = GridCell.of(new Coordinates(-22.9, -43.2));
         assertThat(rio).isEqualTo(GridCell.of(-550, -1037));
         assertThat(rio.describe()).isEqualTo("22.92–22.88°S, 43.21–43.17°W");
     }
@@ -73,7 +74,7 @@ class GridCellTest {
         assertThat(GridCell.of(0, -4321).isValid()).isFalse();
         assertThat(GridCell.of(0, 0).isValid()).isTrue();
 
-        var mo = observer.forMethod("outOfRangeIndices_construct_butAreNotValid");
+        MethodObserver mo = observer.forMethod("outOfRangeIndices_construct_butAreNotValid");
         InvariantObservation result = mo.observable(GridCell.of(2160, -4321), "cell");
         assertThat(result.violationNamesRemovingPrefix(mo.observationPoint()))
                 .containsExactlyInAnyOrder(".cell.latIndex", ".cell.lonIndex");
@@ -92,7 +93,7 @@ class GridCellTest {
 
     @Test
     void coordinates_outOfRange_failInvariants() {
-        var mo = observer.forMethod("coordinates_outOfRange_failInvariants");
+        MethodObserver mo = observer.forMethod("coordinates_outOfRange_failInvariants");
         assertThat(mo.observable(new Coordinates(91, 0), "point").violationNamesRemovingPrefix(mo.observationPoint()))
                 .containsExactlyInAnyOrder(".point.latitude");
         assertThat(mo.observable(new Coordinates(0, -181), "point").violationNamesRemovingPrefix(mo.observationPoint()))
@@ -102,9 +103,9 @@ class GridCellTest {
 
     @Test
     void gridCell_roundTripsThroughJackson() throws Exception {
-        var mapper = new ObjectMapper();
-        var cell = GridCell.of(1092, -2945);
-        var json = mapper.writeValueAsString(cell);
+        ObjectMapper mapper = new ObjectMapper();
+        GridCell cell = GridCell.of(1092, -2945);
+        String json = mapper.writeValueAsString(cell);
         assertThat(mapper.readValue(json, GridCell.class)).isEqualTo(cell);
     }
 }

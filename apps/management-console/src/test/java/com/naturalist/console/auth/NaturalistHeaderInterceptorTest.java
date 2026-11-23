@@ -53,7 +53,7 @@ class NaturalistHeaderInterceptorTest {
     @Test
     void publishesNaturalistSlug_forNaturalistPrincipal() {
         setNaturalistAuthentication();
-        var request = new MockHttpServletRequest();
+        MockHttpServletRequest request = new MockHttpServletRequest();
 
         interceptor.preHandle(request, new MockHttpServletResponse(), new Object());
 
@@ -63,16 +63,16 @@ class NaturalistHeaderInterceptorTest {
 
     @Test
     void publishesNull_forAnonymous() {
-        var request = new MockHttpServletRequest();
+        MockHttpServletRequest request = new MockHttpServletRequest();
         interceptor.preHandle(request, new MockHttpServletResponse(), new Object());
         assertThat(request.getAttribute(NaturalistHeaderInterceptor.CURRENT_NATURALIST_NAME)).isNull();
     }
 
     @Test
     void publishesInsectSectionAndLensAndUri() {
-        var request = new MockHttpServletRequest("GET", "/insects/species");
+        MockHttpServletRequest request = new MockHttpServletRequest("GET", "/insects/species");
         request.setQueryString("page=2");
-        var session = new MockHttpSession();
+        MockHttpSession session = new MockHttpSession();
         session.setAttribute("insects.collectionLens", true);
         request.setSession(session);
 
@@ -85,7 +85,7 @@ class NaturalistHeaderInterceptorTest {
 
     @Test
     void insectSectionFalse_offInsectsPath() {
-        var request = new MockHttpServletRequest("GET", "/chemistry");
+        MockHttpServletRequest request = new MockHttpServletRequest("GET", "/chemistry");
         interceptor.preHandle(request, new MockHttpServletResponse(), new Object());
         assertThat(request.getAttribute("insectSection")).isEqualTo(false);
         assertThat(request.getAttribute("collectionLens")).isEqualTo(false);
@@ -94,7 +94,7 @@ class NaturalistHeaderInterceptorTest {
     @Test
     void usageAlertsPending_false_whenNoActiveAlerts() {
         setAdminAuthentication();
-        var request = new MockHttpServletRequest();
+        MockHttpServletRequest request = new MockHttpServletRequest();
         interceptor.preHandle(request, new MockHttpServletResponse(), new Object());
         assertThat(request.getAttribute("usageAlertsPending")).isEqualTo(false);
     }
@@ -103,7 +103,7 @@ class NaturalistHeaderInterceptorTest {
     void usageAlertsPending_true_whenAdminAndAnActiveAlertExists() {
         insertPendingAlert();
         setAdminAuthentication();
-        var request = new MockHttpServletRequest();
+        MockHttpServletRequest request = new MockHttpServletRequest();
 
         interceptor.preHandle(request, new MockHttpServletResponse(), new Object());
 
@@ -115,7 +115,7 @@ class NaturalistHeaderInterceptorTest {
     @Test
     void usageAlertsPending_false_forAnonymous_evenWithAlertsPending() {
         insertPendingAlert();
-        var request = new MockHttpServletRequest();
+        MockHttpServletRequest request = new MockHttpServletRequest();
 
         interceptor.preHandle(request, new MockHttpServletResponse(), new Object());
 
@@ -127,7 +127,7 @@ class NaturalistHeaderInterceptorTest {
     void usageAlertsPending_false_forNaturalistRole_evenWithAlertsPending() {
         insertPendingAlert();
         setNaturalistAuthentication();
-        var request = new MockHttpServletRequest();
+        MockHttpServletRequest request = new MockHttpServletRequest();
 
         interceptor.preHandle(request, new MockHttpServletResponse(), new Object());
 
@@ -150,7 +150,7 @@ class NaturalistHeaderInterceptorTest {
     }
 
     private static void setNaturalistAuthentication() {
-        var principal = new NaturalistPrincipal(
+        NaturalistPrincipal principal = new NaturalistPrincipal(
                 NaturalistName.of("patrick-way"), "Patrick", "gerald.durrell@oakvista.example",
                 "{bcrypt}x", false, true);
         SecurityContextHolder.getContext().setAuthentication(

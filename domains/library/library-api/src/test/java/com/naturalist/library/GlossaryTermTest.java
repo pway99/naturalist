@@ -1,6 +1,7 @@
 package com.naturalist.library;
 
 import com.naturalist.observability.InvariantObservation;
+import com.naturalist.observability.MethodObserver;
 import com.naturalist.observability.Observer;
 import org.junit.jupiter.api.Test;
 
@@ -12,7 +13,7 @@ class GlossaryTermTest {
 
     @Test
     void validGlossaryTermPassesAllInvariants() {
-        var mo = observer.forMethod("validGlossaryTermPassesAllInvariants");
+        MethodObserver mo = observer.forMethod("validGlossaryTermPassesAllInvariants");
         GlossaryTerm term = new GlossaryTerm(
                 GlossaryTermName.of("conspicuous"),
                 "Conspicuous",
@@ -26,7 +27,7 @@ class GlossaryTermTest {
 
     @Test
     void nullExampleIsPermitted() {
-        var mo = observer.forMethod("nullExampleIsPermitted");
+        MethodObserver mo = observer.forMethod("nullExampleIsPermitted");
         GlossaryTerm term = new GlossaryTerm(
                 GlossaryTermName.of("diagnostic"),
                 "Diagnostic",
@@ -40,7 +41,7 @@ class GlossaryTermTest {
 
     @Test
     void nullRequiredComponentsProduceExpectedInvariantViolations() {
-        var mo = observer.forMethod("nullRequiredComponentsProduceExpectedInvariantViolations");
+        MethodObserver mo = observer.forMethod("nullRequiredComponentsProduceExpectedInvariantViolations");
         GlossaryTerm term = new GlossaryTerm(null, null, null, null);
 
         InvariantObservation result = mo.namedEntity(term, "glossaryTerm");

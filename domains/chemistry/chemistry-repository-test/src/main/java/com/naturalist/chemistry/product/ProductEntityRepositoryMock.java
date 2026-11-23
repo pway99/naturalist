@@ -24,7 +24,7 @@ class ProductEntityRepositoryMock
         getByCompoundName.arguments(i -> i
                         .identifier(compoundName, "compoundName"))
                 .throwWhenInvalid();
-        var result = testEntitySource().entityStream()
+        List<Product> result = testEntitySource().entityStream()
                 .filter(product -> product.compounds().contains(compoundName))
                 .toList();
         getByCompoundName.state(s -> s.observableCollection(result, "result")).observe(Level.WARN);

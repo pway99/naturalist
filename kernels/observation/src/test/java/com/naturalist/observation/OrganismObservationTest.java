@@ -2,10 +2,13 @@ package com.naturalist.observation;
 
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.databind.InjectableValues;
+import com.fasterxml.jackson.databind.JavaType;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
 import com.naturalist.ddd.EntityId;
 import com.naturalist.naturalist.NaturalistName;
+import com.naturalist.observability.InvariantObservation;
+import com.naturalist.observability.MethodObserver;
 import com.naturalist.observability.Observer;
 import com.naturalist.taxonomy.LinealRank;
 import com.naturalist.taxonomy.RankName;
@@ -47,7 +50,7 @@ class OrganismObservationTest {
                 FakeObsId.create(), NaturalistName.of("ada"),
                 new FakeGenusName("salvia"), Instant.parse("2026-08-19T00:00:00Z"),
                 null, null, null, null);
-        var updated = obs.withNotes("in the herb bed");
+        OrganismObservation<OrganismObservationTest.FakeObsId, OrganismObservationTest.FakeGenusName> updated = obs.withNotes("in the herb bed");
         assertThat(updated.notes()).isEqualTo("in the herb bed");
         assertThat(updated.subject()).isEqualTo(obs.subject());
         assertThat(updated.id()).isEqualTo(obs.id());
@@ -61,7 +64,7 @@ class OrganismObservationTest {
                 null, null, null, null);
         String json = mapper().writeValueAsString(obs);
         assertThat(json).contains("\"rank\":\"GENUS\"").contains("\"value\":\"salvia\"");
-        var type = mapper().getTypeFactory().constructParametricType(OrganismObservation.class, FakeObsId.class, FakeGenusName.class);
+        JavaType type = mapper().getTypeFactory().constructParametricType(OrganismObservation.class, FakeObsId.class, FakeGenusName.class);
         OrganismObservation<FakeObsId, FakeGenusName> decoded = mapper().readValue(json, type);
         assertThat(decoded.subject().value()).isEqualTo("salvia");
         assertThat(decoded.id()).isEqualTo(obs.id());
@@ -76,9 +79,9 @@ class OrganismObservationTest {
 
     @Test
     void area_isOptional() {
-        var mo = OBSERVER.forMethod("area_isOptional");
+        MethodObserver mo = OBSERVER.forMethod("area_isOptional");
 
-        var result = mo.namedEntity(observationIn(null), "observation");
+        InvariantObservation result = mo.namedEntity(observationIn(null), "observation");
 
         // the fake subject is not a real identifier, so the only thing proved here is that a null area is no violation
         assertThat(result.violationNamesRemovingPrefix(mo.observationPoint()))
@@ -87,10 +90,10 @@ class OrganismObservationTest {
 
     @Test
     void notes_overMaxLength_isViolation() {
-        var mo = OBSERVER.forMethod("notes_overMaxLength_isViolation");
-        var tooLong = "a".repeat(OrganismObservation.MAX_NOTES_LENGTH + 1);
+        MethodObserver mo = OBSERVER.forMethod("notes_overMaxLength_isViolation");
+        String tooLong = "a".repeat(OrganismObservation.MAX_NOTES_LENGTH + 1);
 
-        var result = mo.namedEntity(observationIn(null).withNotes(tooLong), "observation");
+        InvariantObservation result = mo.namedEntity(observationIn(null).withNotes(tooLong), "observation");
 
         assertThat(result.violationNamesRemovingPrefix(mo.observationPoint()))
                 .contains(".observation.notes");
@@ -98,11 +101,11 @@ class OrganismObservationTest {
 
     @Test
     void notes_atMaxLengthOrNull_isNoViolation() {
-        var mo = OBSERVER.forMethod("notes_atMaxLengthOrNull_isNoViolation");
-        var atMax = "a".repeat(OrganismObservation.MAX_NOTES_LENGTH);
+        MethodObserver mo = OBSERVER.forMethod("notes_atMaxLengthOrNull_isNoViolation");
+        String atMax = "a".repeat(OrganismObservation.MAX_NOTES_LENGTH);
 
-        var nullNotes = mo.namedEntity(observationIn(null), "nullNotes");
-        var maxNotes = mo.namedEntity(observationIn(null).withNotes(atMax), "maxNotes");
+        InvariantObservation nullNotes = mo.namedEntity(observationIn(null), "nullNotes");
+        InvariantObservation maxNotes = mo.namedEntity(observationIn(null).withNotes(atMax), "maxNotes");
 
         // the fake subject is not a real identifier, so only the notes violation is asserted absent
         assertThat(nullNotes.violationNamesRemovingPrefix(mo.observationPoint()))
@@ -113,14 +116,14 @@ class OrganismObservationTest {
 
     @Test
     void area_roundTripsAndWithAreaReplaces() throws Exception {
-        var obs = observationIn(GridCell.of(1092, -2945));
+        OrganismObservation<OrganismObservationTest.FakeObsId, OrganismObservationTest.FakeGenusName> obs = observationIn(GridCell.of(1092, -2945));
         String json = mapper().writeValueAsString(obs);
         assertThat(json).contains("\"area\":{\"latIndex\":1092,\"lonIndex\":-2945}");
-        var type = mapper().getTypeFactory().constructParametricType(OrganismObservation.class, FakeObsId.class, FakeGenusName.class);
+        JavaType type = mapper().getTypeFactory().constructParametricType(OrganismObservation.class, FakeObsId.class, FakeGenusName.class);
         OrganismObservation<FakeObsId, FakeGenusName> decoded = mapper().readValue(json, type);
         assertThat(decoded.area()).isEqualTo(GridCell.of(1092, -2945));
 
-        var moved = obs.withArea(GridCell.of(1, 2));
+        OrganismObservation<OrganismObservationTest.FakeObsId, OrganismObservationTest.FakeGenusName> moved = obs.withArea(GridCell.of(1, 2));
         assertThat(moved.area()).isEqualTo(GridCell.of(1, 2));
         assertThat(moved.withArea(null).area()).isNull();
         assertThat(moved.id()).isEqualTo(obs.id());

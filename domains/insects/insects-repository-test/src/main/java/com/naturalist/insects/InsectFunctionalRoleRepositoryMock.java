@@ -24,7 +24,7 @@ class InsectFunctionalRoleRepositoryMock
         MethodObserver getByGuild = observer().forMethod("getByGuild");
         getByGuild.arguments(i -> i.notNull(guild, "guild"))
                 .throwWhenInvalid();
-        var result = testEntitySource().entityStream()
+        List<InsectFunctionalRole> result = testEntitySource().entityStream()
                 .filter(role -> role.guilds().contains(guild))
                 .toList();
         getByGuild.state(s -> s.observableCollection(result, "result")).observe(Level.WARN);
@@ -36,7 +36,7 @@ class InsectFunctionalRoleRepositoryMock
         MethodObserver getByParentName = observer().forMethod("getByParentName");
         getByParentName.arguments(i -> i.identifier(parentName, "parentName"))
                 .throwWhenInvalid();
-        var result = testEntitySource().entityStream()
+        Optional<InsectFunctionalRole> result = testEntitySource().entityStream()
                 .filter(role -> role.parentName().equals(parentName))
                 .findFirst();
         getByParentName.state(s -> s.namedEntityOrNull(result.orElse(null), "result")).observe(Level.WARN);
@@ -48,7 +48,7 @@ class InsectFunctionalRoleRepositoryMock
         MethodObserver getByParentNames = observer().forMethod("getByParentNames");
         getByParentNames.arguments(i -> i.observableCollection(parentNames, "parentNames"))
                 .throwWhenInvalid();
-        var result = testEntitySource().entityStream()
+        List<InsectFunctionalRole> result = testEntitySource().entityStream()
                 .filter(role -> parentNames.contains(role.parentName()))
                 .toList();
         getByParentNames.state(s -> s.observableCollection(result, "result")).observe(Level.WARN);

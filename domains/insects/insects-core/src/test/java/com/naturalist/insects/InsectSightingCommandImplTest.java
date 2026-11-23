@@ -8,6 +8,8 @@ import com.naturalist.test.context.Wired;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.RegisterExtension;
 
+import java.util.Optional;
+
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatCode;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
@@ -34,9 +36,9 @@ class InsectSightingCommandImplTest {
 
     @Test
     void record_insertsObservationForNaturalist() {
-        var id = recordedBy(PAT, "seen today");
+        InsectObservationId id = recordedBy(PAT, "seen today");
 
-        var observation = insectQuery.observations().getByName(id);
+        Optional<OrganismObservation<InsectObservationId, InsectRankName>> observation = insectQuery.observations().getByName(id);
         assertThat(observation).isPresent();
         assertThat(observation.get().observedBy()).isEqualTo(PAT);
         assertThat(observation.get().subject()).isEqualTo(species);
@@ -57,7 +59,7 @@ class InsectSightingCommandImplTest {
 
     @Test
     void record_notesOverMaxLength_isRefused() {
-        var tooLong = "a".repeat(OrganismObservation.MAX_NOTES_LENGTH + 1);
+        String tooLong = "a".repeat(OrganismObservation.MAX_NOTES_LENGTH + 1);
 
         assertThatThrownBy(() -> sightings.record(species, PAT, tooLong))
                 .isInstanceOf(InvariantViolationException.class)
@@ -66,8 +68,8 @@ class InsectSightingCommandImplTest {
 
     @Test
     void updateNotes_notesOverMaxLength_isRefusedAndLeavesNotesUnchanged() {
-        var id = recordedBy(PAT, "old");
-        var tooLong = "a".repeat(OrganismObservation.MAX_NOTES_LENGTH + 1);
+        InsectObservationId id = recordedBy(PAT, "old");
+        String tooLong = "a".repeat(OrganismObservation.MAX_NOTES_LENGTH + 1);
 
         assertThatThrownBy(() -> sightings.updateNotes(id, PAT, tooLong))
                 .isInstanceOf(InvariantViolationException.class)
@@ -78,7 +80,7 @@ class InsectSightingCommandImplTest {
 
     @Test
     void updateNotes_ownerChangesNotes() {
-        var id = recordedBy(PAT, "old");
+        InsectObservationId id = recordedBy(PAT, "old");
 
         sightings.updateNotes(id, PAT, "new");
 
@@ -87,7 +89,7 @@ class InsectSightingCommandImplTest {
 
     @Test
     void updateNotes_blankClearsNotes() {
-        var id = recordedBy(PAT, "old");
+        InsectObservationId id = recordedBy(PAT, "old");
 
         sightings.updateNotes(id, PAT, "   ");
 
@@ -96,7 +98,7 @@ class InsectSightingCommandImplTest {
 
     @Test
     void updateNotes_nonOwnerLeavesNotesUnchanged() {
-        var id = recordedBy(PAT, "old");
+        InsectObservationId id = recordedBy(PAT, "old");
 
         assertThatCode(() -> sightings.updateNotes(id, MALLORY, "x")).doesNotThrowAnyException();
 
@@ -111,7 +113,7 @@ class InsectSightingCommandImplTest {
 
     @Test
     void updateNotes_rejectsNullViewer() {
-        var id = recordedBy(PAT, "old");
+        InsectObservationId id = recordedBy(PAT, "old");
 
         assertThatThrownBy(() -> sightings.updateNotes(id, null, "x"))
                 .isInstanceOf(InvariantViolationException.class);

@@ -1,7 +1,7 @@
 package com.naturalist.plants;
 
 import com.naturalist.spring.console.ConsoleSliceTemplates;
-
+import gg.jte.TemplateEngine;
 import com.naturalist.data.NaturalistTestExtension;
 import com.naturalist.plants.phytochemistry.PhytochemicalConstituent;
 import com.naturalist.plants.phytochemistry.PlantPhytochemicalConstituentTestEntitySource;
@@ -26,7 +26,7 @@ class PhytochemistryDetailTemplateTest {
 
     @Test
     void phytochemistryDetail_rendersEveryConstituentWithoutError() {
-        var template = ConsoleSliceTemplates.create();
+        TemplateEngine template = ConsoleSliceTemplates.create();
         for (PhytochemicalConstituent constituent : nte.getNamed(PlantPhytochemicalConstituentTestEntitySource.class).entityStream().toList()) {
             StringOutput output = new StringOutput();
             template.render("plants/phytochemistry/detail.jte",

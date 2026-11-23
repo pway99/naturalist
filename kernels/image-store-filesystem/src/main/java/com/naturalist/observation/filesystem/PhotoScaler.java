@@ -21,6 +21,7 @@ import java.awt.image.BufferedImage;
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
+import java.util.Iterator;
 import java.util.Optional;
 
 /**
@@ -79,14 +80,14 @@ final class PhotoScaler {
             .notNull(bytes, "bytes"))
             .throwWhenInvalid();
         try (ImageInputStream in = new MemoryCacheImageInputStream(new ByteArrayInputStream(bytes))) {
-            var readers = ImageIO.getImageReaders(in);
+            Iterator<ImageReader> readers = ImageIO.getImageReaders(in);
             if (!readers.hasNext()) {
                 return Optional.empty();
             }
             ImageReader reader = readers.next();
             try {
                 reader.setInput(in, true, true);
-                var dimensions = new Dimensions(reader.getWidth(0), reader.getHeight(0));
+                PhotoScaler.Dimensions dimensions = new Dimensions(reader.getWidth(0), reader.getHeight(0));
                 return dimensions.width() > 0 && dimensions.height() > 0 ? Optional.of(dimensions) : Optional.empty();
             } finally {
                 reader.dispose();
@@ -139,7 +140,7 @@ final class PhotoScaler {
 
     private static BufferedImage decode(byte[] bytes, Dimensions declared, int edge) throws IOException {
         try (ImageInputStream in = new MemoryCacheImageInputStream(new ByteArrayInputStream(bytes))) {
-            var readers = ImageIO.getImageReaders(in);
+            Iterator<ImageReader> readers = ImageIO.getImageReaders(in);
             if (!readers.hasNext()) {
                 throw new IOException("no ImageReader accepts the bytes");
             }
@@ -173,7 +174,7 @@ final class PhotoScaler {
         int rasterWidth = quarterTurn ? source.getHeight() : source.getWidth();
         int rasterHeight = quarterTurn ? source.getWidth() : source.getHeight();
 
-        var result = new BufferedImage(width, height, BufferedImage.TYPE_INT_RGB);
+        BufferedImage result = new BufferedImage(width, height, BufferedImage.TYPE_INT_RGB);
         Graphics2D g = result.createGraphics();
         try {
             g.setColor(Color.WHITE);
@@ -207,12 +208,12 @@ final class PhotoScaler {
     }
 
     private static byte[] encodeJpeg(BufferedImage image) throws IOException {
-        var writers = ImageIO.getImageWritersByFormatName("jpeg");
+        Iterator<ImageWriter> writers = ImageIO.getImageWritersByFormatName("jpeg");
         if (!writers.hasNext()) {
             throw new IOException("no JPEG ImageWriter available");
         }
         ImageWriter writer = writers.next();
-        var out = new ByteArrayOutputStream();
+        ByteArrayOutputStream out = new ByteArrayOutputStream();
         try (ImageOutputStream stream = ImageIO.createImageOutputStream(out)) {
             writer.setOutput(stream);
             ImageWriteParam param = writer.getDefaultWriteParam();

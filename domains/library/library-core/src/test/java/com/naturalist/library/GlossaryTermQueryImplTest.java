@@ -5,6 +5,7 @@ import com.naturalist.test.context.Wired;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.RegisterExtension;
 
+import java.util.Optional;
 import java.util.Set;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -18,7 +19,7 @@ class GlossaryTermQueryImplTest {
 
     @Test
     void getByNameReturnsTheTerm() {
-        var result = glossaryTermQuery.getByName(TestLibraryIdentifiers.GlossaryTerms.Conspicuous);
+        Optional<GlossaryTerm> result = glossaryTermQuery.getByName(TestLibraryIdentifiers.GlossaryTerms.Conspicuous);
 
         assertThat(result).isPresent();
         assertThat(result.get().term()).isEqualTo("Conspicuous");

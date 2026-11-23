@@ -22,7 +22,7 @@ class UsageCounterRepositoryMock
         MethodObserver findByCounterName = observer().forMethod("findByCounterName");
         findByCounterName.arguments(i -> i.identifier(counterName, "counterName"))
                 .throwWhenInvalid();
-        var result = testEntitySource().entityStream()
+        List<UsageCounter> result = testEntitySource().entityStream()
                 .filter(c -> c.counterName().equals(counterName))
                 .toList();
         findByCounterName.state(s -> s.observableCollection(result, "result")).observe(Level.WARN);

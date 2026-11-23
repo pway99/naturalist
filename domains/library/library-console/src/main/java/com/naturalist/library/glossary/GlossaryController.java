@@ -11,6 +11,7 @@ import org.springframework.web.bind.annotation.PathVariable;
 
 import java.util.Comparator;
 import java.util.List;
+import java.util.Optional;
 
 @Controller
 class GlossaryController {
@@ -34,7 +35,7 @@ class GlossaryController {
 
     @GetMapping("/glossary/{slug}")
     String detail(@PathVariable String slug, Model model) {
-        var term = glossaryTermQuery.getByName(GlossaryTermName.of(slug));
+        Optional<GlossaryTerm> term = glossaryTermQuery.getByName(GlossaryTermName.of(slug));
         if (term.isEmpty()) {
             return "redirect:/glossary";
         }

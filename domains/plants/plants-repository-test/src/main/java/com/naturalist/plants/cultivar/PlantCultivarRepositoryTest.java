@@ -115,7 +115,7 @@ interface PlantCultivarRepositoryTest
 
     @Test
     default void getByPlantName_returnsCultivarsWithMatchingPlantName() {
-        var results = repository().getByPlantName(TestPlantsIdentifiers.Plants.Tomato.name);
+        List<Cultivar> results = repository().getByPlantName(TestPlantsIdentifiers.Plants.Tomato.name);
 
         assertThat(results)
                 .extracting(Cultivar::name)
@@ -125,7 +125,7 @@ interface PlantCultivarRepositoryTest
 
     @Test
     default void getByPlantName_returnsEmptyForUnknownPlant() {
-        var results = repository().getByPlantName(TestPlantsIdentifiers.Plants.NotFound.name);
+        List<Cultivar> results = repository().getByPlantName(TestPlantsIdentifiers.Plants.NotFound.name);
 
         assertThat(results).isEmpty();
     }

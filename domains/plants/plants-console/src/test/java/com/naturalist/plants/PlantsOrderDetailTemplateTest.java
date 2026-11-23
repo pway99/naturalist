@@ -1,7 +1,7 @@
 package com.naturalist.plants;
 
 import com.naturalist.spring.console.ConsoleSliceTemplates;
-
+import gg.jte.TemplateEngine;
 import com.naturalist.data.NaturalistTestExtension;
 import gg.jte.output.StringOutput;
 import org.junit.jupiter.api.Test;
@@ -23,7 +23,7 @@ class PlantsOrderDetailTemplateTest {
 
     @Test
     void orderDetail_rendersEveryOrderWithoutError() {
-        var template = ConsoleSliceTemplates.create();
+        TemplateEngine template = ConsoleSliceTemplates.create();
         List<PlantFamily> allFamilies =
                 nte.getNamed(PlantFamilyTestEntitySource.class).entityStream().toList();
 
@@ -44,7 +44,7 @@ class PlantsOrderDetailTemplateTest {
 
     @Test
     void orderDetail_rendersFamilyCardsWhenTheOrderHasThem() {
-        var template = ConsoleSliceTemplates.create();
+        TemplateEngine template = ConsoleSliceTemplates.create();
         PlantOrder lamiales = nte.getNamed(PlantOrderTestEntitySource.class).entityStream()
                 .filter(o -> o.name().value().equals("lamiales"))
                 .findFirst()
@@ -68,7 +68,7 @@ class PlantsOrderDetailTemplateTest {
         // Exercises the template's empty branch, not a fact about the catalog —
         // every order currently has at least one family, so the empty list is
         // supplied deliberately rather than found.
-        var template = ConsoleSliceTemplates.create();
+        TemplateEngine template = ConsoleSliceTemplates.create();
         PlantOrder anyOrder = nte.getNamed(PlantOrderTestEntitySource.class).entityStream()
                 .findFirst()
                 .orElseThrow();

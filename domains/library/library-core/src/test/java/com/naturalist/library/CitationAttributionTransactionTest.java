@@ -2,6 +2,7 @@ package com.naturalist.library;
 
 import com.naturalist.authority.AuthorityReference;
 import com.naturalist.authority.AuthoritySource;
+import com.naturalist.authority.Citation;
 import com.naturalist.authority.CitationName;
 import com.naturalist.authority.OnlineSource;
 import com.naturalist.catalog.EntityRef;
@@ -53,26 +54,26 @@ class CitationAttributionTransactionTest {
 
     @Test
     void execute_newAttribution_persistsCitationAndAssociation() {
-        var citation = citation("test-attribution-new");
-        var subject = subject("unobtainium-new");
+        OnlineSource citation = citation("test-attribution-new");
+        EntityRef subject = subject("unobtainium-new");
 
         transaction.execute(new CitationAttribution(citation, subject, "first note"));
 
         assertThat(citationRepository.getByName(citation.name())).isPresent();
-        var associations = citationAssociationQuery.findBySubject(subject);
+        CitationAssociationCollection associations = citationAssociationQuery.findBySubject(subject);
         assertThat(associations.size()).isEqualTo(1);
         assertThat(associations.stream().findFirst().orElseThrow().note()).isEqualTo("first note");
     }
 
     @Test
     void execute_sameCitationSameSubjectTwice_createsExactlyOneAssociation() {
-        var citation = citation("test-attribution-repeat-subject");
-        var subject = subject("unobtainium-repeat");
+        OnlineSource citation = citation("test-attribution-repeat-subject");
+        EntityRef subject = subject("unobtainium-repeat");
 
         transaction.execute(new CitationAttribution(citation, subject, "first note"));
         transaction.execute(new CitationAttribution(citation, subject, "second note"));
 
-        var associations = citationAssociationQuery.findBySubject(subject);
+        CitationAssociationCollection associations = citationAssociationQuery.findBySubject(subject);
         assertThat(associations.size()).isEqualTo(1);
         assertThat(associations.stream().findFirst().orElseThrow().note()).isEqualTo("second note");
     }
@@ -89,12 +90,12 @@ class CitationAttributionTransactionTest {
      */
     @Test
     void execute_citationAlreadyExists_leavesStoredCitationUntouchedButStillCreatesAssociation() {
-        var slug = "test-attribution-preexisting";
-        var verified = citation(slug);
+        String slug = "test-attribution-preexisting";
+        OnlineSource verified = citation(slug);
         citationCommand.insert(verified);
-        var subject = subject("unobtainium-preexisting");
+        EntityRef subject = subject("unobtainium-preexisting");
 
-        var laterLowerTrustCitation = new OnlineSource(
+        OnlineSource laterLowerTrustCitation = new OnlineSource(
                 CitationName.of(slug),
                 new AuthorityReference(new AuthoritySource("ref", "Suggested Reference"),
                         URI.create("https://vision.example.com/hallucinated-" + slug)),
@@ -102,12 +103,12 @@ class CitationAttributionTransactionTest {
 
         transaction.execute(new CitationAttribution(laterLowerTrustCitation, subject, "second identification"));
 
-        var stored = citationRepository.getByName(CitationName.of(slug)).orElseThrow();
+        Citation stored = citationRepository.getByName(CitationName.of(slug)).orElseThrow();
         assertThat(stored).isEqualTo(verified);
         assertThat(((OnlineSource) stored).authorityReference()).isEqualTo(verified.authorityReference());
         assertThat(stored.title()).isEqualTo(verified.title());
 
-        var associations = citationAssociationQuery.findBySubject(subject);
+        CitationAssociationCollection associations = citationAssociationQuery.findBySubject(subject);
         assertThat(associations.size()).isEqualTo(1);
         assertThat(associations.stream().findFirst().orElseThrow().note())
                 .isEqualTo("second identification");
@@ -115,14 +116,14 @@ class CitationAttributionTransactionTest {
 
     @Test
     void execute_sameCitationTwoDifferentSubjects_createsTwoAssociations() {
-        var citation = citation("test-attribution-shared-citation");
-        var subjectA = subject("unobtainium-subject-a");
-        var subjectB = subject("unobtainium-subject-b");
+        OnlineSource citation = citation("test-attribution-shared-citation");
+        EntityRef subjectA = subject("unobtainium-subject-a");
+        EntityRef subjectB = subject("unobtainium-subject-b");
 
         transaction.execute(new CitationAttribution(citation, subjectA, "note a"));
         transaction.execute(new CitationAttribution(citation, subjectB, "note b"));
 
-        var associations = citationAssociationQuery.findByCitationName(citation.name());
+        CitationAssociationCollection associations = citationAssociationQuery.findByCitationName(citation.name());
         assertThat(associations.size()).isEqualTo(2);
         assertThat(associations.stream().map(CitationAssociation::subject))
                 .containsExactlyInAnyOrder(subjectA, subjectB);

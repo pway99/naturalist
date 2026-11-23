@@ -3,6 +3,7 @@ package com.naturalist.vision.anthropic;
 import java.util.List;
 import java.util.Map;
 
+import com.anthropic.models.messages.Tool;
 import com.naturalist.resilience.Resilience;
 import com.naturalist.secrets.EnvironmentSecretProvider;
 import com.naturalist.secrets.MissingSecretException;
@@ -23,7 +24,7 @@ class AnthropicVisionServiceTest {
 
     @Test
     void constructs_withAResolvableCredential_andNoNetwork() {
-        var service = new AnthropicVisionService(AnthropicVisionConfig.defaults(), withCredential(), Resilience.noOp());
+        AnthropicVisionService service = new AnthropicVisionService(AnthropicVisionConfig.defaults(), withCredential(), Resilience.noOp());
         assertThat(service).isNotNull();
     }
 
@@ -43,7 +44,7 @@ class AnthropicVisionServiceTest {
 
     @Test
     void buildTool_mapsNameDescriptionPropertiesAndRequired() {
-        var tool = AnthropicVisionService.buildTool(new ToolSchema("propose", "Propose.",
+        Tool tool = AnthropicVisionService.buildTool(new ToolSchema("propose", "Propose.",
                 """
                 {"type":"object","required":["name"],"properties":{"name":{"type":"string"}}}
                 """));

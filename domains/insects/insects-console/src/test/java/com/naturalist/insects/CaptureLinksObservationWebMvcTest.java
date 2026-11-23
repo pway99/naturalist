@@ -47,7 +47,7 @@ class CaptureLinksObservationWebMvcTest {
 
     @Test
     void capture_asNaturalist_addsSpeciesToCollection() throws Exception {
-        var file = new MockMultipartFile("image", "test.jpg", "image/jpeg", TINY_JPEG);
+        MockMultipartFile file = new MockMultipartFile("image", "test.jpg", "image/jpeg", TINY_JPEG);
         mockMvc.perform(multipart("/insects/battus-philenor/images").file(file)
                         .requestAttr(CURRENT_NATURALIST, "amir-hassan"))
                 .andExpect(status().is3xxRedirection());

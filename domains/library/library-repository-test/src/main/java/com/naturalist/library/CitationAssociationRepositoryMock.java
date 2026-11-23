@@ -25,7 +25,7 @@ class CitationAssociationRepositoryMock
         MethodObserver getByCitationName = observer().forMethod("getByCitationName");
         getByCitationName.arguments(i -> i.entityName(citationName, "citationName"))
                 .throwWhenInvalid();
-        var result = testEntitySource().entityStream()
+        List<CitationAssociation> result = testEntitySource().entityStream()
                 .filter(a -> a.citationName().equals(citationName))
                 .toList();
         getByCitationName.state(s -> s.observableCollection(result, "result")).observe(Level.WARN);
@@ -37,7 +37,7 @@ class CitationAssociationRepositoryMock
         MethodObserver getBySubject = observer().forMethod("getBySubject");
         getBySubject.arguments(i -> i.valueObject(subject, "subject"))
                 .throwWhenInvalid();
-        var result = testEntitySource().entityStream()
+        List<CitationAssociation> result = testEntitySource().entityStream()
                 .filter(a -> a.subject().equals(subject))
                 .toList();
         getBySubject.state(s -> s.observableCollection(result, "result")).observe(Level.WARN);
@@ -49,7 +49,7 @@ class CitationAssociationRepositoryMock
         MethodObserver getBySubjects = observer().forMethod("getBySubjects");
         getBySubjects.arguments(i -> i.observableCollection(subjects, "subjects"))
                 .throwWhenInvalid();
-        var result = testEntitySource().entityStream()
+        List<CitationAssociation> result = testEntitySource().entityStream()
                 .filter(a -> subjects.contains(a.subject()))
                 .toList();
         getBySubjects.state(s -> s.observableCollection(result, "result")).observe(Level.WARN);

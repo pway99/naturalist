@@ -95,7 +95,7 @@ class DepictionEntityRepositoryRdbms
         MethodObserver getByCompoundName = observer().forMethod("getByCompoundName");
         getByCompoundName.arguments(i -> i.identifier(compoundName, "compoundName"))
                 .throwWhenInvalid();
-        var result = Optional.ofNullable(mapper.selectByCompoundName(compoundName.value()))
+        Optional<CompoundDepiction> result = Optional.ofNullable(mapper.selectByCompoundName(compoundName.value()))
                 .map(CompoundDepictionDbo::toEntity);
         getByCompoundName.state(s -> s.namedEntityOrNull(result.orElse(null), "result")).observe(Level.WARN);
         return result;
@@ -104,7 +104,7 @@ class DepictionEntityRepositoryRdbms
     @Override
     public List<CompoundName> getAllDepictedCompoundNames() {
         MethodObserver getAllDepictedCompoundNames = observer().forMethod("getAllDepictedCompoundNames");
-        var result = mapper.selectAllDepictedCompoundNames().stream().map(CompoundName::of).toList();
+        List<CompoundName> result = mapper.selectAllDepictedCompoundNames().stream().map(CompoundName::of).toList();
         getAllDepictedCompoundNames.state(s -> s.entityNameCollection(result, "result")).observe(Level.WARN);
         return result;
     }

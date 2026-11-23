@@ -7,16 +7,18 @@ import org.apache.ibatis.session.SqlSessionFactory;
 
 import javax.sql.DataSource;
 
+import java.util.List;
+
 /** Seeds insect life stages through the real RDBMS adapter (split-package with the rdbms module). */
 public final class InsectLifeStageSeeder {
 
     private InsectLifeStageSeeder() {}
 
     public static void seed(DataSource dataSource, NaturalistDatabase database) {
-        var entities = database.getNamed(InsectLifeStageTestEntitySource.class).entityStream().toList();
+        List<LifeStage> entities = database.getNamed(InsectLifeStageTestEntitySource.class).entityStream().toList();
         SqlSessionFactory factory = MyBatisSupport.sessionFactory(dataSource, InsectLifeStageMapper.class);
         try (SqlSession session = factory.openSession(false)) {
-            var repo = new InsectLifeStageEntityRepositoryRdbms(session.getMapper(InsectLifeStageMapper.class),
+            InsectLifeStageEntityRepositoryRdbms repo = new InsectLifeStageEntityRepositoryRdbms(session.getMapper(InsectLifeStageMapper.class),
                     new InsectLifeStageTransaction(session.getMapper(InsectLifeStageMapper.class)));
             entities.forEach(repo::insert);
             session.commit();

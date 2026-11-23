@@ -95,7 +95,7 @@ interface PlantFeatureAssignmentEntityRepositoryTest
 
     @Test
     default void getByRankNames_returnsAssignmentsAcrossTheGivenRanks() {
-        var result = repository().getByRankNames(Set.of(
+        List<OrganismFeatureAssignment<PlantFeatureAssignmentId, PlantFeatureId, PlantRankName>> result = repository().getByRankNames(Set.of(
                 TestPlantsIdentifiers.PlantFamilies.Asteraceae.name,
                 TestPlantsIdentifiers.PlantFamilies.Lamiaceae.name));
         assertThat(result).isNotEmpty();

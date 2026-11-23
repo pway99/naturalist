@@ -92,7 +92,7 @@ class CatalogIdentificationTest {
     @Test
     void mismatchedImageParentReportsViolation() {
         MethodObserver mo = observer.forMethod("mismatchedImageParentReportsViolation");
-        var wrongParent = new OrganismImage<InsectImageId, InsectObservationId, InsectRankName>(
+        OrganismImage<InsectImageId, InsectObservationId, InsectRankName> wrongParent = new OrganismImage<InsectImageId, InsectObservationId, InsectRankName>(
                 InsectImageId.create(),
                 InsectSpeciesName.of("wrong-species"),
                 Instant.now(),
@@ -111,7 +111,7 @@ class CatalogIdentificationTest {
     @Test
     void mismatchedObservationSubjectReportsViolation() {
         MethodObserver mo = observer.forMethod("mismatchedObservationSubjectReportsViolation");
-        var wrongSubject = new OrganismObservation<InsectObservationId, InsectRankName>(
+        OrganismObservation<InsectObservationId, InsectRankName> wrongSubject = new OrganismObservation<InsectObservationId, InsectRankName>(
                 OBSERVATION_ID,
                 NaturalistName.of("pat"),
                 InsectSpeciesName.of("wrong-species"),
@@ -130,8 +130,8 @@ class CatalogIdentificationTest {
     @Test
     void mismatchedImageObservationIdReportsViolation() {
         MethodObserver mo = observer.forMethod("mismatchedImageObservationIdReportsViolation");
-        var differentObservationId = InsectObservationId.create();
-        var imageWithWrongObsId = new OrganismImage<InsectImageId, InsectObservationId, InsectRankName>(
+        InsectObservationId differentObservationId = InsectObservationId.create();
+        OrganismImage<InsectImageId, InsectObservationId, InsectRankName> imageWithWrongObsId = new OrganismImage<InsectImageId, InsectObservationId, InsectRankName>(
                 InsectImageId.create(),
                 SPECIES_NAME,
                 Instant.now(),

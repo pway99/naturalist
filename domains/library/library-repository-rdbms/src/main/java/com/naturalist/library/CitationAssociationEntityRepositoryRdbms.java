@@ -101,7 +101,7 @@ class CitationAssociationEntityRepositoryRdbms
         MethodObserver getByCitationName = observer().forMethod("getByCitationName");
         getByCitationName.arguments(i -> i.entityName(citationName, "citationName"))
                 .throwWhenInvalid();
-        var result = mapper.selectByCitationName(citationName.value()).stream()
+        List<CitationAssociation> result = mapper.selectByCitationName(citationName.value()).stream()
                 .map(d -> d.toEntity(resolver)).toList();
         getByCitationName.state(s -> s.observableCollection(result, "result")).observe(Level.WARN);
         return result;
@@ -112,7 +112,7 @@ class CitationAssociationEntityRepositoryRdbms
         MethodObserver getBySubject = observer().forMethod("getBySubject");
         getBySubject.arguments(i -> i.valueObject(subject, "subject"))
                 .throwWhenInvalid();
-        var result = mapper.selectBySubject(
+        List<CitationAssociation> result = mapper.selectBySubject(
                         subject.domain().value(), resolver.rankOf(subject), subject.name().value()).stream()
                 .map(d -> d.toEntity(resolver)).toList();
         getBySubject.state(s -> s.observableCollection(result, "result")).observe(Level.WARN);
@@ -128,7 +128,7 @@ class CitationAssociationEntityRepositoryRdbms
         List<CitationSubjectKey> keys = subjects.stream()
                 .map(s -> new CitationSubjectKey(s.domain().value(), resolver.rankOf(s), s.name().value()))
                 .toList();
-        var result = mapper.selectBySubjects(keys).stream().map(d -> d.toEntity(resolver)).toList();
+        List<CitationAssociation> result = mapper.selectBySubjects(keys).stream().map(d -> d.toEntity(resolver)).toList();
         getBySubjects.state(s -> s.observableCollection(result, "result")).observe(Level.WARN);
         return result;
     }

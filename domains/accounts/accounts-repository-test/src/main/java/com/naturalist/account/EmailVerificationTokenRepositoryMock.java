@@ -30,7 +30,7 @@ class EmailVerificationTokenRepositoryMock
         MethodObserver getByTokenHash = observer().forMethod("getByTokenHash");
         getByTokenHash.arguments(i -> i.notBlank(tokenHash, "tokenHash"))
                 .throwWhenInvalid();
-        var result = testEntitySource().entityStream()
+        Optional<EmailVerificationToken> result = testEntitySource().entityStream()
                 .filter(token -> tokenHash.equals(token.tokenHash()))
                 .findFirst();
         getByTokenHash.state(s -> s.namedEntityOrNull(result.orElse(null), "result")).observe(Level.WARN);

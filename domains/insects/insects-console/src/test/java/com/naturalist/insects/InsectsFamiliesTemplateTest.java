@@ -1,5 +1,8 @@
 package com.naturalist.insects;
 
+import com.naturalist.observation.Identification;
+import com.naturalist.observation.OrganismImage;
+import com.naturalist.observation.OrganismObservation;
 import com.naturalist.spring.console.ConsoleSliceTemplates;
 
 
@@ -72,19 +75,19 @@ class InsectsFamiliesTemplateTest {
         InsectFamilyInfo anyFamily = nte.getNamed(InsectFamilyTestEntitySource.class).entityStream()
                 .findFirst().orElseThrow();
         InsectOrderInfo order = orderSource.getByName(anyFamily.orderName()).orElseThrow();
-        var observationId = com.naturalist.insects.InsectObservationId.create();
-        var image = new com.naturalist.observation.OrganismImage<InsectImageId, InsectObservationId, InsectRankName>(
+        InsectObservationId observationId = com.naturalist.insects.InsectObservationId.create();
+        OrganismImage<InsectImageId, InsectObservationId, InsectRankName> image = new OrganismImage<InsectImageId, InsectObservationId, InsectRankName>(
                 com.naturalist.insects.InsectImageId.create(),
                 anyFamily.name(),
                 java.time.Instant.parse("2026-07-16T01:54:24Z"),
                 com.naturalist.data.FileName.of("beetle.jpg"),
                 observationId);
-        var identification = new com.naturalist.observation.Identification(
+        Identification identification = new Identification(
                 0.72,
                 "Elytra pattern and antenna shape match this family's diagnostic features.",
-                List.of(new com.naturalist.observation.Identification.Candidate(
+                List.of(new Identification.Candidate(
                         "Coccinellidae", "Ladybird beetle", 0.20)));
-        var observation = new com.naturalist.observation.OrganismObservation<InsectObservationId, InsectRankName>(
+        OrganismObservation<InsectObservationId, InsectRankName> observation = new OrganismObservation<InsectObservationId, InsectRankName>(
                 observationId,
                 com.naturalist.naturalist.NaturalistName.of("pat-way"),
                 anyFamily.name(),

@@ -3,6 +3,7 @@ package com.naturalist.chemistry.product;
 import com.naturalist.RandomValue;
 import com.naturalist.chemistry.compound.CompoundName;
 import com.naturalist.observability.InvariantObservation;
+import com.naturalist.observability.MethodObserver;
 import com.naturalist.observability.Observer;
 import org.junit.jupiter.api.Test;
 
@@ -16,7 +17,7 @@ class ProductTest {
 
     @Test
     void productIsValid() {
-        var mo = observer.forMethod("productIsValid");
+        MethodObserver mo = observer.forMethod("productIsValid");
         Product p = validProduct();
 
         InvariantObservation result = mo.namedEntity(p, "p");
@@ -26,7 +27,7 @@ class ProductTest {
 
     @Test
     void productIsNotValid() {
-        var mo = observer.forMethod("productIsNotValid");
+        MethodObserver mo = observer.forMethod("productIsNotValid");
         Product p = new Product(null, null, null, null);
 
         InvariantObservation observation = mo.namedEntity(p, "p");

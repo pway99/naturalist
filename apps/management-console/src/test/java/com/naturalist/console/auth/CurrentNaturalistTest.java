@@ -16,7 +16,7 @@ class CurrentNaturalistTest {
     }
 
     private void authenticateAs(NaturalistPrincipal principal) {
-        var auth = new UsernamePasswordAuthenticationToken(
+        UsernamePasswordAuthenticationToken auth = new UsernamePasswordAuthenticationToken(
                 principal, "n/a", principal.getAuthorities());
         SecurityContextHolder.getContext().setAuthentication(auth);
     }

@@ -23,7 +23,7 @@ class DomainServiceScanTest {
 
     @Test
     void registersMarkerAnnotatedClassesInPilotScope() {
-        try (var ctx = new AnnotationConfigApplicationContext()) {
+        try (AnnotationConfigApplicationContext ctx = new AnnotationConfigApplicationContext()) {
             ctx.register(ImportingConfig.class);
             ctx.refresh();
 

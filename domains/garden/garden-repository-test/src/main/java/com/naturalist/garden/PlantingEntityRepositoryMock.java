@@ -28,7 +28,7 @@ class PlantingEntityRepositoryMock
         MethodObserver getByZoneName = observer().forMethod("getByZoneName");
         getByZoneName.arguments(i -> i.entityName(zoneName, "zoneName"))
                 .throwWhenInvalid();
-        var result = testEntitySource().entityStream()
+        List<Planting> result = testEntitySource().entityStream()
                 .filter(planting -> zoneName.equals(planting.zoneName()))
                 .toList();
         getByZoneName.state(s -> s.observableCollection(result, "result")).observe(Level.WARN);
@@ -40,7 +40,7 @@ class PlantingEntityRepositoryMock
         MethodObserver getBySubZoneName = observer().forMethod("getBySubZoneName");
         getBySubZoneName.arguments(i -> i.entityName(subZoneName, "subZoneName"))
                 .throwWhenInvalid();
-        var result = testEntitySource().entityStream()
+        List<Planting> result = testEntitySource().entityStream()
                 .filter(planting -> subZoneName.equals(planting.subZoneName()))
                 .toList();
         getBySubZoneName.state(s -> s.observableCollection(result, "result")).observe(Level.WARN);
@@ -52,7 +52,7 @@ class PlantingEntityRepositoryMock
         MethodObserver getByPlantName = observer().forMethod("getByPlantName");
         getByPlantName.arguments(i -> i.identifier(plantName, "plantName"))
                 .throwWhenInvalid();
-        var result = testEntitySource().entityStream()
+        List<Planting> result = testEntitySource().entityStream()
                 .filter(planting -> plantName.equals(planting.plantName()))
                 .toList();
         getByPlantName.state(s -> s.observableCollection(result, "result")).observe(Level.WARN);

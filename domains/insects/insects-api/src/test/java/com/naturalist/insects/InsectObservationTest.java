@@ -22,7 +22,7 @@ class InsectObservationTest {
 
     @Test
     void withNotes_replacesNotes() {
-        var updated = base.withNotes("new notes");
+        OrganismObservation<InsectObservationId, InsectRankName> updated = base.withNotes("new notes");
         assertThat(updated.notes()).isEqualTo("new notes");
         assertThat(updated.id()).isEqualTo(base.id());
         assertThat(updated.observedBy()).isEqualTo(base.observedBy());
@@ -34,14 +34,14 @@ class InsectObservationTest {
 
     @Test
     void withNotes_acceptsNull() {
-        var updated = base.withNotes(null);
+        OrganismObservation<InsectObservationId, InsectRankName> updated = base.withNotes(null);
         assertThat(updated.notes()).isNull();
     }
 
     @Test
     void withSubject_replacesSubject() {
-        var newSubject = InsectGenusName.of("battus");
-        var updated = base.withSubject(newSubject);
+        InsectGenusName newSubject = InsectGenusName.of("battus");
+        OrganismObservation<InsectObservationId, InsectRankName> updated = base.withSubject(newSubject);
         assertThat(updated.subject()).isEqualTo(newSubject);
         assertThat(updated.id()).isEqualTo(base.id());
         assertThat(updated.observedBy()).isEqualTo(base.observedBy());

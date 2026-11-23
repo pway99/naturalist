@@ -1,6 +1,10 @@
 package com.naturalist.plants.phytochemistry;
 
-import com.naturalist.catalog.*;
+import com.naturalist.catalog.Catalog;
+import com.naturalist.catalog.CatalogContribution;
+import com.naturalist.catalog.DomainId;
+import com.naturalist.catalog.EntityRef;
+import com.naturalist.catalog.EntityReferences;
 import com.naturalist.catalog.inmem.CatalogAssembly;
 import com.naturalist.chemistry.TestChemistryIdentifiers.Compounds;
 import com.naturalist.chemistry.compound.CompoundName;

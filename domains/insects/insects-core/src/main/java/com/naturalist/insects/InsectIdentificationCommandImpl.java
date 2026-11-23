@@ -45,6 +45,7 @@ import com.naturalist.vision.Image;
 import com.naturalist.vision.ImageMetadata;
 import com.naturalist.vision.ToolResult;
 import com.naturalist.vision.ToolSchema;
+import com.naturalist.vision.VisionExchange;
 import com.naturalist.vision.VisionService;
 import org.apache.commons.lang3.StringUtils;
 import org.jspecify.annotations.Nullable;
@@ -54,6 +55,7 @@ import java.time.Instant;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.LinkedHashMap;
+import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
@@ -231,60 +233,60 @@ class InsectIdentificationCommandImpl implements InsectCommand.IdentificationCom
     private InsectRankName catalogue(ImageUpload upload, ImageMetadata metadata,
                                      NaturalistName naturalist, @Nullable String notes,
                                      @Nullable GridCell area, FileName storedFileName) {
-        var image = new Image(upload.bytes(), upload.mediaType(),
+        Image image = new Image(upload.bytes(), upload.mediaType(),
                 new ImageMetadata(locationContext(metadata.location(), area), metadata.capturedAt()));
 
         // 1. VISION -- external call (turn 1 propose, optional turn 2 reuse-resolve)
-        var visionOutcome = identifyViaVision(image);
-        var visionResult = visionOutcome.proposed();
-        var identifiedEntity = visionResult.identifiedEntity();
-        var taxonomy = visionResult.taxonomy();
-        var rankName = identifiedEntity.rankName();
+        InsectIdentificationCommandImpl.VisionOutcome visionOutcome = identifyViaVision(image);
+        InsectIdentificationResult visionResult = visionOutcome.proposed();
+        IdentifiedRankEntity identifiedEntity = visionResult.identifiedEntity();
+        TaxonomicClassification taxonomy = visionResult.taxonomy();
+        InsectRankName rankName = identifiedEntity.rankName();
 
         // 2. AUTHORITY ENRICHMENT -- best-effort, never gates
-        var authorityRefs = collectAuthorityRefs(rankName, taxonomy);
+        Map<InsectRankName, Set<AuthorityReference>> authorityRefs = collectAuthorityRefs(rankName, taxonomy);
         if (visionResult.referenceUrl() != null) {
             authorityRefs.putIfAbsent(rankName, Set.of(
                     new AuthorityReference(VISION_SUGGESTED, visionResult.referenceUrl())));
         }
 
         // 3. PARENT RANK ENRICHMENT -- external calls, only for new ranks
-        var parentDescriptions = enrichParentRanks(taxonomy);
-        var parentFeatures = new ArrayList<RankFeatures>();
+        Map<InsectRankName, InsectIdentificationCommandImpl.RankEnrichment> parentDescriptions = enrichParentRanks(taxonomy);
+        ArrayList<InsectIdentificationCommandImpl.RankFeatures> parentFeatures = new ArrayList<RankFeatures>();
         parentDescriptions.forEach((rn, enrichment) ->
                 parentFeatures.add(new RankFeatures(rn, enrichment.features())));
 
         // 4. FEATURE RESOLUTION -- queries only
-        var identifiedRankFeatures = new RankFeatures(rankName, visionResult.features());
-        var combined = new ArrayList<RankFeatures>();
+        InsectIdentificationCommandImpl.RankFeatures identifiedRankFeatures = new RankFeatures(rankName, visionResult.features());
+        ArrayList<InsectIdentificationCommandImpl.RankFeatures> combined = new ArrayList<RankFeatures>();
         combined.add(identifiedRankFeatures);
         combined.addAll(parentFeatures);
-        var featureResolution = resolveFeatures(combined, visionOutcome.reuse(), visionOutcome.candidateIds());
+        InsectIdentificationCommandImpl.FeatureResolution featureResolution = resolveFeatures(combined, visionOutcome.reuse(), visionOutcome.candidateIds());
 
         // 5. CITATION PREPARATION + LIBRARY WRITES -- cross-domain, best-effort
         writeCitations(authorityRefs);
 
         // 6. INSECT TRANSACTION -- pure DB writes
-        var observationId = InsectObservationId.create();
-        var capturedAt = image.metadata().capturedAt() != null
+        InsectObservationId observationId = InsectObservationId.create();
+        Instant capturedAt = image.metadata().capturedAt() != null
                 ? image.metadata().capturedAt() : Instant.now();
 
-        var insectImage = new OrganismImage<InsectImageId, InsectObservationId, InsectRankName>(
+        OrganismImage<InsectImageId, InsectObservationId, InsectRankName> insectImage = new OrganismImage<InsectImageId, InsectObservationId, InsectRankName>(
                 InsectImageId.create(), rankName, Instant.now(),
                 storedFileName, observationId);
 
-        var observation = new OrganismObservation<InsectObservationId, InsectRankName>(
+        OrganismObservation<InsectObservationId, InsectRankName> observation = new OrganismObservation<InsectObservationId, InsectRankName>(
                 observationId, naturalist, rankName, capturedAt,
                 StringUtils.defaultIfBlank(notes, null),
                 metadata.location(),
                 area,
                 visionResult.identification());
 
-        var descriptionMap = new HashMap<InsectRankName, Description>();
+        HashMap<InsectRankName, Description> descriptionMap = new HashMap<InsectRankName, Description>();
         parentDescriptions.forEach((name, enrichment) ->
                 descriptionMap.put(name, enrichment.description()));
 
-        var catalogId = new CatalogIdentification(
+        CatalogIdentification catalogId = new CatalogIdentification(
                 identifiedEntity, taxonomy,
                 insectImage, observation,
                 featureResolution.newFeatures(), featureResolution.assignments(),
@@ -311,18 +313,18 @@ class InsectIdentificationCommandImpl implements InsectCommand.IdentificationCom
      * to let the model resolve each proposed value to an existing feature (reuse) or new.
      */
     private VisionOutcome identifyViaVision(Image image) {
-        var toolSchema = buildToolSchema();
-        var systemPrompt = buildSystemPrompt(image.metadata().location());
-        var exchange = visionService.identify(image, toolSchema, systemPrompt);
-        var proposed = parseResult(exchange.result());
+        ToolSchema toolSchema = buildToolSchema();
+        String systemPrompt = buildSystemPrompt(image.metadata().location());
+        VisionExchange exchange = visionService.identify(image, toolSchema, systemPrompt);
+        InsectIdentificationResult proposed = parseResult(exchange.result());
 
         // Similarity search over the proposed (turn-1) feature values, one corpus pass for them all.
-        var normalized = proposed.features().stream()
+        LinkedHashSet<String> normalized = proposed.features().stream()
                 .map(value -> value.trim().toLowerCase())
                 .filter(value -> !value.isBlank())
-                .collect(java.util.stream.Collectors.toCollection(java.util.LinkedHashSet::new));
-        var candidatesByProposed = new LinkedHashMap<String, List<String>>();
-        var candidateIds = new HashMap<String, InsectFeatureId>();
+                .collect(java.util.stream.Collectors.toCollection(LinkedHashSet::new));
+        LinkedHashMap<String, List<String>> candidatesByProposed = new LinkedHashMap<String, List<String>>();
+        HashMap<String, InsectFeatureId> candidateIds = new HashMap<String, InsectFeatureId>();
         featureSearch.findSimilarToEach(normalized, 5).forEach((value, matches) -> {
             if (!matches.isEmpty()) {
                 candidatesByProposed.put(value, matches.stream().map(FeatureSearch.FeatureMatch::value).toList());
@@ -334,7 +336,7 @@ class InsectIdentificationCommandImpl implements InsectCommand.IdentificationCom
         // no-match path is exactly the old single-turn behavior.
         Map<String, String> reuse = Map.of();
         if (!candidatesByProposed.isEmpty()) {
-            var turn2 = exchange.respond(
+            VisionExchange turn2 = exchange.respond(
                     buildCandidatesJson(candidatesByProposed), buildResolveToolSchema());
             reuse = parseResolution(turn2.result());
         }
@@ -346,7 +348,7 @@ class InsectIdentificationCommandImpl implements InsectCommand.IdentificationCom
      * {@code {"features":[{"proposed":"<value>","candidates":["<existing value>",...]},...]}}.
      */
     private String buildCandidatesJson(Map<String, List<String>> candidatesByProposed) {
-        var features = new ArrayList<Map<String, Object>>();
+        ArrayList<Map<String, Object>> features = new ArrayList<Map<String, Object>>();
         candidatesByProposed.forEach((proposed, candidates) ->
                 features.add(Map.of("proposed", proposed, "candidates", candidates)));
         try {
@@ -362,7 +364,7 @@ class InsectIdentificationCommandImpl implements InsectCommand.IdentificationCom
      * {@code reuse} an existing feature (naming which) or mint a {@code new} one.
      */
     private ToolSchema buildResolveToolSchema() {
-        var schema = """
+        String schema = """
                 {
                   "type": "object",
                   "required": ["resolutions"],
@@ -396,17 +398,17 @@ class InsectIdentificationCommandImpl implements InsectCommand.IdentificationCom
      * an {@code existingValue}) are absent from the map, so they mint as before.
      */
     private Map<String, String> parseResolution(ToolResult result) {
-        var reuse = new HashMap<String, String>();
+        HashMap<String, String> reuse = new HashMap<String, String>();
         try {
-            var node = MAPPER.readTree(result.argumentsJson());
-            var resolutions = node.get("resolutions");
+            JsonNode node = MAPPER.readTree(result.argumentsJson());
+            JsonNode resolutions = node.get("resolutions");
             if (resolutions == null || !resolutions.isArray()) return Map.of();
-            for (var r : resolutions) {
+            for (JsonNode r : resolutions) {
                 if (!r.hasNonNull("proposed") || !r.hasNonNull("decision")) continue;
                 if (!"reuse".equals(r.get("decision").asText())) continue;
                 if (!r.hasNonNull("existingValue")) continue;
-                var proposed = r.get("proposed").asText().trim().toLowerCase();
-                var existing = r.get("existingValue").asText().trim().toLowerCase();
+                String proposed = r.get("proposed").asText().trim().toLowerCase();
+                String existing = r.get("existingValue").asText().trim().toLowerCase();
                 if (!proposed.isBlank() && !existing.isBlank()) {
                     reuse.put(proposed, existing);
                 }
@@ -423,7 +425,7 @@ class InsectIdentificationCommandImpl implements InsectCommand.IdentificationCom
 
     private Map<InsectRankName, Set<AuthorityReference>> collectAuthorityRefs(
             InsectRankName identifiedRank, TaxonomicClassification taxonomy) {
-        var refs = new LinkedHashMap<InsectRankName, Set<AuthorityReference>>();
+        LinkedHashMap<InsectRankName, Set<AuthorityReference>> refs = new LinkedHashMap<InsectRankName, Set<AuthorityReference>>();
 
         tryCollectRef(identifiedRank, refs);
 
@@ -434,12 +436,12 @@ class InsectIdentificationCommandImpl implements InsectCommand.IdentificationCom
         if ((identifiedRank instanceof InsectSpeciesName
                 || identifiedRank instanceof InsectGenusName)
                 && taxonomy.family() != null) {
-            var familyName = InsectFamilyName.of(
+            InsectFamilyName familyName = InsectFamilyName.of(
                     taxonomy.family().value().toLowerCase(Locale.ROOT));
             if (!refs.containsKey(familyName)) tryCollectRef(familyName, refs);
         }
         if (!(identifiedRank instanceof InsectOrderName)) {
-            var orderName = InsectOrderName.of(
+            InsectOrderName orderName = InsectOrderName.of(
                     taxonomy.order().value().toLowerCase(Locale.ROOT));
             if (!refs.containsKey(orderName)) tryCollectRef(orderName, refs);
         }
@@ -450,7 +452,7 @@ class InsectIdentificationCommandImpl implements InsectCommand.IdentificationCom
     private void tryCollectRef(InsectRankName rankName,
                                Map<InsectRankName, Set<AuthorityReference>> refs) {
         try {
-            var found = externalAuthority.lookup((EntityName) rankName);
+            Set<AuthorityReference> found = externalAuthority.lookup((EntityName) rankName);
             if (!found.isEmpty()) refs.put(rankName, found);
         } catch (Exception e) {
             observer.noticeError("tryCollectRef", "authorityReferenceCollected", e, Handling.SWALLOWED);
@@ -470,20 +472,20 @@ class InsectIdentificationCommandImpl implements InsectCommand.IdentificationCom
 
     private Map<InsectRankName, RankEnrichment> enrichParentRanks(
             TaxonomicClassification taxonomy) {
-        var enrichments = new LinkedHashMap<InsectRankName, RankEnrichment>();
+        LinkedHashMap<InsectRankName, InsectIdentificationCommandImpl.RankEnrichment> enrichments = new LinkedHashMap<InsectRankName, RankEnrichment>();
 
         // Check each parent rank -- only enrich if it doesn't already exist
         if (taxonomy.genus() != null) {
-            var genusName = InsectGenusName.of(
+            InsectGenusName genusName = InsectGenusName.of(
                     taxonomy.genus().value().toLowerCase(Locale.ROOT));
             enrichIfNew(genusName, taxonomy.genus().value(), enrichments);
         }
         if (taxonomy.family() != null) {
-            var familyName = InsectFamilyName.of(
+            InsectFamilyName familyName = InsectFamilyName.of(
                     taxonomy.family().value().toLowerCase(Locale.ROOT));
             enrichIfNew(familyName, taxonomy.family().value(), enrichments);
         }
-        var orderName = InsectOrderName.of(
+        InsectOrderName orderName = InsectOrderName.of(
                 taxonomy.order().value().toLowerCase(Locale.ROOT));
         enrichIfNew(orderName, taxonomy.order().value(), enrichments);
 
@@ -504,14 +506,14 @@ class InsectIdentificationCommandImpl implements InsectCommand.IdentificationCom
         if (exists) return;
 
         try {
-            var refs = externalAuthority.lookup((EntityName) rankName);
+            Set<AuthorityReference> refs = externalAuthority.lookup((EntityName) rankName);
             if (refs.isEmpty()) {
                 enrichments.put(rankName, new RankEnrichment(FALLBACK_DESCRIPTION, List.of()));
                 return;
             }
-            var ref = refs.iterator().next();
-            var content = externalAuthority.fetchContent(ref);
-            var enrichment = generateEnrichment(displayName, content);
+            AuthorityReference ref = refs.iterator().next();
+            AuthorityContent content = externalAuthority.fetchContent(ref);
+            InsectIdentificationCommandImpl.RankEnrichment enrichment = generateEnrichment(displayName, content);
             enrichments.put(rankName, enrichment);
         } catch (Exception e) {
             observer.noticeError("enrichIfNew", "enriched", e, Handling.SWALLOWED);
@@ -520,7 +522,7 @@ class InsectIdentificationCommandImpl implements InsectCommand.IdentificationCom
     }
 
     private RankEnrichment generateEnrichment(String taxonName, AuthorityContent content) {
-        var schema = """
+        String schema = """
                 {
                   "type": "object",
                   "required": ["descriptionPreschool", "descriptionElementary",
@@ -534,28 +536,28 @@ class InsectIdentificationCommandImpl implements InsectCommand.IdentificationCom
                   }
                 }
                 """;
-        var tool = new ToolSchema("describe_taxon",
+        ToolSchema tool = new ToolSchema("describe_taxon",
                 "Generate Durrell descriptions and diagnostic features for a taxon.", schema);
-        var systemPrompt = """
+        String systemPrompt = """
                 You are an expert entomologist. Given authoritative reference content about
                 an insect taxon, produce four Durrell-level descriptions grounded in the
                 provided content. Do not invent facts -- only reshape what the source says.
                 Also extract the diagnostic morphological features that characterise this
                 taxon, ordered from most conspicuous to most diagnostic.
                 """;
-        var userPrompt = "Taxon: " + taxonName + "\n\nAuthority content:\n" + content.content();
+        String userPrompt = "Taxon: " + taxonName + "\n\nAuthority content:\n" + content.content();
 
-        var result = textGenerationService.generate(tool, systemPrompt, userPrompt);
+        ToolResult result = textGenerationService.generate(tool, systemPrompt, userPrompt);
         try {
-            var node = MAPPER.readTree(result.argumentsJson());
-            var description = new Description(
+            JsonNode node = MAPPER.readTree(result.argumentsJson());
+            Description description = new Description(
                     node.get("descriptionPreschool").asText(),
                     node.get("descriptionElementary").asText(),
                     node.get("descriptionSecondary").asText(),
                     node.get("descriptionUniversity").asText());
-            var features = new ArrayList<String>();
+            ArrayList<String> features = new ArrayList<String>();
             if (node.hasNonNull("features") && node.get("features").isArray()) {
-                for (var f : node.get("features")) {
+                for (JsonNode f : node.get("features")) {
                     if (f.isTextual() && !f.asText().isBlank()) {
                         features.add(f.asText());
                     }
@@ -587,19 +589,19 @@ class InsectIdentificationCommandImpl implements InsectCommand.IdentificationCom
     private FeatureResolution resolveFeatures(List<RankFeatures> allRankFeatures,
                                               Map<String, String> reuse,
                                               Map<String, InsectFeatureId> existingByValue) {
-        var newFeatures = new ArrayList<InsectFeature>();
-        var assignments = new ArrayList<OrganismFeatureAssignment<InsectFeatureAssignmentId, InsectFeatureId, InsectRankName>>();
+        ArrayList<InsectFeature> newFeatures = new ArrayList<InsectFeature>();
+        ArrayList<OrganismFeatureAssignment<InsectFeatureAssignmentId, InsectFeatureId, InsectRankName>> assignments = new ArrayList<OrganismFeatureAssignment<InsectFeatureAssignmentId, InsectFeatureId, InsectRankName>>();
         // Track features we've already created in this invocation
-        var createdFeatures = new HashMap<String, InsectFeatureId>();
+        HashMap<String, InsectFeatureId> createdFeatures = new HashMap<String, InsectFeatureId>();
 
-        for (var rankFeatures : allRankFeatures) {
+        for (InsectIdentificationCommandImpl.RankFeatures rankFeatures : allRankFeatures) {
             int ordinal = 0;
-            for (var value : rankFeatures.featureValues()) {
-                var normalized = value.trim().toLowerCase();
+            for (String value : rankFeatures.featureValues()) {
+                String normalized = value.trim().toLowerCase();
                 if (normalized.isBlank()) continue;
 
                 InsectFeatureId featureId;
-                var reuseTarget = reuse.get(normalized);
+                String reuseTarget = reuse.get(normalized);
                 if (reuseTarget != null && existingByValue.containsKey(reuseTarget)) {
                     // Model resolved this proposed value to an existing feature: reuse its
                     // id, mint no new feature. The assignment still links this rank to it.
@@ -628,16 +630,16 @@ class InsectIdentificationCommandImpl implements InsectCommand.IdentificationCom
     @SuppressRepeatedSelect(reason = "Each citation attributes in its own transaction, so one failure leaves the "
             + "others standing.")
     private void writeCitations(Map<InsectRankName, Set<AuthorityReference>> authorityRefs) {
-        for (var entry : authorityRefs.entrySet()) {
-            var rankName = entry.getKey();
-            for (var ref : entry.getValue()) {
+        for (Map.Entry<InsectRankName, Set<AuthorityReference>> entry : authorityRefs.entrySet()) {
+            InsectRankName rankName = entry.getKey();
+            for (AuthorityReference ref : entry.getValue()) {
                 try {
-                    var citationSlug = ref.source().id() + "-" + rankName.value();
-                    var citationName = CitationName.of(citationSlug);
-                    var title = StringUtils.capitalize(rankName.value()) + " -- " + ref.source().displayName();
-                    var citation = new OnlineSource(
+                    String citationSlug = ref.source().id() + "-" + rankName.value();
+                    CitationName citationName = CitationName.of(citationSlug);
+                    String title = StringUtils.capitalize(rankName.value()) + " -- " + ref.source().displayName();
+                    OnlineSource citation = new OnlineSource(
                             citationName, ref, title, null, null, null);
-                    var attribution = new CitationAttribution(
+                    CitationAttribution attribution = new CitationAttribution(
                             citation,
                             new EntityRef(INSECTS_DOMAIN, (EntityName) rankName),
                             "Identified via vision");
@@ -664,7 +666,7 @@ class InsectIdentificationCommandImpl implements InsectCommand.IdentificationCom
     // ----- tool schema + parsing (unchanged from Task 6) -----
 
     private ToolSchema buildToolSchema() {
-        var schema = """
+        String schema = """
                 {
                   "type": "object",
                   "required": ["name", "identifiedRank", "order", "family", "commonName",
@@ -713,7 +715,7 @@ class InsectIdentificationCommandImpl implements InsectCommand.IdentificationCom
     }
 
     private String buildSystemPrompt(@Nullable String location) {
-        var prompt = """
+        String prompt = """
                 You are an expert entomologist assisting a naturalist in identifying insects
                 from photographs. For each identification:
 
@@ -758,43 +760,43 @@ class InsectIdentificationCommandImpl implements InsectCommand.IdentificationCom
 
     private InsectIdentificationResult parseResult(ToolResult result) {
         try {
-            var node = MAPPER.readTree(result.argumentsJson());
-            var identifiedRank = node.get("identifiedRank").asText();
-            var slug = node.get("name").asText();
-            var description = new Description(
+            JsonNode node = MAPPER.readTree(result.argumentsJson());
+            String identifiedRank = node.get("identifiedRank").asText();
+            String slug = node.get("name").asText();
+            Description description = new Description(
                     node.get("descriptionPreschool").asText(),
                     node.get("descriptionElementary").asText(),
                     node.get("descriptionSecondary").asText(),
                     node.get("descriptionUniversity").asText());
-            var commonName = node.get("commonName").asText();
-            var sightingNotes = node.hasNonNull("sightingNotes")
+            String commonName = node.get("commonName").asText();
+            String sightingNotes = node.hasNonNull("sightingNotes")
                     ? node.get("sightingNotes").asText() : null;
 
-            var taxonomicOrder = TaxonomicOrder.of(node.get("order").asText());
-            var taxonomicFamily = node.hasNonNull("family")
+            TaxonomicOrder taxonomicOrder = TaxonomicOrder.of(node.get("order").asText());
+            TaxonomicFamily taxonomicFamily = node.hasNonNull("family")
                     ? TaxonomicFamily.of(node.get("family").asText()) : null;
-            var taxonomicGenus = node.hasNonNull("genus")
+            TaxonomicGenus taxonomicGenus = node.hasNonNull("genus")
                     ? TaxonomicGenus.of(node.get("genus").asText()) : null;
-            var taxonomicSpecies = node.hasNonNull("species")
+            TaxonomicSpecies taxonomicSpecies = node.hasNonNull("species")
                     ? TaxonomicSpecies.of(node.get("species").asText()) : null;
-            var taxonomy = new TaxonomicClassification(
+            TaxonomicClassification taxonomy = new TaxonomicClassification(
                     taxonomicOrder, taxonomicFamily, taxonomicGenus, taxonomicSpecies);
 
-            var identifiedEntity = buildIdentifiedEntity(
+            IdentifiedRankEntity identifiedEntity = buildIdentifiedEntity(
                     identifiedRank, slug, description, commonName, sightingNotes, taxonomy);
 
-            var features = new ArrayList<String>();
+            ArrayList<String> features = new ArrayList<String>();
             if (node.hasNonNull("features") && node.get("features").isArray()) {
-                for (var f : node.get("features")) {
+                for (JsonNode f : node.get("features")) {
                     if (f.isTextual() && !f.asText().isBlank()) {
                         features.add(f.asText());
                     }
                 }
             }
 
-            var confidence = node.get("confidence").asDouble();
-            var evidence = node.get("evidence").asText();
-            var identification = new Identification(confidence, evidence, parseAlternatives(node));
+            double confidence = node.get("confidence").asDouble();
+            String evidence = node.get("evidence").asText();
+            Identification identification = new Identification(confidence, evidence, parseAlternatives(node));
 
             URI referenceUrl = null;
             if (node.hasNonNull("referenceUrl") && !node.get("referenceUrl").asText().isBlank()) {
@@ -821,8 +823,8 @@ class InsectIdentificationCommandImpl implements InsectCommand.IdentificationCom
                 .throwWhenInvalid();
         return switch (rank) {
             case "SPECIES" -> {
-                var speciesName = InsectSpeciesName.of(slug);
-                var genusName = InsectGenusName.of(
+                InsectSpeciesName speciesName = InsectSpeciesName.of(slug);
+                InsectGenusName genusName = InsectGenusName.of(
                         taxonomy.genus().value().toLowerCase(Locale.ROOT));
                 yield new IdentifiedRankEntity.Species(new InsectSpeciesInfo(
                         speciesName, genusName, taxonomy.species(), description,
@@ -830,23 +832,23 @@ class InsectIdentificationCommandImpl implements InsectCommand.IdentificationCom
                         null, null, null, null, null, null, null, null));
             }
             case "GENUS" -> {
-                var genusName = InsectGenusName.of(slug);
-                var familyName = InsectFamilyName.of(
+                InsectGenusName genusName = InsectGenusName.of(slug);
+                InsectFamilyName familyName = InsectFamilyName.of(
                         taxonomy.family().value().toLowerCase(Locale.ROOT));
                 yield new IdentifiedRankEntity.Genus(new InsectGenusInfo(
                         genusName, familyName, taxonomy.genus(), description,
                         Set.of(CommonName.of(commonName)), null));
             }
             case "FAMILY" -> {
-                var familyName = InsectFamilyName.of(slug);
-                var orderName = InsectOrderName.of(
+                InsectFamilyName familyName = InsectFamilyName.of(slug);
+                InsectOrderName orderName = InsectOrderName.of(
                         taxonomy.order().value().toLowerCase(Locale.ROOT));
                 yield new IdentifiedRankEntity.Family(new InsectFamilyInfo(
                         familyName, orderName, taxonomy.family(), description,
                         Set.of(CommonName.of(commonName)), null));
             }
             case "ORDER" -> {
-                var orderName = InsectOrderName.of(slug);
+                InsectOrderName orderName = InsectOrderName.of(slug);
                 yield new IdentifiedRankEntity.Order(new InsectOrderInfo(
                         orderName, taxonomy.order(), description,
                         Set.of(CommonName.of(commonName)), null));
@@ -859,7 +861,7 @@ class InsectIdentificationCommandImpl implements InsectCommand.IdentificationCom
         if (!node.hasNonNull("alternatives")) {
             return List.of();
         }
-        var alt = node.get("alternatives");
+        JsonNode alt = node.get("alternatives");
         JsonNode array;
         try {
             array = alt.isTextual() ? MAPPER.readTree(alt.asText()) : alt;
@@ -870,14 +872,14 @@ class InsectIdentificationCommandImpl implements InsectCommand.IdentificationCom
         if (array == null || !array.isArray()) {
             return List.of();
         }
-        var candidates = new ArrayList<Identification.Candidate>();
-        for (var candidate : array) {
-            var scientificName = candidate.hasNonNull("name") ? candidate.get("name").asText() : null;
+        ArrayList<Identification.Candidate> candidates = new ArrayList<Identification.Candidate>();
+        for (JsonNode candidate : array) {
+            String scientificName = candidate.hasNonNull("name") ? candidate.get("name").asText() : null;
             if (StringUtils.isBlank(scientificName)) {
                 continue;
             }
-            var candidateCommonName = candidate.hasNonNull("commonName") ? candidate.get("commonName").asText() : null;
-            var candidateConfidence = candidate.hasNonNull("confidence") ? candidate.get("confidence").asDouble() : 0.0;
+            String candidateCommonName = candidate.hasNonNull("commonName") ? candidate.get("commonName").asText() : null;
+            double candidateConfidence = candidate.hasNonNull("confidence") ? candidate.get("confidence").asDouble() : 0.0;
             candidates.add(new Identification.Candidate(scientificName, candidateCommonName, candidateConfidence));
         }
         return List.copyOf(candidates);

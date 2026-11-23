@@ -23,7 +23,7 @@ class PlantSeedLineageRepositoryMock
         MethodObserver getByCultivarName = observer().forMethod("getByCultivarName");
         getByCultivarName.arguments(i -> i.entityName(cultivarName, "cultivarName"))
                 .throwWhenInvalid();
-        var result = testEntitySource().entityStream()
+        List<SeedLineage> result = testEntitySource().entityStream()
                 .filter(s -> cultivarName.equals(s.cultivarName()))
                 .toList();
         getByCultivarName.state(s -> s.observableCollection(result, "result")).observe(Level.WARN);

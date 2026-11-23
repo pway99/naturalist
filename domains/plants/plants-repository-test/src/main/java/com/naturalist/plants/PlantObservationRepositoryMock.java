@@ -25,7 +25,7 @@ class PlantObservationRepositoryMock
         MethodObserver getByNaturalist = observer().forMethod("getByNaturalist");
         getByNaturalist.arguments(i -> i.identifier(observedBy, "observedBy"))
                 .throwWhenInvalid();
-        var result = testEntitySource().entityStream()
+        List<OrganismObservation<PlantObservationId, PlantRankName>> result = testEntitySource().entityStream()
                 .filter(o -> observedBy.equals(o.observedBy()))
                 .toList();
         getByNaturalist.state(s -> s.observableCollection(result, "result")).observe(Level.WARN);
@@ -39,7 +39,7 @@ class PlantObservationRepositoryMock
                         .identifier(observedBy, "observedBy")
                         .identifierSet(subjects, "subjects"))
                 .throwWhenInvalid();
-        var result = testEntitySource().entityStream()
+        List<OrganismObservation<PlantObservationId, PlantRankName>> result = testEntitySource().entityStream()
                 .filter(o -> observedBy.equals(o.observedBy()) && subjects.contains(o.subject()))
                 .toList();
         getByNaturalistAndSubjects.state(s -> s.observableCollection(result, "result")).observe(Level.WARN);

@@ -29,7 +29,7 @@ class UsageAlertRepositoryMock
                         .notNull(kind, "kind")
                         .notBlank(period, "period"))
                 .throwWhenInvalid();
-        var result = testEntitySource().entityStream()
+        Optional<UsageAlert> result = testEntitySource().entityStream()
                 .filter(a -> a.counter().equals(counter)
                         && a.scope() == scope
                         && a.kind() == kind
@@ -42,7 +42,7 @@ class UsageAlertRepositoryMock
     @Override
     public List<UsageAlert> getUnacknowledged() {
         MethodObserver getUnacknowledged = observer().forMethod("getUnacknowledged");
-        var result = testEntitySource().entityStream()
+        List<UsageAlert> result = testEntitySource().entityStream()
                 .filter(a -> !a.acknowledged())
                 .sorted(Comparator.comparing(UsageAlert::at).reversed())
                 .toList();
@@ -53,7 +53,7 @@ class UsageAlertRepositoryMock
     @Override
     public List<UsageAlert> getUnsent() {
         MethodObserver getUnsent = observer().forMethod("getUnsent");
-        var result = testEntitySource().entityStream()
+        List<UsageAlert> result = testEntitySource().entityStream()
                 .filter(a -> !a.emailed())
                 .toList();
         getUnsent.state(s -> s.observableCollection(result, "result")).observe(Level.WARN);

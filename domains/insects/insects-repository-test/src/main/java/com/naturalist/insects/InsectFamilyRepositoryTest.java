@@ -87,7 +87,7 @@ interface InsectFamilyRepositoryTest
     @Test
     default void getByOrderName_returnsFamiliesWithMatchingOrderName() {
         InsectOrderName diptera = InsectOrderName.of("diptera");
-        var results = repository().getByOrderName(diptera);
+        List<InsectFamilyInfo> results = repository().getByOrderName(diptera);
         assertThat(results)
                 .extracting(InsectFamilyInfo::name)
                 .extracting(InsectFamilyName::value)
@@ -97,7 +97,7 @@ interface InsectFamilyRepositoryTest
     @Test
     default void getByOrderName_returnsEmptyForUnknownOrder() {
         InsectOrderName unknown = InsectOrderName.of("zygentoma");
-        var results = repository().getByOrderName(unknown);
+        List<InsectFamilyInfo> results = repository().getByOrderName(unknown);
         assertThat(results).isEmpty();
     }
 
@@ -110,7 +110,7 @@ interface InsectFamilyRepositoryTest
 
     @Test
     default void getByOrderNames_partialMatch_returnsOnlyKnownOrders() {
-        var results = repository().getByOrderNames(Set.of(
+        List<InsectFamilyInfo> results = repository().getByOrderNames(Set.of(
                 InsectOrderName.of("diptera"),
                 InsectOrderName.of("zygentoma")));
         assertThat(results)

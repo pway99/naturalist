@@ -7,7 +7,8 @@ description: >-
   NaturalistTestExtension, and never cache a TestEntitySource in a field; and the ADR-028
   secrets rules: never read the process environment outside com.naturalist.secrets, and
   never name a credential in source. Every concrete named value declares the factory
-  NamedValues reads it through, and declares no @JsonCreator of its own.
+  NamedValues reads it through, and declares no @JsonCreator of its own. No source declares
+  a variable with var, and every import is explicit.
 recipeList:
   - com.naturalist.rewrite.NoDirectTestEntitySourceConstruction
   - com.naturalist.rewrite.NoCachedTestEntitySourceField
@@ -16,6 +17,8 @@ recipeList:
   - com.naturalist.rewrite.NoNamedCredentials
   - com.naturalist.rewrite.NamedValueHasFactory
   - com.naturalist.rewrite.NoSubtypeJsonCreator
+  - com.naturalist.rewrite.NoVar
+  - org.openrewrite.java.RemoveUnusedImports
   - com.naturalist.EnforceQueryHygiene
 ---
 type: specs.openrewrite.org/v1beta/recipe
@@ -38,3 +41,23 @@ description: >-
   (docs/plans/2026-11-18-named-value-serialization-design.md, step 3).
 recipeList:
   - com.naturalist.rewrite.TypedPathVariable
+---
+type: specs.openrewrite.org/v1beta/style
+name: com.naturalist.Style
+displayName: Naturalist code style
+description: >-
+  Imports are explicit, never folded into a star import: the import block is the quickest record
+  of the types and packages a class uses. OpenRewrite has no switch for that, only the counts at
+  which it folds, so both are set out of reach. The layout, IntelliJ's default, places the imports
+  a recipe adds.
+styleConfigs:
+  - org.openrewrite.java.style.ImportLayoutStyle:
+      classCountToUseStarImport: 2147483647
+      nameCountToUseStarImport: 2147483647
+      layout:
+        - import all other imports
+        - <blank line>
+        - import javax.*
+        - import java.*
+        - <blank line>
+        - import static all other imports

@@ -23,7 +23,7 @@ class PlantImageRepositoryMock
         MethodObserver getByParentName = observer().forMethod("getByParentName");
         getByParentName.arguments(i -> i.identifier(parentName, "parentName"))
                 .throwWhenInvalid();
-        var result = testEntitySource().entityStream()
+        List<OrganismImage<PlantImageId, PlantObservationId, PlantRankName>> result = testEntitySource().entityStream()
                 .filter(image -> image.parentName().equals(parentName))
                 .toList();
         getByParentName.state(s -> s.observableCollection(result, "result")).observe(Level.WARN);

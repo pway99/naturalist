@@ -7,6 +7,8 @@ import org.apache.ibatis.session.SqlSessionFactory;
 
 import javax.sql.DataSource;
 
+import java.util.List;
+
 /**
  * Seeds {@link Element}s. Lives in the domain's package (split-package with the rdbms module) so
  * it reaches the package-private adapter, mapper, and test-entity-source directly — nothing in the
@@ -17,10 +19,10 @@ public final class ElementSeeder {
     private ElementSeeder() {}
 
     public static void seed(DataSource dataSource, NaturalistDatabase database) {
-        var elements = database.getNamed(ElementTestEntitySource.class).entityStream().toList();
+        List<Element> elements = database.getNamed(ElementTestEntitySource.class).entityStream().toList();
         SqlSessionFactory factory = MyBatisSupport.sessionFactory(dataSource, ElementMapper.class);
         try (SqlSession session = factory.openSession(false)) {
-            var repo = new ElementEntityRepositoryRdbms(session.getMapper(ElementMapper.class));
+            ElementEntityRepositoryRdbms repo = new ElementEntityRepositoryRdbms(session.getMapper(ElementMapper.class));
             elements.forEach(repo::insert);
             session.commit();
         }

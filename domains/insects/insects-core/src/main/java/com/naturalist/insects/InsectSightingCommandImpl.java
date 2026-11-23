@@ -33,7 +33,7 @@ class InsectSightingCommandImpl implements InsectCommand.SightingCommand {
                         .entityName(naturalist, "naturalist")
                         .maxLength(notes, OrganismObservation.MAX_NOTES_LENGTH, "notes"))
                 .throwWhenInvalid();
-        var id = InsectObservationId.create();
+        InsectObservationId id = InsectObservationId.create();
         observations.insert(new OrganismObservation<InsectObservationId, InsectRankName>(
                 id, naturalist, subject, Instant.now(), blankToNull(notes), null, null, null));
         return id;

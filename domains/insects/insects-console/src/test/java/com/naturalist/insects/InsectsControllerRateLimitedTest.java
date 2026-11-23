@@ -152,8 +152,8 @@ class InsectsControllerRateLimitedTest {
     }
 
     private InsectsController controller() {
-        var imageStore = new FilesystemImageStore(imageRoot, Resilience.noOp());
-        var context = InsectsTestContext.create(nte, imageStore,
+        FilesystemImageStore imageStore = new FilesystemImageStore(imageRoot, Resilience.noOp());
+        InsectsTestContext context = InsectsTestContext.create(nte, imageStore,
                 new RejectingRateLimiterResilience(),
                 IdentificationBudget.noOp(),
                 new NoOpVisionService(),      // never called; the rate gate throws first
@@ -169,9 +169,9 @@ class InsectsControllerRateLimitedTest {
 
     @Test
     void identify_redirectsWithLimitRate_whenRateLimiterRejects() throws IOException {
-        var request = new MockHttpServletRequest();
+        MockHttpServletRequest request = new MockHttpServletRequest();
         request.setAttribute("naturalist.currentNaturalistName", "pat-way");
-        var image = new MockMultipartFile("image", "test.jpg", "image/jpeg", JPEG_BYTES);
+        MockMultipartFile image = new MockMultipartFile("image", "test.jpg", "image/jpeg", JPEG_BYTES);
 
         String view = controller().identify(image, null, null, null, null, null, request);
 

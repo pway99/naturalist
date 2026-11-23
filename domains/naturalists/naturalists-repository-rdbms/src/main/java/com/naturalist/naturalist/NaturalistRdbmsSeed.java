@@ -19,7 +19,7 @@ public final class NaturalistRdbmsSeed {
         SqlSessionFactory factory = MyBatisSupport.sessionFactory(dataSource, NaturalistMapper.class);
 
         try (SqlSession session = factory.openSession(false)) {
-            var naturalistRepo = new NaturalistEntityRepositoryRdbms(session.getMapper(NaturalistMapper.class));
+            NaturalistEntityRepositoryRdbms naturalistRepo = new NaturalistEntityRepositoryRdbms(session.getMapper(NaturalistMapper.class));
             naturalists.forEach(naturalistRepo::insert);
 
             session.commit();

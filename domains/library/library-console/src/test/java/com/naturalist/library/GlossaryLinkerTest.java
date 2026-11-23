@@ -18,7 +18,7 @@ class GlossaryLinkerTest {
 
     @Test
     void wrapsAKnownWholeWordTermInADefinitionPopover() {
-        var html = linker(term("dorsum", "Dorsum")).linkHtml("spots on the dorsum here", "seed");
+        String html = linker(term("dorsum", "Dorsum")).linkHtml("spots on the dorsum here", "seed");
 
         assertThat(html).contains(
                 "<button type=\"button\" class=\"glossary-link\" popovertarget=\"glossary-seed-dorsum\"");
@@ -33,24 +33,24 @@ class GlossaryLinkerTest {
 
     @Test
     void foldsTheUsageExampleIntoThePopoverWhenPresent() {
-        var withExample = new GlossaryTerm(
+        GlossaryTerm withExample = new GlossaryTerm(
                 GlossaryTermName.of("dorsum"), "Dorsum", "The upper surface of an animal.",
                 "Bold white spots on the dorsum.");
-        var html = GlossaryLinker.of(List.of(withExample)).linkHtml("marks on the dorsum", "seed");
+        String html = GlossaryLinker.of(List.of(withExample)).linkHtml("marks on the dorsum", "seed");
 
         assertThat(html).contains("<em class=\"glossary-example\">Bold white spots on the dorsum.</em>");
     }
 
     @Test
     void omitsTheExampleBlockWhenThereIsNone() {
-        var html = linker(term("dorsum", "Dorsum")).linkHtml("the dorsum", "seed");
+        String html = linker(term("dorsum", "Dorsum")).linkHtml("the dorsum", "seed");
 
         assertThat(html).doesNotContain("glossary-example");
     }
 
     @Test
     void idSeedMakesThePopoverIdUnique() {
-        var linker = linker(term("dorsum", "Dorsum"));
+        GlossaryLinker linker = linker(term("dorsum", "Dorsum"));
 
         assertThat(linker.linkHtml("dorsum", "family-0")).contains("popovertarget=\"glossary-family-0-dorsum\"");
         assertThat(linker.linkHtml("dorsum", "family-1")).contains("popovertarget=\"glossary-family-1-dorsum\"");
@@ -58,7 +58,7 @@ class GlossaryLinkerTest {
 
     @Test
     void matchesCaseInsensitivelyButPreservesTheMatchedCasing() {
-        var html = linker(term("dorsum", "Dorsum")).linkHtml("Dorsum first", "seed");
+        String html = linker(term("dorsum", "Dorsum")).linkHtml("Dorsum first", "seed");
 
         assertThat(html).contains(">Dorsum</button>");
         assertThat(html).contains("aria-label=\"Definition of Dorsum\"");
@@ -66,14 +66,14 @@ class GlossaryLinkerTest {
 
     @Test
     void doesNotMatchInsideAnotherWord() {
-        var html = linker(term("dorsum", "Dorsum")).linkHtml("an endorsement of dorsal marks", "seed");
+        String html = linker(term("dorsum", "Dorsum")).linkHtml("an endorsement of dorsal marks", "seed");
 
         assertThat(html).doesNotContain("<button");
     }
 
     @Test
     void linksOnlyTheFirstOccurrenceOfEachTerm() {
-        var html = linker(term("dorsum", "Dorsum")).linkHtml("dorsum and again dorsum", "seed");
+        String html = linker(term("dorsum", "Dorsum")).linkHtml("dorsum and again dorsum", "seed");
 
         assertThat(html).containsOnlyOnce("<button");
         assertThat(html).endsWith("again dorsum");
@@ -81,7 +81,7 @@ class GlossaryLinkerTest {
 
     @Test
     void prefersTheLongerTermOverAWordInsideIt() {
-        var html = linker(term("field-mark", "field mark"), term("mark", "mark"))
+        String html = linker(term("field-mark", "field mark"), term("mark", "mark"))
                 .linkHtml("a field mark to check", "seed");
 
         assertThat(html).contains("popovertarget=\"glossary-seed-field-mark\"");
@@ -91,7 +91,7 @@ class GlossaryLinkerTest {
 
     @Test
     void escapesHtmlAndInjectsOnlyItsOwnMarkup() {
-        var html = linker(term("dorsum", "Dorsum")).linkHtml("a <b>bold</b> & dark dorsum", "seed");
+        String html = linker(term("dorsum", "Dorsum")).linkHtml("a <b>bold</b> & dark dorsum", "seed");
 
         assertThat(html).contains("&lt;b&gt;bold&lt;/b&gt;");
         assertThat(html).contains("&amp; dark");
@@ -101,14 +101,14 @@ class GlossaryLinkerTest {
 
     @Test
     void passesThroughEscapedTextWhenNoTermMatches() {
-        var html = linker(term("dorsum", "Dorsum")).linkHtml("nothing to link < here", "seed");
+        String html = linker(term("dorsum", "Dorsum")).linkHtml("nothing to link < here", "seed");
 
         assertThat(html).isEqualTo("nothing to link &lt; here");
     }
 
     @Test
     void noneLinksNothingButStillEscapes() {
-        var html = GlossaryLinker.none().linkHtml("plain <text> with dorsum", "seed");
+        String html = GlossaryLinker.none().linkHtml("plain <text> with dorsum", "seed");
 
         assertThat(html).isEqualTo("plain &lt;text&gt; with dorsum");
     }

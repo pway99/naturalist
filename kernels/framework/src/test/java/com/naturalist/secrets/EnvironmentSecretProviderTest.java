@@ -14,7 +14,7 @@ class EnvironmentSecretProviderTest {
 
     @Test
     void present_isResolvedFromTheUpperSnakeVariable() {
-        var provider = new EnvironmentSecretProvider(Map.of("EXAMPLE_SECRET", "not-a-real-secret"));
+        EnvironmentSecretProvider provider = new EnvironmentSecretProvider(Map.of("EXAMPLE_SECRET", "not-a-real-secret"));
         assertThat(provider.lookup(SECRET)).contains(Secret.of("not-a-real-secret"));
         assertThat(provider.require(SECRET).fingerprint()).isEqualTo("ed24bc0b");
     }
@@ -50,7 +50,7 @@ class EnvironmentSecretProviderTest {
         assertThatThrownBy(() -> new EnvironmentSecretProvider(null))
                 .isInstanceOf(InvariantViolationException.class)
                 .hasMessageContaining("[EnvironmentSecretProvider.constructor.environment]");
-        var provider = new EnvironmentSecretProvider(Map.of());
+        EnvironmentSecretProvider provider = new EnvironmentSecretProvider(Map.of());
         assertThatThrownBy(() -> provider.lookup(null))
                 .isInstanceOf(InvariantViolationException.class)
                 .hasMessageContaining("[EnvironmentSecretProvider.lookup.name]");

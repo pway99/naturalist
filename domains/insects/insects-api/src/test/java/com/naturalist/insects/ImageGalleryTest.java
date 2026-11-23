@@ -31,9 +31,9 @@ class ImageGalleryTest {
 
     @Test
     void ofGroupsByParentName() {
-        var imgA1 = image(SPECIES_A, "a1.heic");
-        var imgA2 = image(SPECIES_A, "a2.heic");
-        var imgB1 = image(SPECIES_B, "b1.heic");
+        OrganismImage<InsectImageId, InsectObservationId, InsectRankName> imgA1 = image(SPECIES_A, "a1.heic");
+        OrganismImage<InsectImageId, InsectObservationId, InsectRankName> imgA2 = image(SPECIES_A, "a2.heic");
+        OrganismImage<InsectImageId, InsectObservationId, InsectRankName> imgB1 = image(SPECIES_B, "b1.heic");
 
         ImageGallery gallery = ImageGallery.of(List.of(imgA1, imgA2, imgB1));
 
@@ -46,8 +46,8 @@ class ImageGalleryTest {
 
     @Test
     void groupedUsesProvidedMapping() {
-        var imgA1 = image(SPECIES_A, "a1.heic");
-        var imgB1 = image(SPECIES_B, "b1.heic");
+        OrganismImage<InsectImageId, InsectObservationId, InsectRankName> imgA1 = image(SPECIES_A, "a1.heic");
+        OrganismImage<InsectImageId, InsectObservationId, InsectRankName> imgB1 = image(SPECIES_B, "b1.heic");
 
         ImageGallery gallery = ImageGallery.grouped(
                 Map.of(ORDER_X, List.of(imgA1, imgB1)));
@@ -96,8 +96,8 @@ class ImageGalleryTest {
 
     @Test
     void streamReturnsAllElementsFlat() {
-        var img1 = image(SPECIES_A, "a.heic");
-        var img2 = image(SPECIES_B, "b.heic");
+        OrganismImage<InsectImageId, InsectObservationId, InsectRankName> img1 = image(SPECIES_A, "a.heic");
+        OrganismImage<InsectImageId, InsectObservationId, InsectRankName> img2 = image(SPECIES_B, "b.heic");
 
         ImageGallery gallery = ImageGallery.of(List.of(img1, img2));
 

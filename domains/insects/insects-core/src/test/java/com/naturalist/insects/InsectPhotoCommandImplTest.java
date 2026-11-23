@@ -17,6 +17,7 @@ import com.naturalist.resilience.Resilience;
 import com.naturalist.test.TestDirectories;
 import com.naturalist.test.context.Fake;
 import com.naturalist.test.context.Wired;
+import io.micrometer.core.instrument.Counter;
 import io.micrometer.core.instrument.Metrics;
 import io.micrometer.core.instrument.simple.SimpleMeterRegistry;
 import org.jspecify.annotations.Nullable;
@@ -28,6 +29,9 @@ import java.io.UncheckedIOException;
 import java.nio.ByteOrder;
 import java.nio.file.Files;
 import java.nio.file.Path;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Optional;
 import java.util.Set;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
@@ -54,18 +58,18 @@ class InsectPhotoCommandImplTest {
 
     @Test
     void add_withNaturalist_insertsImageAndObservation() {
-        var species = TestInsectsIdentifiers.InsectSpecies.BattusPhilenor.name;
-        var naturalist = NaturalistName.of("test-naturalist");
+        InsectSpeciesName species = TestInsectsIdentifiers.InsectSpecies.BattusPhilenor.name;
+        NaturalistName naturalist = NaturalistName.of("test-naturalist");
 
         command.add(species, ImageUpload.of(JPEG), naturalist, "Found on pipevine", "Garden", null);
 
-        var photo = query.images().forParentName(species).stream()
+        Optional<OrganismImage<InsectImageId, InsectObservationId, InsectRankName>> photo = query.images().forParentName(species).stream()
                 .filter(img -> img.observationId() != null)
                 .findFirst();
         assertThat(photo).isPresent();
         assertThat(store.read(InsectPhotoCommandImpl.SPACE, photo.get().resourceName())).isPresent();
 
-        var observation = query.observations().getByName(photo.get().observationId());
+        Optional<OrganismObservation<InsectObservationId, InsectRankName>> observation = query.observations().getByName(photo.get().observationId());
         assertThat(observation).isPresent();
         assertThat(observation.get().observedBy()).isEqualTo(naturalist);
         assertThat(observation.get().subject()).isEqualTo(species);
@@ -76,14 +80,14 @@ class InsectPhotoCommandImplTest {
 
     @Test
     void add_withoutNaturalist_insertsImageOnly() {
-        var species = TestInsectsIdentifiers.InsectSpecies.BattusPhilenor.name;
-        var before = query.images().forParentName(species).stream().count();
+        InsectSpeciesName species = TestInsectsIdentifiers.InsectSpecies.BattusPhilenor.name;
+        long before = query.images().forParentName(species).stream().count();
 
         command.add(species, ImageUpload.of(JPEG), null, null, null, null);
 
-        var images = query.images().forParentName(species).stream().toList();
+        List<OrganismImage<InsectImageId, InsectObservationId, InsectRankName>> images = query.images().forParentName(species).stream().toList();
         assertThat(images).hasSize((int) before + 1);
-        var added = images.stream()
+        Optional<OrganismImage<InsectImageId, InsectObservationId, InsectRankName>> added = images.stream()
                 .filter(img -> store.read(InsectPhotoCommandImpl.SPACE, img.resourceName()).isPresent()
                         && img.observationId() == null)
                 .findFirst();
@@ -92,34 +96,34 @@ class InsectPhotoCommandImplTest {
 
     @Test
     void add_genusRank_insertsImageAndObservationAtGenus() {
-        var genus = TestInsectsIdentifiers.InsectGenus.Battus.name;
-        var naturalist = NaturalistName.of("test-naturalist");
+        InsectGenusName genus = TestInsectsIdentifiers.InsectGenus.Battus.name;
+        NaturalistName naturalist = NaturalistName.of("test-naturalist");
 
         command.add(genus, ImageUpload.of(JPEG), naturalist, "Unidentified swallowtail", null, null);
 
-        var photo = query.images().forParentName(genus).stream()
+        Optional<OrganismImage<InsectImageId, InsectObservationId, InsectRankName>> photo = query.images().forParentName(genus).stream()
                 .filter(img -> img.observationId() != null)
                 .findFirst();
         assertThat(photo).isPresent();
         assertThat(photo.get().parentName()).isEqualTo(genus);
 
-        var observation = query.observations().getByName(photo.get().observationId());
+        Optional<OrganismObservation<InsectObservationId, InsectRankName>> observation = query.observations().getByName(photo.get().observationId());
         assertThat(observation).isPresent();
         assertThat(observation.get().subject()).isEqualTo(genus);
     }
 
     @Test
     void add_withNaturalist_blankNotesAndLocation_persistsAsNull() {
-        var species = TestInsectsIdentifiers.InsectSpecies.BattusPhilenor.name;
-        var naturalist = NaturalistName.of("test-naturalist");
+        InsectSpeciesName species = TestInsectsIdentifiers.InsectSpecies.BattusPhilenor.name;
+        NaturalistName naturalist = NaturalistName.of("test-naturalist");
 
         command.add(species, ImageUpload.of(JPEG), naturalist, "  ", "", null);
 
-        var photo = query.images().forParentName(species).stream()
+        Optional<OrganismImage<InsectImageId, InsectObservationId, InsectRankName>> photo = query.images().forParentName(species).stream()
                 .filter(img -> img.observationId() != null)
                 .findFirst();
         assertThat(photo).isPresent();
-        var observation = query.observations().getByName(photo.get().observationId());
+        Optional<OrganismObservation<InsectObservationId, InsectRankName>> observation = query.observations().getByName(photo.get().observationId());
         assertThat(observation).isPresent();
         assertThat(observation.get().notes()).isNull();
         assertThat(observation.get().location()).isNull();
@@ -127,8 +131,8 @@ class InsectPhotoCommandImplTest {
 
     @Test
     void add_invalidUpload_storesAndPersistsNothing() throws IOException {
-        var species = TestInsectsIdentifiers.InsectSpecies.BattusPhilenor.name;
-        var before = query.images().forParentName(species).stream().count();
+        InsectSpeciesName species = TestInsectsIdentifiers.InsectSpecies.BattusPhilenor.name;
+        long before = query.images().forParentName(species).stream().count();
 
         assertThatThrownBy(() -> command.add(species, ImageUpload.of(HEIC), null, null, null, null))
                 .isInstanceOf(InvariantViolationException.class);
@@ -139,18 +143,18 @@ class InsectPhotoCommandImplTest {
 
     @Test
     void add_notesAtMaxLength_isAccepted() {
-        var notes = "a".repeat(OrganismObservation.MAX_NOTES_LENGTH);
+        String notes = "a".repeat(OrganismObservation.MAX_NOTES_LENGTH);
 
-        var image = addAndFind(ImageUpload.of(JPEG), null, notes);
+        OrganismImage<InsectImageId, InsectObservationId, InsectRankName> image = addAndFind(ImageUpload.of(JPEG), null, notes);
 
         assertThat(query.observations().getByName(image.observationId()).orElseThrow().notes()).isEqualTo(notes);
     }
 
     @Test
     void add_notesOverMaxLength_isRefusedAndStoresNothing() throws IOException {
-        var species = TestInsectsIdentifiers.InsectSpecies.BattusPhilenor.name;
-        var before = query.images().forParentName(species).stream().count();
-        var notes = "a".repeat(OrganismObservation.MAX_NOTES_LENGTH + 1);
+        InsectSpeciesName species = TestInsectsIdentifiers.InsectSpecies.BattusPhilenor.name;
+        long before = query.images().forParentName(species).stream().count();
+        String notes = "a".repeat(OrganismObservation.MAX_NOTES_LENGTH + 1);
 
         assertThatThrownBy(() -> command.add(species, ImageUpload.of(JPEG),
                 NaturalistName.of("test-naturalist"), notes, null, null))
@@ -163,17 +167,17 @@ class InsectPhotoCommandImplTest {
 
     @Test
     void add_invalidPhotoAddition_isRefusedAndDeletesStoredFile() throws IOException {
-        var species = TestInsectsIdentifiers.InsectSpecies.BattusPhilenor.name;
-        var before = query.images().forParentName(species).stream().count();
+        InsectSpeciesName species = TestInsectsIdentifiers.InsectSpecies.BattusPhilenor.name;
+        long before = query.images().forParentName(species).stream().count();
         // Stores the file for real but hands back a blank name, so the image -- and with it the
         // PhotoAddition -- is invalid after the store has written; delete of that name removes the real file.
-        var realNames = new java.util.ArrayList<FileName>();
+        ArrayList<FileName> realNames = new ArrayList<FileName>();
         ImageStore blankNaming = new ImageStore() {
             @Override public FileName store(String space, ImageUpload upload) {
                 realNames.add(store.store(space, upload));
                 return FileName.of(" ");
             }
-            @Override public java.util.Optional<StoredImage> read(String space, FileName name, ImageVariant variant) {
+            @Override public Optional<StoredImage> read(String space, FileName name, ImageVariant variant) {
                 return store.read(space, name, variant);
             }
             @Override public void requireStorable(ImageUpload upload) {
@@ -183,7 +187,7 @@ class InsectPhotoCommandImplTest {
                 realNames.forEach(real -> store.delete(space, real));
             }
         };
-        var refusing = new InsectPhotoCommandImpl(blankNaming, new InsectAddPhotoTransaction(entityCommands));
+        InsectPhotoCommandImpl refusing = new InsectPhotoCommandImpl(blankNaming, new InsectAddPhotoTransaction(entityCommands));
 
         assertThatThrownBy(() -> refusing.add(species, ImageUpload.of(JPEG), null, null, null, null))
                 .isInstanceOf(InvariantViolationException.class)
@@ -196,14 +200,14 @@ class InsectPhotoCommandImplTest {
 
     @Test
     void add_persistFailure_deletesStoredFile() throws IOException {
-        var species = TestInsectsIdentifiers.InsectSpecies.BattusPhilenor.name;
-        var throwing = new InsectAddPhotoTransaction(entityCommands) {
+        InsectSpeciesName species = TestInsectsIdentifiers.InsectSpecies.BattusPhilenor.name;
+        InsectAddPhotoTransaction throwing = new InsectAddPhotoTransaction(entityCommands) {
             @Override
             protected void doExecute(PhotoAddition addition) {
                 throw new IllegalStateException("boom");
             }
         };
-        var failing = new InsectPhotoCommandImpl(store, throwing);
+        InsectPhotoCommandImpl failing = new InsectPhotoCommandImpl(store, throwing);
 
         assertThatThrownBy(() -> failing.add(species, ImageUpload.of(JPEG), null, null, null, null))
                 .isInstanceOf(IllegalStateException.class)
@@ -214,8 +218,8 @@ class InsectPhotoCommandImplTest {
 
     @Test
     void add_persistFailure_whenDeleteAlsoFails_countsTheFailedCleanup() {
-        var species = TestInsectsIdentifiers.InsectSpecies.BattusPhilenor.name;
-        var throwing = new InsectAddPhotoTransaction(entityCommands) {
+        InsectSpeciesName species = TestInsectsIdentifiers.InsectSpecies.BattusPhilenor.name;
+        InsectAddPhotoTransaction throwing = new InsectAddPhotoTransaction(entityCommands) {
             @Override
             protected void doExecute(PhotoAddition addition) {
                 throw new IllegalStateException("boom");
@@ -225,7 +229,7 @@ class InsectPhotoCommandImplTest {
             @Override public FileName store(String space, ImageUpload upload) {
                 return store.store(space, upload);
             }
-            @Override public java.util.Optional<StoredImage> read(String space, FileName name, ImageVariant variant) {
+            @Override public Optional<StoredImage> read(String space, FileName name, ImageVariant variant) {
                 return store.read(space, name, variant);
             }
             @Override public void requireStorable(ImageUpload upload) {
@@ -235,8 +239,8 @@ class InsectPhotoCommandImplTest {
                 throw new UncheckedIOException(new IOException("disk said no"));
             }
         };
-        var failing = new InsectPhotoCommandImpl(undeletable, throwing);
-        var meters = new SimpleMeterRegistry();
+        InsectPhotoCommandImpl failing = new InsectPhotoCommandImpl(undeletable, throwing);
+        SimpleMeterRegistry meters = new SimpleMeterRegistry();
         Metrics.addRegistry(meters);
         try {
             assertThatThrownBy(() -> failing.add(species, ImageUpload.of(JPEG), null, null, null, null))
@@ -244,7 +248,7 @@ class InsectPhotoCommandImplTest {
                     .hasMessage("boom")
                     .satisfies(e -> assertThat(e.getSuppressed()).hasSize(1));
 
-            var counter = meters.find("naturalist.invariant.check")
+            Counter counter = meters.find("naturalist.invariant.check")
                     .tag("name", "InsectPhotoCommandImpl.add.storedDiscarded")
                     .tag("outcome", "violated")
                     .counter();
@@ -270,7 +274,7 @@ class InsectPhotoCommandImplTest {
     /** As {@link #addAndFind(ImageUpload, GridCell)}, with {@code notes} on the observation. */
     private OrganismImage<InsectImageId, InsectObservationId, InsectRankName> addAndFind(
             ImageUpload upload, @Nullable GridCell area, @Nullable String notes) {
-        var species = TestInsectsIdentifiers.InsectSpecies.BattusPhilenor.name;
+        InsectSpeciesName species = TestInsectsIdentifiers.InsectSpecies.BattusPhilenor.name;
         Set<InsectImageId> before = query.images().forParentName(species).stream()
                 .map(OrganismImage::id).collect(Collectors.toSet());
 
@@ -283,15 +287,15 @@ class InsectPhotoCommandImplTest {
 
     @Test
     void add_persistsClaimedArea() {
-        var claimed = GridCell.of(1000, -2000);
-        var image = addAndFind(portlandUpload(), claimed);
+        GridCell claimed = GridCell.of(1000, -2000);
+        OrganismImage<InsectImageId, InsectObservationId, InsectRankName> image = addAndFind(portlandUpload(), claimed);
 
         assertThat(query.observations().getByName(image.observationId()).orElseThrow().area()).isEqualTo(claimed);
     }
 
     @Test
     void add_nullArea_derivesFromExif() {
-        var image = addAndFind(portlandUpload(), null);
+        OrganismImage<InsectImageId, InsectObservationId, InsectRankName> image = addAndFind(portlandUpload(), null);
 
         assertThat(query.observations().getByName(image.observationId()).orElseThrow().area())
                 .isEqualTo(GridCell.of(1092, -2945));
@@ -299,9 +303,9 @@ class InsectPhotoCommandImplTest {
 
     @Test
     void add_storesStrippedBytes() {
-        var image = addAndFind(portlandUpload(), null);
+        OrganismImage<InsectImageId, InsectObservationId, InsectRankName> image = addAndFind(portlandUpload(), null);
 
-        var stored = store.read(InsectPhotoCommandImpl.SPACE, image.resourceName()).orElseThrow();
+        StoredImage stored = store.read(InsectPhotoCommandImpl.SPACE, image.resourceName()).orElseThrow();
         assertThat(ImageUpload.of(stored.readAllBytes()).gps()).isEmpty();
         assertThat(stored.readAllBytes()).isEqualTo(portlandUpload().withoutMetadata().bytes());
     }
@@ -315,7 +319,7 @@ class InsectPhotoCommandImplTest {
         }
     }
 
-    private static java.util.List<Path> filesUnder(Path root) throws IOException {
+    private static List<Path> filesUnder(Path root) throws IOException {
         try (Stream<Path> walk = Files.walk(root)) {
             return walk.filter(Files::isRegularFile).toList();
         }

@@ -26,7 +26,7 @@ class PlantFeatureAssignmentRepositoryMock
         MethodObserver getByRankName = observer().forMethod("getByRankName");
         getByRankName.arguments(i -> i.identifier(rankName, "rankName"))
                 .throwWhenInvalid();
-        var result = testEntitySource().entityStream()
+        List<OrganismFeatureAssignment<PlantFeatureAssignmentId, PlantFeatureId, PlantRankName>> result = testEntitySource().entityStream()
                 .filter(a -> a.rankName().equals(rankName))
                 .toList();
         getByRankName.state(s -> s.observableCollection(result, "result")).observe(Level.WARN);
@@ -38,7 +38,7 @@ class PlantFeatureAssignmentRepositoryMock
         MethodObserver getByRankNames = observer().forMethod("getByRankNames");
         getByRankNames.arguments(i -> i.observableCollection(rankNames, "rankNames"))
                 .throwWhenInvalid();
-        var result = testEntitySource().entityStream()
+        List<OrganismFeatureAssignment<PlantFeatureAssignmentId, PlantFeatureId, PlantRankName>> result = testEntitySource().entityStream()
                 .filter(a -> rankNames.contains(a.rankName()))
                 .toList();
         getByRankNames.state(s -> s.observableCollection(result, "result")).observe(Level.WARN);
@@ -50,7 +50,7 @@ class PlantFeatureAssignmentRepositoryMock
         MethodObserver getByFeatureId = observer().forMethod("getByFeatureId");
         getByFeatureId.arguments(i -> i.entityId(featureId, "featureId"))
                 .throwWhenInvalid();
-        var result = testEntitySource().entityStream()
+        List<OrganismFeatureAssignment<PlantFeatureAssignmentId, PlantFeatureId, PlantRankName>> result = testEntitySource().entityStream()
                 .filter(a -> a.featureId().equals(featureId))
                 .toList();
         getByFeatureId.state(s -> s.observableCollection(result, "result")).observe(Level.WARN);

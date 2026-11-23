@@ -1,8 +1,11 @@
 package com.naturalist.account;
 
 import com.naturalist.exception.InvariantViolationException;
+import com.naturalist.observability.Constraint;
 import com.naturalist.observability.Observer;
 import org.junit.jupiter.api.Test;
+
+import java.util.Set;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
@@ -28,7 +31,7 @@ class AccountDboTest {
     @Test void invariants_flagOverLongName() {
         AccountDbo dbo = AccountDbo.from(sample("acct-018f3a2eabcd", "someone@example.org", true));
         dbo.name = "x".repeat(65); // exceeds VARCHAR(64)
-        var violations = Observer.forClass(AccountDboTest.class)
+        Set<Constraint<?>> violations = Observer.forClass(AccountDboTest.class)
                 .arguments("t", i -> i.observable(dbo, "dbo")).violations();
         assertThat(violations).isNotEmpty();
     }

@@ -1,7 +1,7 @@
 package com.naturalist.plants;
 
 import com.naturalist.spring.console.ConsoleSliceTemplates;
-
+import gg.jte.TemplateEngine;
 import com.naturalist.data.NaturalistTestExtension;
 import gg.jte.output.StringOutput;
 import org.junit.jupiter.api.Test;
@@ -24,7 +24,7 @@ class PlantsFamilyDetailTemplateTest {
 
     @Test
     void familyDetail_rendersEveryFamilyWithoutError() {
-        var template = ConsoleSliceTemplates.create();
+        TemplateEngine template = ConsoleSliceTemplates.create();
         List<PlantGenus> allGenera =
                 nte.getNamed(PlantGenusTestEntitySource.class).entityStream().toList();
 
@@ -45,7 +45,7 @@ class PlantsFamilyDetailTemplateTest {
 
     @Test
     void familyDetail_rendersGeneraCardsWhenTheFamilyHasThem() {
-        var template = ConsoleSliceTemplates.create();
+        TemplateEngine template = ConsoleSliceTemplates.create();
         PlantFamily lamiaceae = nte.getNamed(PlantFamilyTestEntitySource.class).entityStream()
                 .filter(f -> f.name().value().equals("lamiaceae"))
                 .findFirst()
@@ -71,7 +71,7 @@ class PlantsFamilyDetailTemplateTest {
         // every family currently has at least one genus, so the empty list is
         // supplied deliberately rather than found. Keeps the branch covered as
         // the genus catalog grows.
-        var template = ConsoleSliceTemplates.create();
+        TemplateEngine template = ConsoleSliceTemplates.create();
         PlantFamily anyFamily = nte.getNamed(PlantFamilyTestEntitySource.class).entityStream()
                 .findFirst()
                 .orElseThrow();

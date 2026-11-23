@@ -10,7 +10,9 @@ import com.naturalist.resilience.Timeout;
 import java.time.Duration;
 import java.util.Set;
 import java.util.concurrent.ExecutionException;
+import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
+import java.util.concurrent.Future;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.TimeoutException;
 import java.util.concurrent.atomic.AtomicInteger;
@@ -78,8 +80,8 @@ final class TestResilience implements Resilience {
                 if (ceiling == null) {
                     return supplier.get();
                 }
-                try (var worker = Executors.newVirtualThreadPerTaskExecutor()) {
-                    var future = worker.submit(supplier::get);
+                try (ExecutorService worker = Executors.newVirtualThreadPerTaskExecutor()) {
+                    Future<T> future = worker.submit(supplier::get);
                     try {
                         return future.get(ceiling.toMillis(), TimeUnit.MILLISECONDS);
                     } catch (TimeoutException e) {

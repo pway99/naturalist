@@ -97,7 +97,7 @@ class PlantEcologicalRoleEntityRepositoryRdbms
                 .throwWhenInvalid();
         PlantEcologicalRoleDbo parent = mapper.selectByPlantName(plantName.rank().name(), plantName.value());
         if (parent == null) return Optional.empty();
-        var result = Optional.of(assemble(List.of(parent)).get(0));
+        Optional<PlantEcologicalRole> result = Optional.of(assemble(List.of(parent)).get(0));
         getByPlantName.state(s -> s.namedEntityOrNull(result.orElse(null), "result")).observe(Level.WARN);
         return result;
     }

@@ -4,6 +4,7 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.mock.web.MockHttpServletResponse;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
@@ -38,8 +39,8 @@ class SecurityHeadersWebMvcTest {
 
     @Test
     void everyPage_carriesTheConnectFormAndFrameDirectives_andNothingStricter() throws Exception {
-        for (var path : List.of("/", "/login", "/insects/orders")) {
-            var csp = mockMvc.perform(get(path)).andReturn().getResponse().getHeader("Content-Security-Policy");
+        for (String path : List.of("/", "/login", "/insects/orders")) {
+            String csp = mockMvc.perform(get(path)).andReturn().getResponse().getHeader("Content-Security-Policy");
             assertThat(csp).as(path).isEqualTo(POLICY);
             assertThat(csp).doesNotContain("default-src", "script-src", "style-src", "frame-src");
         }
@@ -47,7 +48,7 @@ class SecurityHeadersWebMvcTest {
 
     @Test
     void identifyPage_carriesThePolicy_andNosniff() throws Exception {
-        var response = mockMvc.perform(get("/insects/identify").with(user("naturalist").authorities(
+        MockHttpServletResponse response = mockMvc.perform(get("/insects/identify").with(user("naturalist").authorities(
                         new SimpleGrantedAuthority("ROLE_NATURALIST"), new SimpleGrantedAuthority("VISION"))))
                 .andReturn().getResponse();
         assertThat(response.getHeader("Content-Security-Policy")).isEqualTo(POLICY);

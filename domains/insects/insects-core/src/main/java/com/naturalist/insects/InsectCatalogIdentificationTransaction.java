@@ -57,9 +57,9 @@ class InsectCatalogIdentificationTransaction extends Transaction<CatalogIdentifi
 
     @Override
     protected void doExecute(CatalogIdentification identification) {
-        var taxonomy = identification.taxonomy();
-        var identifiedEntity = identification.identifiedEntity();
-        var parentDescriptions = identification.parentDescriptions();
+        TaxonomicClassification taxonomy = identification.taxonomy();
+        IdentifiedRankEntity identifiedEntity = identification.identifiedEntity();
+        Map<InsectRankName, Description> parentDescriptions = identification.parentDescriptions();
 
         // 1. Resolve the parent ranks ABOVE the identified rank, top-down
         //    (order → family → genus), so the upward FK the identified entity
@@ -100,15 +100,15 @@ class InsectCatalogIdentificationTransaction extends Transaction<CatalogIdentifi
         //    features: the (featureId, rankName) pair from a re-identification
         //    is likely to already exist once the featureId above is remapped
         //    to the existing feature.
-        var resolvedFeatureIds = new HashMap<InsectFeatureId, InsectFeatureId>();
-        for (var feature : identification.newFeatures()) {
-            var persisted = commands.features().save(feature);
+        HashMap<InsectFeatureId, InsectFeatureId> resolvedFeatureIds = new HashMap<InsectFeatureId, InsectFeatureId>();
+        for (InsectFeature feature : identification.newFeatures()) {
+            InsectFeature persisted = commands.features().save(feature);
             resolvedFeatureIds.put(feature.id(), persisted.id());
         }
-        for (var assignment : identification.featureAssignments()) {
-            var resolvedFeatureId = resolvedFeatureIds.getOrDefault(
+        for (OrganismFeatureAssignment<InsectFeatureAssignmentId, InsectFeatureId, InsectRankName> assignment : identification.featureAssignments()) {
+            InsectFeatureId resolvedFeatureId = resolvedFeatureIds.getOrDefault(
                     assignment.featureId(), assignment.featureId());
-            var toSave = resolvedFeatureId.equals(assignment.featureId())
+            OrganismFeatureAssignment<InsectFeatureAssignmentId, InsectFeatureId, InsectRankName> toSave = resolvedFeatureId.equals(assignment.featureId())
                     ? assignment
                     : OrganismFeatureAssignment.of(
                             assignment.id(), resolvedFeatureId, assignment.rankName(), assignment.ordinal());
@@ -141,8 +141,8 @@ class InsectCatalogIdentificationTransaction extends Transaction<CatalogIdentifi
             case IdentifiedRankEntity.Genus ignored ->
                     resolveFamily(taxonomy, resolveOrder(taxonomy, parentDescriptions), parentDescriptions);
             case IdentifiedRankEntity.Species ignored -> {
-                var orderName = resolveOrder(taxonomy, parentDescriptions);
-                var familyName = resolveFamily(taxonomy, orderName, parentDescriptions);
+                InsectOrderName orderName = resolveOrder(taxonomy, parentDescriptions);
+                InsectFamilyName familyName = resolveFamily(taxonomy, orderName, parentDescriptions);
                 // A species identification always carries its genus (the species'
                 // own genusName is derived from it upstream). Absent it there is no
                 // genus to resolve, and the species insert below reports the
@@ -156,22 +156,22 @@ class InsectCatalogIdentificationTransaction extends Transaction<CatalogIdentifi
 
     private void insertIdentifiedEntity(IdentifiedRankEntity entity) {
         switch (entity) {
-            case IdentifiedRankEntity.Species(var species) -> {
+            case IdentifiedRankEntity.Species(InsectSpeciesInfo species) -> {
                 if (insectQuery.species().getByName(species.name()).isEmpty()) {
                     commands.species().insert(species);
                 }
             }
-            case IdentifiedRankEntity.Genus(var genus) -> {
+            case IdentifiedRankEntity.Genus(InsectGenusInfo genus) -> {
                 if (insectQuery.genera().getByName(genus.name()).isEmpty()) {
                     commands.genera().insert(genus);
                 }
             }
-            case IdentifiedRankEntity.Family(var family) -> {
+            case IdentifiedRankEntity.Family(InsectFamilyInfo family) -> {
                 if (insectQuery.families().getByName(family.name()).isEmpty()) {
                     commands.families().insert(family);
                 }
             }
-            case IdentifiedRankEntity.Order(var order) -> {
+            case IdentifiedRankEntity.Order(InsectOrderInfo order) -> {
                 if (insectQuery.orders().getByName(order.name()).isEmpty()) {
                     commands.orders().insert(order);
                 }
@@ -181,10 +181,10 @@ class InsectCatalogIdentificationTransaction extends Transaction<CatalogIdentifi
 
     private InsectOrderName resolveOrder(TaxonomicClassification taxonomy,
                                          Map<InsectRankName, Description> parentDescriptions) {
-        var orderSlug = taxonomy.order().value().toLowerCase(Locale.ROOT);
-        var orderName = InsectOrderName.of(orderSlug);
+        String orderSlug = taxonomy.order().value().toLowerCase(Locale.ROOT);
+        InsectOrderName orderName = InsectOrderName.of(orderSlug);
         if (insectQuery.orders().getByName(orderName).isEmpty()) {
-            var description = parentDescriptions.getOrDefault(orderName, PLACEHOLDER);
+            Description description = parentDescriptions.getOrDefault(orderName, PLACEHOLDER);
             commands.orders().insert(new InsectOrderInfo(
                     orderName, taxonomy.order(), description, Set.of(), null));
         }
@@ -194,10 +194,10 @@ class InsectCatalogIdentificationTransaction extends Transaction<CatalogIdentifi
     private InsectFamilyName resolveFamily(TaxonomicClassification taxonomy,
                                            InsectOrderName orderName,
                                            Map<InsectRankName, Description> parentDescriptions) {
-        var familySlug = taxonomy.family().value().toLowerCase(Locale.ROOT);
-        var familyName = InsectFamilyName.of(familySlug);
+        String familySlug = taxonomy.family().value().toLowerCase(Locale.ROOT);
+        InsectFamilyName familyName = InsectFamilyName.of(familySlug);
         if (insectQuery.families().getByName(familyName).isEmpty()) {
-            var description = parentDescriptions.getOrDefault(familyName, PLACEHOLDER);
+            Description description = parentDescriptions.getOrDefault(familyName, PLACEHOLDER);
             commands.families().insert(new InsectFamilyInfo(
                     familyName, orderName, taxonomy.family(), description, Set.of(), null));
         }
@@ -207,10 +207,10 @@ class InsectCatalogIdentificationTransaction extends Transaction<CatalogIdentifi
     private void resolveGenus(TaxonomicClassification taxonomy,
                               InsectFamilyName familyName,
                               Map<InsectRankName, Description> parentDescriptions) {
-        var genusSlug = taxonomy.genus().value().toLowerCase(Locale.ROOT);
-        var genusName = InsectGenusName.of(genusSlug);
+        String genusSlug = taxonomy.genus().value().toLowerCase(Locale.ROOT);
+        InsectGenusName genusName = InsectGenusName.of(genusSlug);
         if (insectQuery.genera().getByName(genusName).isEmpty()) {
-            var description = parentDescriptions.getOrDefault(genusName, PLACEHOLDER);
+            Description description = parentDescriptions.getOrDefault(genusName, PLACEHOLDER);
             commands.genera().insert(new InsectGenusInfo(
                     genusName, familyName, taxonomy.genus(), description, Set.of(), null));
         }

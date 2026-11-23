@@ -23,7 +23,7 @@ class PlantProgramRepositoryMock
         MethodObserver getByPlantName = observer().forMethod("getByPlantName");
         getByPlantName.arguments(i -> i.identifier(plantName, "plantName"))
                 .throwWhenInvalid();
-        var result = testEntitySource().entityStream()
+        List<PlantProgram> result = testEntitySource().entityStream()
                 .filter(p -> plantName.equals(p.plantName()))
                 .toList();
         getByPlantName.state(s -> s.observableCollection(result, "result")).observe(Level.WARN);

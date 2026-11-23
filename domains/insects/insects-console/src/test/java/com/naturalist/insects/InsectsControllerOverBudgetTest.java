@@ -63,8 +63,8 @@ class InsectsControllerOverBudgetTest {
     };
 
     private InsectsController controller() {
-        var imageStore = new FilesystemImageStore(imageRoot, Resilience.noOp());
-        var context = InsectsTestContext.create(nte, imageStore,
+        FilesystemImageStore imageStore = new FilesystemImageStore(imageRoot, Resilience.noOp());
+        InsectsTestContext context = InsectsTestContext.create(nte, imageStore,
                 Resilience.noOp(),
                 EXCEEDED_BUDGET,
                 new NoOpVisionService(),      // never called; budget.reserve() throws first
@@ -80,9 +80,9 @@ class InsectsControllerOverBudgetTest {
 
     @Test
     void identify_redirectsWithLimitParam_whenBudgetExceeded() throws IOException {
-        var request = new MockHttpServletRequest();
+        MockHttpServletRequest request = new MockHttpServletRequest();
         request.setAttribute("naturalist.currentNaturalistName", "pat-way");
-        var image = new MockMultipartFile("image", "test.jpg", "image/jpeg", JPEG_BYTES);
+        MockMultipartFile image = new MockMultipartFile("image", "test.jpg", "image/jpeg", JPEG_BYTES);
 
         String view = controller().identify(image, null, null, null, null, null, request);
 
@@ -95,16 +95,16 @@ class InsectsControllerOverBudgetTest {
      */
     @Test
     void identify_chargesNothing_whenTheStoreRefusesThePhoto() throws IOException {
-        var reservations = new AtomicInteger();
+        AtomicInteger reservations = new AtomicInteger();
         IdentificationBudget counting = naturalist -> reservations.incrementAndGet();
-        var imageStore = new FilesystemImageStore(imageRoot, Resilience.noOp());
-        var context = InsectsTestContext.create(nte, imageStore, Resilience.noOp(), counting,
+        FilesystemImageStore imageStore = new FilesystemImageStore(imageRoot, Resilience.noOp());
+        InsectsTestContext context = InsectsTestContext.create(nte, imageStore, Resilience.noOp(), counting,
                 new NoOpVisionService(), InsectsTestContext.noOpAuthority());
-        var controller = new InsectsController(context.insectQuery(), context.insectViewQuery(),
+        InsectsController controller = new InsectsController(context.insectQuery(), context.insectViewQuery(),
                 context.insectCommand(), libraryContext.cladeQuery(), libraryContext.glossaryTermQuery(), imageStore);
-        var request = new MockHttpServletRequest();
+        MockHttpServletRequest request = new MockHttpServletRequest();
         request.setAttribute("naturalist.currentNaturalistName", "pat-way");
-        var image = new MockMultipartFile("image", "corrupt.png", "image/png", ImageFixtures.corruptBodyPng());
+        MockMultipartFile image = new MockMultipartFile("image", "corrupt.png", "image/png", ImageFixtures.corruptBodyPng());
 
         assertThat(controller.identify(image, null, null, null, null, null, request))
                 .isEqualTo("redirect:/insects/identify?error=image");

@@ -4,16 +4,19 @@ import com.naturalist.observability.Level;
 import com.naturalist.observation.ImageUpload;
 import com.naturalist.observation.filesystem.PhotoScaler.Dimensions;
 import com.naturalist.observation.test.ImageFixtures;
+import io.micrometer.core.instrument.Counter;
 import org.junit.jupiter.api.Test;
 import io.micrometer.core.instrument.simple.SimpleMeterRegistry;
 import io.micrometer.core.instrument.Metrics;
 
 import javax.imageio.ImageIO;
 import java.awt.Color;
+import java.awt.Graphics2D;
 import java.awt.image.BufferedImage;
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
+import java.io.InputStream;
 import java.io.UncheckedIOException;
 import java.nio.ByteBuffer;
 import java.nio.ByteOrder;
@@ -89,7 +92,7 @@ class PhotoScalerTest {
 
         byte[] result = fit(tagged, 1024, 1);
 
-        var upload = ImageUpload.of(result);
+        ImageUpload upload = ImageUpload.of(result);
         assertThat(upload.withoutMetadata()).isEqualTo(upload);
         assertThat(upload.orientation()).isEmpty();
         assertThat(upload.gps()).isEmpty();
@@ -98,7 +101,7 @@ class PhotoScalerTest {
     @Test
     void fitJpeg_decodesWebp() throws IOException {
         byte[] webp;
-        try (var in = PhotoScalerTest.class.getResourceAsStream("/scaler/alpha.webp")) {
+        try (InputStream in = PhotoScalerTest.class.getResourceAsStream("/scaler/alpha.webp")) {
             webp = in.readAllBytes();
         }
 
@@ -154,7 +157,7 @@ class PhotoScalerTest {
 
     @Test
     void dimensions_reportPixelsAndLongestEdge() {
-        var dimensions = new Dimensions(50_000, 40_000);
+        PhotoScaler.Dimensions dimensions = new Dimensions(50_000, 40_000);
 
         assertThat(dimensions.pixels()).isEqualTo(2_000_000_000L);
         assertThat(dimensions.longestEdge()).isEqualTo(50_000);
@@ -197,11 +200,11 @@ class PhotoScalerTest {
     }
 
     private static byte[] image(String format, int width, int height, int type) {
-        var image = new BufferedImage(width, height, type);
-        var out = new ByteArrayOutputStream();
+        BufferedImage image = new BufferedImage(width, height, type);
+        ByteArrayOutputStream out = new ByteArrayOutputStream();
         try {
             if (type == BufferedImage.TYPE_INT_RGB) {
-                var g = image.createGraphics();
+                Graphics2D g = image.createGraphics();
                 g.setColor(Color.ORANGE);
                 g.fillRect(0, 0, width, height);
                 g.dispose();
@@ -215,8 +218,8 @@ class PhotoScalerTest {
 
     /** A JPEG split into four solid quadrants: red top-left, green top-right, blue bottom-right, yellow bottom-left. */
     private static byte[] quadrants(int width, int height) {
-        var image = new BufferedImage(width, height, BufferedImage.TYPE_INT_RGB);
-        var g = image.createGraphics();
+        BufferedImage image = new BufferedImage(width, height, BufferedImage.TYPE_INT_RGB);
+        Graphics2D g = image.createGraphics();
         g.setColor(Color.RED);
         g.fillRect(0, 0, width / 2, height / 2);
         g.setColor(Color.GREEN);
@@ -226,7 +229,7 @@ class PhotoScalerTest {
         g.setColor(Color.YELLOW);
         g.fillRect(0, height / 2, width / 2, height - height / 2);
         g.dispose();
-        var out = new ByteArrayOutputStream();
+        ByteArrayOutputStream out = new ByteArrayOutputStream();
         try {
             ImageIO.write(image, "jpg", out);
         } catch (IOException e) {
@@ -247,7 +250,7 @@ class PhotoScalerTest {
     private static byte[] pngDeclaring(int width, int height) {
         byte[] ihdr = ByteBuffer.allocate(13).putInt(width).putInt(height).put((byte) 8).put((byte) 2)
                 .put((byte) 0).put((byte) 0).put((byte) 0).array();
-        var out = new ByteArrayOutputStream();
+        ByteArrayOutputStream out = new ByteArrayOutputStream();
         out.writeBytes(new byte[]{(byte) 0x89, 'P', 'N', 'G', 0x0D, 0x0A, 0x1A, 0x0A});
         chunk(out, "IHDR", ihdr);
         chunk(out, "IDAT", new byte[]{0x78, (byte) 0x9C, 0x03, 0x00, 0x00, 0x00, 0x00, 0x01});
@@ -257,7 +260,7 @@ class PhotoScalerTest {
 
     private static void chunk(ByteArrayOutputStream out, String type, byte[] data) {
         byte[] typeBytes = type.getBytes(StandardCharsets.US_ASCII);
-        var crc = new CRC32();
+        CRC32 crc = new CRC32();
         crc.update(typeBytes);
         crc.update(data);
         out.writeBytes(ByteBuffer.allocate(4).putInt(data.length).array());
@@ -279,7 +282,7 @@ class PhotoScalerTest {
     void fitJpeg_refusesABodyThatDoesNotDecodeWithoutCountingAFault() {
         byte[] corrupt = ImageFixtures.corruptBodyPng();
         Dimensions declared = PhotoScaler.declared(corrupt).orElseThrow();
-        var meters = new SimpleMeterRegistry();
+        SimpleMeterRegistry meters = new SimpleMeterRegistry();
         Metrics.addRegistry(meters);
         try {
             assertThatThrownBy(() -> PhotoScaler.fitJpeg(corrupt, declared, PhotoScaler.TILE_EDGE, 1))
@@ -301,7 +304,7 @@ class PhotoScalerTest {
     @Test
     void fitJpeg_reportsAFailureAfterTheDecodeAsAFault() {
         byte[] png = image("png", 10, 10, BufferedImage.TYPE_INT_RGB);
-        var meters = new SimpleMeterRegistry();
+        SimpleMeterRegistry meters = new SimpleMeterRegistry();
         Metrics.addRegistry(meters);
         try {
             assertThatThrownBy(() -> PhotoScaler.fitJpeg(png, new Dimensions(0, 10), PhotoScaler.TILE_EDGE, 1))
@@ -310,7 +313,7 @@ class PhotoScalerTest {
             Metrics.removeRegistry(meters);
         }
 
-        var encoded = meters.find("naturalist.invariant.check")
+        Counter encoded = meters.find("naturalist.invariant.check")
                 .tag("name", "PhotoScaler.fitJpeg.encoded")
                 .tag("handling", "wrapped")
                 .tag("level", Level.ERROR.tagValue())

@@ -95,7 +95,7 @@ interface InsectFeatureAssignmentEntityRepositoryTest
 
     @Test
     default void getByRankNames_returnsAssignmentsAcrossTheGivenRanks() {
-        var result = repository().getByRankNames(Set.of(
+        List<OrganismFeatureAssignment<InsectFeatureAssignmentId, InsectFeatureId, InsectRankName>> result = repository().getByRankNames(Set.of(
                 InsectOrderName.of("diptera"), InsectOrderName.of("lepidoptera")));
         assertThat(result).isNotEmpty();
         assertThat(result).extracting(a -> a.rankName().value())

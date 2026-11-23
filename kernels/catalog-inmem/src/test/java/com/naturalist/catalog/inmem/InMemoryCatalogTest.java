@@ -1,6 +1,13 @@
 package com.naturalist.catalog.inmem;
 
-import com.naturalist.catalog.*;
+import com.naturalist.catalog.Catalog;
+import com.naturalist.catalog.CatalogContribution;
+import com.naturalist.catalog.DomainId;
+import com.naturalist.catalog.EntityRef;
+import com.naturalist.catalog.EntityReferences;
+import com.naturalist.catalog.MatchKind;
+import com.naturalist.catalog.SearchHit;
+import com.naturalist.catalog.SearchResults;
 import com.naturalist.catalog.CatalogContribution.SearchableEntity;
 import com.naturalist.chemistry.TestChemistryIdentifiers.Compounds;
 import com.naturalist.chemistry.compound.CompoundName;
@@ -530,8 +537,8 @@ class InMemoryCatalogTest {
                 return "plants";
             }
         }
-        var legitimate = contribution(new Plants(), entity(BORAGE, "borage"));
-        var rogue = contribution(new RoguePlants(), entity(CALIFORNIA_PIPEVINE, "shared"));
+        CatalogContribution legitimate = contribution(new Plants(), entity(BORAGE, "borage"));
+        CatalogContribution rogue = contribution(new RoguePlants(), entity(CALIFORNIA_PIPEVINE, "shared"));
 
         assertThatThrownBy(() -> CatalogAssembly.from(List.of(legitimate, rogue), List.of()))
                 .isInstanceOf(IllegalArgumentException.class)
@@ -547,7 +554,7 @@ class InMemoryCatalogTest {
                 return "plants";
             }
         }
-        var contribution = contribution(new Plants(), entity(BORAGE, "borage"));
+        CatalogContribution contribution = contribution(new Plants(), entity(BORAGE, "borage"));
         EntityReferences<CompoundName> rogueProvider = provider(new RoguePlants(),
                 CompoundName.class, Map.of());
 
@@ -558,8 +565,8 @@ class InMemoryCatalogTest {
 
     @Test
     void sameDomainAcrossMultipleContributionsAndProvidersIsLegal() {
-        var first = contribution(new Plants(), entity(BORAGE, "borage"));
-        var second = contribution(new Plants(), entity(CALIFORNIA_PIPEVINE, "pipevine"));
+        CatalogContribution first = contribution(new Plants(), entity(BORAGE, "borage"));
+        CatalogContribution second = contribution(new Plants(), entity(CALIFORNIA_PIPEVINE, "pipevine"));
         EntityReferences<CompoundName> refs = provider(new Plants(),
                 CompoundName.class, Map.of());
 

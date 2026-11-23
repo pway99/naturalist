@@ -65,7 +65,7 @@ public abstract class AbstractEntityRepository<
     public final Optional<ENTITY> getByName(NAME name) {
         MethodObserver getByName = observer.forMethod("getByName");
         getByName.arguments(i -> i.identifier(name, "name")).throwWhenInvalid();
-        var result = doGetByName(name);
+        Optional<ENTITY> result = doGetByName(name);
         getByName.state(s -> s.namedEntityOrNull(result.orElse(null), "result")).observe(Level.WARN);
         return result;
     }
@@ -74,7 +74,7 @@ public abstract class AbstractEntityRepository<
     public final List<ENTITY> getByEntityNameSet(Set<NAME> nameSet) {
         MethodObserver getByEntityNameSet = observer.forMethod("getByEntityNameSet");
         getByEntityNameSet.arguments(i -> i.identifierSet(nameSet, "nameSet")).throwWhenInvalid();
-        var result = doGetByNameSet(nameSet);
+        List<ENTITY> result = doGetByNameSet(nameSet);
         getByEntityNameSet.state(s -> s.observableCollection(result, "result")).observe(Level.WARN);
         return result;
     }
@@ -83,7 +83,7 @@ public abstract class AbstractEntityRepository<
     public final Page<ENTITY> getPage(PageRequest pageRequest) {
         MethodObserver getPage = observer.forMethod("getPage");
         getPage.arguments(i -> i.valueObject(pageRequest, "pageRequest")).throwWhenInvalid();
-        var result = doGetPage(pageRequest);
+        Page<ENTITY> result = doGetPage(pageRequest);
         getPage.state(s -> s.observableCollection(result.content(), "result")).observe(Level.WARN);
         return result;
     }

@@ -8,6 +8,7 @@ import com.naturalist.exception.InvariantViolationException;
 import org.junit.jupiter.api.Test;
 
 import java.util.List;
+import java.util.Optional;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
@@ -91,7 +92,7 @@ interface NaturalistEntityRepositoryTest
 
     @Test
     default void getByAccount_returnsNaturalistWithMatchingAccount() {
-        var result = repository().getByAccount(AccountName.of("acct-018f3a2e9b71"));
+        Optional<Naturalist> result = repository().getByAccount(AccountName.of("acct-018f3a2e9b71"));
 
         assertThat(result).isPresent();
         assertThat(result.get().name()).isEqualTo(PATRICK);

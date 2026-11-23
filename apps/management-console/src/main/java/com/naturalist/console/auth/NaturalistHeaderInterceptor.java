@@ -3,6 +3,7 @@ package com.naturalist.console.auth;
 import com.naturalist.usage.UsageQuery;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
+import jakarta.servlet.http.HttpSession;
 import org.springframework.security.web.csrf.CsrfToken;
 import org.springframework.stereotype.Component;
 import org.springframework.web.servlet.HandlerInterceptor;
@@ -57,7 +58,7 @@ public class NaturalistHeaderInterceptor implements HandlerInterceptor {
         request.setAttribute(USAGE_ALERTS_PENDING,
                 CurrentNaturalistView.isAdmin() && !usageQuery.activeAlerts().isEmpty());
         request.setAttribute("insectSection", request.getRequestURI().startsWith("/insects"));
-        var session = request.getSession(false);
+        HttpSession session = request.getSession(false);
         request.setAttribute("collectionLens",
                 session != null && Boolean.TRUE.equals(session.getAttribute("insects.collectionLens")));
         String uri = request.getRequestURI();

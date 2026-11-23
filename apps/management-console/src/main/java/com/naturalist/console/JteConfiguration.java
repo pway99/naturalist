@@ -45,17 +45,17 @@ class JteConfiguration {
         if (!developmentMode) {
             return TemplateEngine.createPrecompiled(ContentType.Html);
         }
-        var projectRoot = findProjectRoot();
-        var roots = discoverTemplateRoots(projectRoot);
-        var resolvers = roots.stream()
+        Path projectRoot = findProjectRoot();
+        List<Path> roots = discoverTemplateRoots(projectRoot);
+        List<DirectoryCodeResolver> resolvers = roots.stream()
                 .map(DirectoryCodeResolver::new)
                 .toList();
-        var codeResolver = new CompositeCodeResolver(resolvers);
+        JteConfiguration.CompositeCodeResolver codeResolver = new CompositeCodeResolver(resolvers);
         return TemplateEngine.create(codeResolver, projectRoot.resolve("jte-classes"), ContentType.Html, getClass().getClassLoader());
     }
 
     private Path findProjectRoot() {
-        var dir = Path.of("").toAbsolutePath();
+        Path dir = Path.of("").toAbsolutePath();
         while (dir != null) {
             if (Files.exists(dir.resolve("pom.xml")) && Files.isDirectory(dir.resolve("kernels"))) {
                 return dir;
@@ -73,11 +73,11 @@ class JteConfiguration {
      * shadows them), then domain consoles in directory iteration order.
      */
     private List<Path> discoverTemplateRoots(Path projectRoot) {
-        var roots = new ArrayList<Path>();
+        ArrayList<Path> roots = new ArrayList<Path>();
         addJteRootsUnder(projectRoot.resolve("apps"), roots);
-        var domainsDir = projectRoot.resolve("domains");
+        Path domainsDir = projectRoot.resolve("domains");
         if (Files.isDirectory(domainsDir)) {
-            for (var domain : list(domainsDir)) {
+            for (Path domain : list(domainsDir)) {
                 addJteRootsUnder(domain, roots);
             }
         }
@@ -86,8 +86,8 @@ class JteConfiguration {
 
     private void addJteRootsUnder(Path parent, List<Path> roots) {
         if (!Files.isDirectory(parent)) return;
-        for (var child : list(parent)) {
-            var jte = child.resolve("src/main/jte");
+        for (Path child : list(parent)) {
+            Path jte = child.resolve("src/main/jte");
             if (Files.isDirectory(jte)) {
                 roots.add(jte);
             }
@@ -106,8 +106,8 @@ class JteConfiguration {
 
         @Override
         public String resolve(String name) {
-            for (var resolver : resolvers) {
-                var result = resolver.resolve(name);
+            for (DirectoryCodeResolver resolver : resolvers) {
+                String result = resolver.resolve(name);
                 if (result != null) {
                     return result;
                 }
@@ -117,8 +117,8 @@ class JteConfiguration {
 
         @Override
         public String resolveRequired(String name) throws TemplateNotFoundException {
-            for (var resolver : resolvers) {
-                var result = resolver.resolve(name);
+            for (DirectoryCodeResolver resolver : resolvers) {
+                String result = resolver.resolve(name);
                 if (result != null) {
                     return result;
                 }
@@ -133,7 +133,7 @@ class JteConfiguration {
 
         @Override
         public long getLastModified(String name) {
-            for (var resolver : resolvers) {
+            for (DirectoryCodeResolver resolver : resolvers) {
                 if (resolver.exists(name)) {
                     return resolver.getLastModified(name);
                 }
@@ -143,8 +143,8 @@ class JteConfiguration {
 
         @Override
         public List<String> resolveAllTemplateNames() {
-            var names = new ArrayList<String>();
-            for (var resolver : resolvers) {
+            ArrayList<String> names = new ArrayList<String>();
+            for (DirectoryCodeResolver resolver : resolvers) {
                 names.addAll(resolver.resolveAllTemplateNames());
             }
             return names;

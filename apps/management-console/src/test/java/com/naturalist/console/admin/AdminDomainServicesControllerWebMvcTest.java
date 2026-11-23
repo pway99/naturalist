@@ -63,22 +63,22 @@ class AdminDomainServicesControllerWebMvcTest {
 
     @Test
     void admin_domainServices_listsRepresentativeBeanUnderItsDomain() throws Exception {
-        var html = mockMvc.perform(get("/admin/domain-services")
+        String html = mockMvc.perform(get("/admin/domain-services")
                         .with(user("naturalist").roles("ADMIN")))
                 .andExpect(status().isOk())
                 .andReturn().getResponse().getContentAsString();
 
-        var chemistryAt = html.indexOf(">chemistry</h2>");
-        var insectsAt = html.indexOf(">insects</h2>");
-        var plantsAt = html.indexOf(">plants</h2>");
+        int chemistryAt = html.indexOf(">chemistry</h2>");
+        int insectsAt = html.indexOf(">insects</h2>");
+        int plantsAt = html.indexOf(">plants</h2>");
 
         assertThat(chemistryAt).as("chemistry heading").isGreaterThan(-1);
         assertThat(insectsAt).as("insects heading, ordered after chemistry").isGreaterThan(chemistryAt);
         assertThat(plantsAt).as("plants heading, ordered after insects").isGreaterThan(insectsAt);
 
-        var chemistrySection = html.substring(chemistryAt, insectsAt);
-        var insectsSection = html.substring(insectsAt, plantsAt);
-        var plantsSection = html.substring(plantsAt);
+        String chemistrySection = html.substring(chemistryAt, insectsAt);
+        String insectsSection = html.substring(insectsAt, plantsAt);
+        String plantsSection = html.substring(plantsAt);
 
         assertThat(chemistrySection)
                 .contains("ChemistryDomain")
@@ -93,7 +93,7 @@ class AdminDomainServicesControllerWebMvcTest {
 
     @Test
     void admin_domainServices_omitsHeadingForPackagesWithNoDomainServices() throws Exception {
-        var html = mockMvc.perform(get("/admin/domain-services")
+        String html = mockMvc.perform(get("/admin/domain-services")
                         .with(user("naturalist").roles("ADMIN")))
                 .andExpect(status().isOk())
                 .andReturn().getResponse().getContentAsString();

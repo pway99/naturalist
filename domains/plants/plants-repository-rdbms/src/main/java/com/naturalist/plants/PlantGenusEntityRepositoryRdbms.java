@@ -4,11 +4,13 @@ import com.naturalist.data.AbstractEntityRepository;
 import com.naturalist.data.Page;
 import com.naturalist.data.PageRequest;
 import com.naturalist.exception.EntityNotFoundException;
+import com.naturalist.fieldnotes.CommonName;
 import com.naturalist.infrastructure.DomainService;
 import com.naturalist.observability.Level;
 import com.naturalist.observability.MethodObserver;
 
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 import java.util.Set;
 import java.util.stream.Collectors;
@@ -95,7 +97,7 @@ class PlantGenusEntityRepositoryRdbms
                 .throwWhenInvalid();
         List<PlantGenusDbo> parents = mapper.selectByFamilyName(familyName.value());
         Set<String> names = parents.stream().map(p -> p.name).collect(Collectors.toSet());
-        var result = assemble(parents, names);
+        List<PlantGenus> result = assemble(parents, names);
         getByFamilyName.state(s -> s.observableCollection(result, "result")).observe(Level.WARN);
         return result;
     }
@@ -103,7 +105,7 @@ class PlantGenusEntityRepositoryRdbms
     /** Assemble records from parent rows + one batched common-name load. */
     private List<PlantGenus> assemble(List<PlantGenusDbo> parents, Set<String> names) {
         if (parents.isEmpty()) return List.of();
-        var commonNames = mapper.selectCommonNames(names).stream()
+        Map<String, Set<CommonName>> commonNames = mapper.selectCommonNames(names).stream()
                 .collect(Collectors.groupingBy(cn -> cn.genusName,
                         Collectors.mapping(PlantGenusCommonNameDbo::toCommonName, Collectors.toSet())));
         return parents.stream()

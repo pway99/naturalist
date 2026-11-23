@@ -7,6 +7,7 @@ import com.naturalist.secrets.EnvironmentSecretProvider;
 import com.naturalist.secrets.MissingSecretException;
 import com.naturalist.secrets.SecretProvider;
 import com.naturalist.vision.NoOpVisionService;
+import com.naturalist.vision.VisionService;
 import com.naturalist.vision.anthropic.AnthropicVisionService;
 import io.micrometer.core.instrument.Counter;
 import io.micrometer.core.instrument.Metrics;
@@ -39,20 +40,20 @@ class VisionConfigurationTest {
 
     @Test
     void none_wiresTheNoOp_andIsObservedAsAStandingViolation() {
-        var service = configuration.visionService(new VisionProperties("none"), noSecrets(), Resilience.noOp());
+        VisionService service = configuration.visionService(new VisionProperties("none"), noSecrets(), Resilience.noOp());
         assertThat(service).isInstanceOf(NoOpVisionService.class);
         assertThat(violations("VisionConfiguration.visionService.provider")).isEqualTo(1);
     }
 
     @Test
     void none_ignoresACredentialThatIsPresent() {
-        var service = configuration.visionService(new VisionProperties("none"), withCredential(), Resilience.noOp());
+        VisionService service = configuration.visionService(new VisionProperties("none"), withCredential(), Resilience.noOp());
         assertThat(service).isInstanceOf(NoOpVisionService.class);
     }
 
     @Test
     void anthropic_withAResolvableCredential_wiresTheAdapter() {
-        var service = configuration.visionService(new VisionProperties("anthropic"), withCredential(), Resilience.noOp());
+        VisionService service = configuration.visionService(new VisionProperties("anthropic"), withCredential(), Resilience.noOp());
         assertThat(service).isInstanceOf(AnthropicVisionService.class);
         assertThat(violations("VisionConfiguration.visionService.provider")).isZero();
     }

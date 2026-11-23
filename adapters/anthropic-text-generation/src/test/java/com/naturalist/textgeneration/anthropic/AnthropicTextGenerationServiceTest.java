@@ -14,7 +14,7 @@ class AnthropicTextGenerationServiceTest {
 
     @Test
     void constructs_withAResolvableCredential_andNoNetwork() {
-        var secrets = new EnvironmentSecretProvider(Map.of(
+        EnvironmentSecretProvider secrets = new EnvironmentSecretProvider(Map.of(
                 AnthropicTextGenerationService.CREDENTIAL.environmentVariable(), "not-a-real-secret"));
         assertThat(new AnthropicTextGenerationService(AnthropicTextGenerationConfig.defaults(), secrets)).isNotNull();
     }

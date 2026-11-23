@@ -1,6 +1,8 @@
 package com.naturalist.catalog.rdbms;
 
-import com.naturalist.catalog.*;
+import com.naturalist.catalog.Catalog;
+import com.naturalist.catalog.EntityRef;
+import com.naturalist.catalog.SearchResults;
 import com.naturalist.persistence.test.RdbmsTestExtension;
 import com.naturalist.plants.PlantSpeciesName;
 import com.naturalist.resilience.Resilience;
@@ -8,8 +10,10 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.RegisterExtension;
 
 import java.util.List;
+import java.util.Optional;
 
-import static org.junit.jupiter.api.Assertions.*;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 class RdbmsCatalogPlantsIT {
 
@@ -35,7 +39,7 @@ class RdbmsCatalogPlantsIT {
 
     @Test
     void findBySlugResolvesToTypedSpeciesRef() {
-        var ref = catalog().findBySlug("aristolochia-californica");
+        Optional<EntityRef> ref = catalog().findBySlug("aristolochia-californica");
         assertTrue(ref.isPresent());
         assertTrue(ref.get().name() instanceof PlantSpeciesName);
     }

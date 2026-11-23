@@ -2,6 +2,8 @@ package com.naturalist.insects;
 
 import com.naturalist.clades.Clade;
 import com.naturalist.exception.InvariantViolationException;
+import com.naturalist.fieldnotes.Description;
+import com.naturalist.naturalist.NaturalistName;
 import com.naturalist.observability.Handling;
 import com.naturalist.ddd.EntityName;
 import com.naturalist.observability.Level;
@@ -24,6 +26,7 @@ import com.naturalist.library.CladeView;
 import com.naturalist.library.GlossaryLinker;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
+import jakarta.servlet.http.HttpSession;
 import org.apache.commons.lang3.StringUtils;
 import org.jspecify.annotations.Nullable;
 import com.naturalist.resilience.BulkheadFullException;
@@ -68,11 +71,11 @@ public class InsectsController {
     // Written by the app's NaturalistHeaderInterceptor (same literal, by convention).
     private static final String CURRENT_NATURALIST_ATTRIBUTE = "naturalist.currentNaturalistName";
 
-    private static java.util.Optional<com.naturalist.naturalist.NaturalistName> currentNaturalist(
+    private static java.util.Optional<NaturalistName> currentNaturalist(
             HttpServletRequest request) {
         Object slug = request.getAttribute(CURRENT_NATURALIST_ATTRIBUTE);
         return slug instanceof String s && !s.isBlank()
-                ? java.util.Optional.of(com.naturalist.naturalist.NaturalistName.of(s))
+                ? java.util.Optional.of(NaturalistName.of(s))
                 : java.util.Optional.empty();
     }
 
@@ -80,7 +83,7 @@ public class InsectsController {
     private static final String COLLECTION_LENS_ATTRIBUTE = "insects.collectionLens";
 
     private static boolean collectionLensOn(HttpServletRequest request) {
-        var session = request.getSession(false);
+        HttpSession session = request.getSession(false);
         return session != null && Boolean.TRUE.equals(session.getAttribute(COLLECTION_LENS_ATTRIBUTE));
     }
 
@@ -123,7 +126,7 @@ public class InsectsController {
      * signalling "I want rank-context", not "I want this specific order".
      */
     private AncestorIntro intro(String label, String storageKey,
-                                com.naturalist.fieldnotes.Description d) {
+                                Description d) {
         return new AncestorIntro(label, storageKey,
                 descriptionRenderer.render(d.preschool()),
                 descriptionRenderer.render(d.elementary()),
@@ -167,7 +170,7 @@ public class InsectsController {
 
     private List<AncestorIntro> introsForLifeStages(InsectOrderInfo order, InsectFamilyInfo family,
                                                     InsectGenusInfo genus, InsectSpeciesInfo species) {
-        var binomial = genus.genus().value() + " " + species.epithet().value();
+        String binomial = genus.genus().value() + " " + species.epithet().value();
         return List.of(
                 classInsectaIntro(),
                 intro("Order " + order.order().value(), "intro-order-open", order.description()),
@@ -228,13 +231,13 @@ public class InsectsController {
     }
 
     private List<BreadcrumbSegment> breadcrumbToOrder(InsectOrderInfo order) {
-        var segments = new ArrayList<>(cladePrefix());
+        ArrayList<BreadcrumbSegment> segments = new ArrayList<>(cladePrefix());
         segments.add(BreadcrumbSegment.current(order.order().value(), "Order"));
         return segments;
     }
 
     private List<BreadcrumbSegment> breadcrumbToFamily(InsectFamilyInfo family, InsectOrderInfo order) {
-        var segments = new ArrayList<>(cladePrefix());
+        ArrayList<BreadcrumbSegment> segments = new ArrayList<>(cladePrefix());
         segments.add(BreadcrumbSegment.link(order.order().value(),
                 "/insects/orders/" + order.name().value(), "Order"));
         segments.add(BreadcrumbSegment.current(family.family().value(), "Family"));
@@ -244,7 +247,7 @@ public class InsectsController {
     private List<BreadcrumbSegment> breadcrumbToGenus(InsectGenusInfo genus,
                                                       InsectFamilyInfo family,
                                                       InsectOrderInfo order) {
-        var segments = new ArrayList<>(cladePrefix());
+        ArrayList<BreadcrumbSegment> segments = new ArrayList<>(cladePrefix());
         segments.add(BreadcrumbSegment.link(order.order().value(),
                 "/insects/orders/" + order.name().value(), "Order"));
         segments.add(BreadcrumbSegment.link(family.family().value(),
@@ -257,7 +260,7 @@ public class InsectsController {
                                                         InsectGenusInfo genus,
                                                         InsectFamilyInfo family,
                                                         InsectOrderInfo order) {
-        var segments = new ArrayList<>(cladePrefix());
+        ArrayList<BreadcrumbSegment> segments = new ArrayList<>(cladePrefix());
         segments.add(BreadcrumbSegment.link(order.order().value(),
                 "/insects/orders/" + order.name().value(), "Order"));
         segments.add(BreadcrumbSegment.link(family.family().value(),
@@ -306,7 +309,7 @@ public class InsectsController {
         if (CladeTraversal.ancestry(clade).stream().anyMatch(node -> node instanceof Plantae)) {
             return "redirect:/plants/clades/" + slug;
         }
-        var description = clade.description();
+        Description description = clade.description();
         model.addAttribute("clade", clade);
         model.addAttribute("orders", ordersPlacedAt(clade));
         model.addAttribute("families", familiesPlacedAt(clade));
@@ -450,7 +453,7 @@ public class InsectsController {
                     @RequestParam(name = "areaLat", required = false) String areaLat,
                     @RequestParam(name = "areaLon", required = false) String areaLon,
                     HttpServletRequest request) throws IOException {
-        var me = currentNaturalist(request);
+        Optional<NaturalistName> me = currentNaturalist(request);
         if (me.isEmpty()) {
             return "redirect:/insects/identify";
         }
@@ -485,7 +488,7 @@ public class InsectsController {
         }
 
         try {
-            var rankName = insectCommand.identification().identify(
+            InsectRankName rankName = insectCommand.identification().identify(
                     upload,
                     new com.naturalist.vision.ImageMetadata(location, capturedInstant),
                     me.get(), notes, area);
@@ -510,7 +513,7 @@ public class InsectsController {
     String list(@RequestParam(defaultValue = "0") int page,
                 @RequestParam(name = "error", required = false) String error,
                 HttpServletRequest request, Model model) {
-        java.util.Optional<com.naturalist.naturalist.NaturalistName> viewer = currentNaturalist(request);
+        java.util.Optional<NaturalistName> viewer = currentNaturalist(request);
         boolean mine = collectionLensOn(request) && viewer.isPresent();
         PageRequest pageRequest = PageRequest.console(Math.max(0, page));
         Page<InsectViews.SpeciesCard> cards = mine
@@ -542,14 +545,14 @@ public class InsectsController {
         if (invalidName(methodObserver, name)) {
             return notFound(response, model, name, "/insects/families");
         }
-        var rankPage = insectViewQuery.rankPage(name, currentNaturalist(request).orElse(null));
+        Optional<InsectViews.RankPage> rankPage = insectViewQuery.rankPage(name, currentNaturalist(request).orElse(null));
         if (unknownName(methodObserver, rankPage.isPresent())) {
             return notFound(response, model, name, "/insects/families");
         }
         Insect insect = rankPage.get().insect();
         InsectFamilyInfo family = insect.family().info();
         InsectOrderInfo order = insect.order().info();
-        var description = family.description();
+        Description description = family.description();
         model.addAttribute("page", rankPage.get());
         model.addAttribute("glossaryLinker", glossaryLinker);
         model.addAttribute("descriptionPreschool", descriptionRenderer.render(description.preschool()));
@@ -585,12 +588,12 @@ public class InsectsController {
         if (invalidName(methodObserver, name)) {
             return notFound(response, model, name, "/insects/orders");
         }
-        var rankPage = insectViewQuery.rankPage(name, currentNaturalist(request).orElse(null));
+        Optional<InsectViews.RankPage> rankPage = insectViewQuery.rankPage(name, currentNaturalist(request).orElse(null));
         if (unknownName(methodObserver, rankPage.isPresent())) {
             return notFound(response, model, name, "/insects/orders");
         }
         InsectOrderInfo order = rankPage.get().insect().order().info();
-        var description = order.description();
+        Description description = order.description();
         model.addAttribute("page", rankPage.get());
         model.addAttribute("glossaryLinker", glossaryLinker);
         model.addAttribute("descriptionPreschool", descriptionRenderer.render(description.preschool()));
@@ -626,7 +629,7 @@ public class InsectsController {
         if (invalidName(methodObserver, name)) {
             return notFound(response, model, name, "/insects/genera");
         }
-        var rankPage = insectViewQuery.rankPage(name, currentNaturalist(request).orElse(null));
+        Optional<InsectViews.RankPage> rankPage = insectViewQuery.rankPage(name, currentNaturalist(request).orElse(null));
         if (unknownName(methodObserver, rankPage.isPresent())) {
             return notFound(response, model, name, "/insects/genera");
         }
@@ -634,7 +637,7 @@ public class InsectsController {
         InsectGenusInfo genus = insect.genus().info();
         InsectFamilyInfo family = insect.family().info();
         InsectOrderInfo order = insect.order().info();
-        var description = genus.description();
+        Description description = genus.description();
         model.addAttribute("page", rankPage.get());
         model.addAttribute("glossaryLinker", glossaryLinker);
         model.addAttribute("descriptionPreschool", descriptionRenderer.render(description.preschool()));
@@ -661,7 +664,7 @@ public class InsectsController {
         } catch (IllegalArgumentException e) {
             return "redirect:/insects";
         }
-        var roles = insectQuery.functionalRoles().getByGuild(selected).sortedByParentName().stream().toList();
+        List<InsectFunctionalRole> roles = insectQuery.functionalRoles().getByGuild(selected).sortedByParentName().stream().toList();
         model.addAttribute("selectedGuild", selected);
         model.addAttribute("guilds", FunctionalGuild.values());
         model.addAttribute("roles", roles);
@@ -679,8 +682,8 @@ public class InsectsController {
         if (invalidName(methodObserver, name)) {
             return notFound(response, model, name, "/insects/species");
         }
-        java.util.Optional<com.naturalist.naturalist.NaturalistName> viewer = currentNaturalist(request);
-        var rankPage = insectViewQuery.rankPage(name, viewer.orElse(null));
+        java.util.Optional<NaturalistName> viewer = currentNaturalist(request);
+        Optional<InsectViews.RankPage> rankPage = insectViewQuery.rankPage(name, viewer.orElse(null));
         if (unknownName(methodObserver, rankPage.isPresent())) {
             return notFound(response, model, name, "/insects/species");
         }
@@ -689,7 +692,7 @@ public class InsectsController {
         InsectGenusInfo genus = i.genus().info();
         InsectFamilyInfo family = i.family().info();
         InsectOrderInfo order = i.order().info();
-        var description = s.description();
+        Description description = s.description();
         if ("image".equals(error)) {
             model.addAttribute("imageError", true);
         }
@@ -736,7 +739,7 @@ public class InsectsController {
         if (invalidName(methodObserver, name)) {
             return "redirect:/insects/species?error=name";
         }
-        java.util.Optional<com.naturalist.naturalist.NaturalistName> me = currentNaturalist(request);
+        java.util.Optional<NaturalistName> me = currentNaturalist(request);
         if (me.isEmpty()) {
             return "redirect:/insects/" + name;
         }
@@ -762,7 +765,7 @@ public class InsectsController {
         if (notesTooLong(methodObserver, notes)) {
             return "redirect:/insects/" + name + "?error=notes";
         }
-        var me = currentNaturalist(request);
+        Optional<NaturalistName> me = currentNaturalist(request);
         GridCell area = GridCell.of(areaLat, areaLon);
         if (areaOffTheLattice(methodObserver, area)) {
             // A claimed cell that is unreadable or off the lattice -- the image is not read, nothing is stored.
@@ -855,7 +858,7 @@ public class InsectsController {
                        @RequestParam("notes") String notes,
                        @RequestParam(value = "returnPath", required = false) String returnPath,
                        HttpServletRequest request) {
-        var destination = safeReturnPath(returnPath, "/insects/" + name);
+        String destination = safeReturnPath(returnPath, "/insects/" + name);
         MethodObserver methodObserver = OBSERVER.forMethod("updateNotes");
         if (notesTooLong(methodObserver, notes)) {
             return "redirect:" + destination + (destination.contains("?") ? "&" : "?") + "error=notes";
@@ -904,7 +907,7 @@ public class InsectsController {
         if (invalidName(methodObserver, name)) {
             return notFound(response, model, name, "/insects/species");
         }
-        var insect = insectQuery.getByName(name);
+        Optional<Insect> insect = insectQuery.getByName(name);
         if (unknownName(methodObserver, insect.isPresent())) {
             return notFound(response, model, name, "/insects/species");
         }

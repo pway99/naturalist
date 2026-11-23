@@ -1,11 +1,16 @@
 package com.naturalist.catalog.rdbms;
 
-import com.naturalist.catalog.*;
+import com.naturalist.catalog.Catalog;
+import com.naturalist.catalog.DomainId;
+import com.naturalist.catalog.EntityReferences;
+import com.naturalist.catalog.ReferenceRouting;
 import com.naturalist.ddd.EntityName;
 import com.naturalist.observability.Observer;
 import com.naturalist.resilience.Resilience;
 
-import java.util.*;
+import java.util.LinkedHashMap;
+import java.util.List;
+import java.util.Map;
 import java.util.function.Function;
 
 /** Composition-root entry point for the Postgres-backed {@link Catalog}. */

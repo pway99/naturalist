@@ -10,6 +10,7 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.RegisterExtension;
 
 import java.util.List;
+import java.util.Optional;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
@@ -55,7 +56,7 @@ class AccountQueryImplTest
 
     @Test
     void getByEmail_returnsMatchingAccount() {
-        var result = query.getByEmail("gerald.durrell@oakvista.example");
+        Optional<Account> result = query.getByEmail("gerald.durrell@oakvista.example");
 
         assertThat(result).isPresent();
         assertThat(result.get().name()).isEqualTo(AccountName.of("acct-018f3a2e9b71"));

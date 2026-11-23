@@ -5,6 +5,7 @@ import com.naturalist.test.context.Wired;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.RegisterExtension;
 
+import java.util.Optional;
 import java.util.Set;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -18,7 +19,7 @@ class ConceptQueryImplTest {
 
     @Test
     void getByNameReturnsTheConcept() {
-        var result = conceptQuery.getByName(TestLibraryIdentifiers.Concepts.Clade);
+        Optional<Concept> result = conceptQuery.getByName(TestLibraryIdentifiers.Concepts.Clade);
 
         assertThat(result).isPresent();
         assertThat(result.get().title()).isEqualTo("What is a clade?");

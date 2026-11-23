@@ -29,7 +29,7 @@ class UsageEventRepositoryMock
                         .identifier(counter, "counter")
                         .notNull(since, "since"))
                 .throwWhenInvalid();
-        var result = testEntitySource().entityStream()
+        List<UsageEvent> result = testEntitySource().entityStream()
                 .filter(e -> e.counterName().equals(counter)
                         && !e.instant().isBefore(since)
                         && (naturalist == null || e.naturalist().equals(naturalist)))

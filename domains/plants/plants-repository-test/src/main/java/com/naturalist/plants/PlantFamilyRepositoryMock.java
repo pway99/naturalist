@@ -22,7 +22,7 @@ class PlantFamilyRepositoryMock
         MethodObserver getByOrderName = observer().forMethod("getByOrderName");
         getByOrderName.arguments(i -> i.entityName(orderName, "orderName"))
                 .throwWhenInvalid();
-        var result = testEntitySource().entityStream()
+        List<PlantFamily> result = testEntitySource().entityStream()
                 .filter(f -> orderName.equals(f.orderName()))
                 .toList();
         getByOrderName.state(s -> s.observableCollection(result, "result")).observe(Level.WARN);

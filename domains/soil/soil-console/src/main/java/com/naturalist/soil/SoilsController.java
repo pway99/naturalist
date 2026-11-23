@@ -13,6 +13,7 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 
 import java.util.List;
+import java.util.Optional;
 
 /**
  * Read-only viewer for the Oak Vista soil profiles: a list of profiles and a per-profile detail
@@ -61,7 +62,7 @@ public class SoilsController {
 
     @GetMapping("/profiles/{name}")
     String profileDetail(@PathVariable String name, Model model) {
-        var profile = soilProfileQuery.getBySoilProfileName(SoilProfileName.of(name));
+        Optional<SoilProfile> profile = soilProfileQuery.getBySoilProfileName(SoilProfileName.of(name));
         if (profile.isEmpty()) {
             return "redirect:/soil/profiles";
         }

@@ -98,7 +98,7 @@ interface PlantGenusRepositoryTest
     default void getByFamilyName_returnsGeneraWithMatchingFamilyName() {
         // Lamiaceae carries two catalogued genera — enough to distinguish a
         // real family join from a single-entity lookup.
-        var results = repository().getByFamilyName(
+        List<PlantGenus> results = repository().getByFamilyName(
                 TestPlantsIdentifiers.PlantFamilies.Lamiaceae.name);
 
         assertThat(results)
@@ -109,7 +109,7 @@ interface PlantGenusRepositoryTest
 
     @Test
     default void getByFamilyName_returnsEmptyForUnknownFamily() {
-        var results = repository().getByFamilyName(
+        List<PlantGenus> results = repository().getByFamilyName(
                 TestPlantsIdentifiers.PlantFamilies.NotFound.name);
 
         assertThat(results).isEmpty();

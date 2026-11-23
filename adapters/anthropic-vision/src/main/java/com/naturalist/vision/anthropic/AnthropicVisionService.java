@@ -7,6 +7,7 @@ import com.anthropic.models.messages.Base64ImageSource;
 import com.anthropic.models.messages.CacheControlEphemeral;
 import com.anthropic.models.messages.ContentBlockParam;
 import com.anthropic.models.messages.ImageBlockParam;
+import com.anthropic.models.messages.Message;
 import com.anthropic.models.messages.MessageCreateParams;
 import com.anthropic.models.messages.MessageParam;
 import com.anthropic.models.messages.TextBlockParam;
@@ -88,14 +89,14 @@ public class AnthropicVisionService implements VisionService {
     @Override
     public VisionExchange identify(Image image, ToolSchema tool, String systemPrompt) {
         // 1. Fit the image within the vendor's longest edge, then base64-encode it
-        var sized = ImageDownscaler.fit(image.bytes(), image.mediaType());
-        var base64Data = Base64.getEncoder().encodeToString(sized.bytes());
+        ImageDownscaler.Sized sized = ImageDownscaler.fit(image.bytes(), image.mediaType());
+        String base64Data = Base64.getEncoder().encodeToString(sized.bytes());
 
         // 2. Determine media type
-        var mediaType = resolveMediaType(sized.mediaType());
+        Base64ImageSource.MediaType mediaType = resolveMediaType(sized.mediaType());
 
         // 3. Build the image content block
-        var imageBlock = ContentBlockParam.ofImage(
+        ContentBlockParam imageBlock = ContentBlockParam.ofImage(
                 ImageBlockParam.builder()
                         .source(Base64ImageSource.builder()
                                 .data(base64Data)
@@ -104,8 +105,8 @@ public class AnthropicVisionService implements VisionService {
                         .build());
 
         // 4. Build the user text block (with optional location context)
-        var userText = buildUserText(image);
-        var textBlock = ContentBlockParam.ofText(
+        String userText = buildUserText(image);
+        ContentBlockParam textBlock = ContentBlockParam.ofText(
                 TextBlockParam.builder()
                         .text(userText)
                         .build());
@@ -114,13 +115,13 @@ public class AnthropicVisionService implements VisionService {
         //    The system prompt and tool schema are cache-stable across calls;
         //    only the image varies, so caching the system prefix reduces cost on
         //    repeated identifications.
-        var systemBlock = TextBlockParam.builder()
+        TextBlockParam systemBlock = TextBlockParam.builder()
                 .text(systemPrompt)
                 .cacheControl(CacheControlEphemeral.builder().build())
                 .build();
 
         // 6. Seed the conversation with the user's image message and issue turn 1.
-        var userMessage = MessageParam.builder()
+        MessageParam userMessage = MessageParam.builder()
                 .role(MessageParam.Role.USER)
                 .contentOfBlockParams(List.of(imageBlock, textBlock))
                 .build();
@@ -137,9 +138,9 @@ public class AnthropicVisionService implements VisionService {
     private VisionExchange issueRequest(
             List<MessageParam> messages, ToolSchema tool, TextBlockParam systemBlock) {
 
-        var toolDef = buildTool(tool);
+        Tool toolDef = buildTool(tool);
 
-        var params = MessageCreateParams.builder()
+        MessageCreateParams params = MessageCreateParams.builder()
                 .model(config.model())
                 .maxTokens(config.maxTokens())
                 .systemOfTextBlockParams(List.of(systemBlock))
@@ -151,9 +152,9 @@ public class AnthropicVisionService implements VisionService {
                                 .build()))
                 .build();
 
-        var message = resilience.timeout(STRATEGY).execute(() -> client.messages().create(params));
+        Message message = resilience.timeout(STRATEGY).execute(() -> client.messages().create(params));
 
-        var toolUseBlock = message.content().stream()
+        ToolUseBlock toolUseBlock = message.content().stream()
                 .flatMap(block -> block.toolUse().stream())
                 .findFirst()
                 .orElseThrow(() -> new IllegalStateException(
@@ -193,20 +194,20 @@ public class AnthropicVisionService implements VisionService {
             // Only the tool_use block is replayed (no sibling text): forced toolChoice
             // always yields a lone tool_use block, so nothing is lost -- revisit if
             // toolChoice ever becomes non-forced.
-            var assistantMessage = MessageParam.builder()
+            MessageParam assistantMessage = MessageParam.builder()
                     .role(MessageParam.Role.ASSISTANT)
                     .contentOfBlockParams(List.of(ContentBlockParam.ofToolUse(block.toParam())))
                     .build();
-            var toolResultBlock = ToolResultBlockParam.builder()
+            ToolResultBlockParam toolResultBlock = ToolResultBlockParam.builder()
                     .toolUseId(block.id())
                     .content(toolResultJson)
                     .build();
-            var userMessage = MessageParam.builder()
+            MessageParam userMessage = MessageParam.builder()
                     .role(MessageParam.Role.USER)
                     .contentOfBlockParams(List.of(ContentBlockParam.ofToolResult(toolResultBlock)))
                     .build();
 
-            var extended = new ArrayList<MessageParam>(messages);
+            ArrayList<MessageParam> extended = new ArrayList<MessageParam>(messages);
             extended.add(assistantMessage);
             extended.add(userMessage);
 
@@ -228,7 +229,7 @@ public class AnthropicVisionService implements VisionService {
     }
 
     private static String buildUserText(Image image) {
-        var location = image.metadata().location();
+        String location = image.metadata().location();
         if (StringUtils.isNotBlank(location)) {
             return "Identify this insect. Location: " + location;
         }
@@ -253,13 +254,13 @@ public class AnthropicVisionService implements VisionService {
                     schema.parametersJson(),
                     new TypeReference<>() {});
 
-            var inputSchemaBuilder = Tool.InputSchema.builder();
+            Tool.InputSchema.Builder inputSchemaBuilder = Tool.InputSchema.builder();
 
             // Populate individual property definitions
-            var properties = (Map<String, Object>) schemaMap.get("properties");
+            Map<String, Object> properties = (Map<String, Object>) schemaMap.get("properties");
             if (properties != null && !properties.isEmpty()) {
-                var propsBuilder = Tool.InputSchema.Properties.builder();
-                for (var entry : properties.entrySet()) {
+                Tool.InputSchema.Properties.Builder propsBuilder = Tool.InputSchema.Properties.builder();
+                for (Map.Entry<String, Object> entry : properties.entrySet()) {
                     propsBuilder.putAdditionalProperty(
                             entry.getKey(),
                             JsonValue.from(entry.getValue()));
@@ -268,7 +269,7 @@ public class AnthropicVisionService implements VisionService {
             }
 
             // Populate required field list
-            var required = (List<String>) schemaMap.get("required");
+            List<String> required = (List<String>) schemaMap.get("required");
             if (required != null && !required.isEmpty()) {
                 inputSchemaBuilder.required(required);
             }

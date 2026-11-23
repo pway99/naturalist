@@ -40,7 +40,7 @@ class TransactionProxyReachesDoExecuteTest {
 
     @Test
     void proxiedExecuteRunsDoExecuteInsideABegunAndCommittedTransaction() {
-        try (var context = new AnnotationConfigApplicationContext(ProxiedTransactionConfiguration.class)) {
+        try (AnnotationConfigApplicationContext context = new AnnotationConfigApplicationContext(ProxiedTransactionConfiguration.class)) {
             RecordingTransaction transaction = context.getBean(RecordingTransaction.class);
             TransactionEventLog log = context.getBean(TransactionEventLog.class);
 

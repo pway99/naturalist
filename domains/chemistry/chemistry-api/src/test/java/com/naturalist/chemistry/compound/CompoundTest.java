@@ -6,6 +6,7 @@ import com.naturalist.chemistry.compound.role.FunctionalRole;
 import com.naturalist.chemistry.compound.structure.StructuralType;
 import com.naturalist.chemistry.element.PeriodicElement;
 import com.naturalist.observability.InvariantObservation;
+import com.naturalist.observability.MethodObserver;
 import com.naturalist.observability.Observer;
 import org.junit.jupiter.api.Test;
 
@@ -20,7 +21,7 @@ class CompoundTest {
 
     @Test
     void compoundIsValid() {
-        var mo = observer.forMethod("compoundIsValid");
+        MethodObserver mo = observer.forMethod("compoundIsValid");
         Compound c = validCompound();
 
         InvariantObservation result = mo.observable(c, "c");
@@ -31,7 +32,7 @@ class CompoundTest {
 
     @Test
     void compoundIsNotValid() {
-        var mo = observer.forMethod("compoundIsNotValid");
+        MethodObserver mo = observer.forMethod("compoundIsNotValid");
         Compound c = new Compound(null, null, null, null, null, null, null, false, false, null);
 
         InvariantObservation observation = mo.namedEntity(c, "c");

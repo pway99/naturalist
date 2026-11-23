@@ -87,12 +87,12 @@ interface PlantObservationRepositoryTest
 
     @Test
     default void insertWithArea_readsBackTheSameCell() {
-        var cell = GridCell.of(1092, -2945);
-        var entity = newEntity().withArea(cell);
+        GridCell cell = GridCell.of(1092, -2945);
+        OrganismObservation<PlantObservationId, PlantRankName> entity = newEntity().withArea(cell);
 
         repository().insert(entity);
 
-        var persisted = repository().getByName(entity.key()).orElseThrow();
+        OrganismObservation<PlantObservationId, PlantRankName> persisted = repository().getByName(entity.key()).orElseThrow();
         assertThat(persisted.area()).isEqualTo(cell);
         assertEntityEquals(persisted, entity);
     }
@@ -106,14 +106,14 @@ interface PlantObservationRepositoryTest
 
     @Test
     default void getByNaturalist_returnsOnlyThatNaturalistsObservations() {
-        var results = repository().getByNaturalist(PATRICK);
+        List<OrganismObservation<PlantObservationId, PlantRankName>> results = repository().getByNaturalist(PATRICK);
         assertThat(results).isNotEmpty();
         assertThat(results).allMatch(o -> o.observedBy().equals(PATRICK));
     }
 
     @Test
     default void getByNaturalistAndSubjects_matchesNaturalistAndSubject() {
-        var results = repository().getByNaturalistAndSubjects(
+        List<OrganismObservation<PlantObservationId, PlantRankName>> results = repository().getByNaturalistAndSubjects(
                 PATRICK, Set.of(PlantSpeciesName.of("solanum-lycopersicum")));
         assertThat(results).isNotEmpty();
         assertThat(results).allMatch(o -> o.observedBy().equals(PATRICK)
@@ -123,7 +123,7 @@ interface PlantObservationRepositoryTest
     @Test
     default void getByNaturalistAndSubjects_excludesOtherNaturalists() {
         // delia also observed solanum-lycopersicum; patrick's query must not return hers.
-        var results = repository().getByNaturalistAndSubjects(
+        List<OrganismObservation<PlantObservationId, PlantRankName>> results = repository().getByNaturalistAndSubjects(
                 PATRICK, Set.of(PlantSpeciesName.of("solanum-lycopersicum")));
         assertThat(results).noneMatch(o -> o.observedBy().equals(DELIA));
     }

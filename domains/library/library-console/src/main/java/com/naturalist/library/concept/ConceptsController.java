@@ -1,6 +1,7 @@
 package com.naturalist.library.concept;
 
 import com.naturalist.data.PageRequest;
+import com.naturalist.fieldnotes.Description;
 import com.naturalist.fieldnotes.render.DescriptionRenderer;
 import com.naturalist.library.Concept;
 import com.naturalist.library.ConceptName;
@@ -12,6 +13,7 @@ import org.springframework.web.bind.annotation.PathVariable;
 
 import java.util.Comparator;
 import java.util.List;
+import java.util.Optional;
 
 @Controller
 class ConceptsController {
@@ -36,12 +38,12 @@ class ConceptsController {
 
     @GetMapping("/concepts/{slug}")
     String detail(@PathVariable String slug, Model model) {
-        var concept = conceptQuery.getByName(ConceptName.of(slug));
+        Optional<Concept> concept = conceptQuery.getByName(ConceptName.of(slug));
         if (concept.isEmpty()) {
             return "redirect:/concepts";
         }
         Concept c = concept.get();
-        var description = c.description();
+        Description description = c.description();
         model.addAttribute("concept", c);
         model.addAttribute("descriptionPreschool", descriptionRenderer.render(description.preschool()));
         model.addAttribute("descriptionElementary", descriptionRenderer.render(description.elementary()));

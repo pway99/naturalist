@@ -4,6 +4,8 @@ import com.naturalist.data.NaturalistTestExtension;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.RegisterExtension;
 
+import java.util.List;
+
 import static org.assertj.core.api.Assertions.assertThat;
 
 class PlantBreadcrumbTest {
@@ -15,9 +17,9 @@ class PlantBreadcrumbTest {
 
     @Test
     void breadcrumb_forSpecies_isPlantaeThroughAncestorsToCurrent() {
-        var plant = context.plantQuery().getByName(
+        Plant plant = context.plantQuery().getByName(
                 PlantSpeciesName.of("aristolochia-californica")).orElseThrow();
-        var crumbs = PlantsController.breadcrumbFor(plant);
+        List<BreadcrumbSegment> crumbs = PlantsController.breadcrumbFor(plant);
 
         assertThat(crumbs).extracting(BreadcrumbSegment::label).containsExactly(
                 "Plantae", "Piperales", "Aristolochiaceae", "Aristolochia", "Aristolochia californica");
@@ -29,8 +31,8 @@ class PlantBreadcrumbTest {
 
     @Test
     void breadcrumb_forOrder_isPlantaeThenCurrentOrder() {
-        var plant = context.plantQuery().getByName(PlantOrderName.of("lamiales")).orElseThrow();
-        var crumbs = PlantsController.breadcrumbFor(plant);
+        Plant plant = context.plantQuery().getByName(PlantOrderName.of("lamiales")).orElseThrow();
+        List<BreadcrumbSegment> crumbs = PlantsController.breadcrumbFor(plant);
 
         assertThat(crumbs).extracting(BreadcrumbSegment::label).containsExactly("Plantae", "Lamiales");
         assertThat(crumbs.get(1).currentPage()).isTrue();

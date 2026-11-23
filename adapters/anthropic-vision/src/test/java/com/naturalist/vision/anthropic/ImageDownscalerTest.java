@@ -1,5 +1,6 @@
 package com.naturalist.vision.anthropic;
 
+import com.sun.management.ThreadMXBean;
 import org.junit.jupiter.api.Test;
 
 import javax.imageio.ImageIO;
@@ -28,8 +29,8 @@ class ImageDownscalerTest {
 
     @Test
     void largePng_isDownscaledToTheLongestEdge_asJpeg() throws IOException {
-        var sized = ImageDownscaler.fit(png(4000, 3000, BufferedImage.TYPE_INT_RGB), "image/png");
-        var out = ImageIO.read(new ByteArrayInputStream(sized.bytes()));
+        ImageDownscaler.Sized sized = ImageDownscaler.fit(png(4000, 3000, BufferedImage.TYPE_INT_RGB), "image/png");
+        BufferedImage out = ImageIO.read(new ByteArrayInputStream(sized.bytes()));
         assertThat(sized.mediaType()).isEqualTo("image/jpeg");
         assertThat(out.getWidth()).isEqualTo(1568);
         assertThat(out.getHeight()).isEqualTo(1176);
@@ -38,15 +39,15 @@ class ImageDownscalerTest {
 
     @Test
     void portrait_isScaledOnItsLongestEdge() throws IOException {
-        var sized = ImageDownscaler.fit(png(1000, 4000, BufferedImage.TYPE_INT_RGB), "image/png");
-        var out = ImageIO.read(new ByteArrayInputStream(sized.bytes()));
+        ImageDownscaler.Sized sized = ImageDownscaler.fit(png(1000, 4000, BufferedImage.TYPE_INT_RGB), "image/png");
+        BufferedImage out = ImageIO.read(new ByteArrayInputStream(sized.bytes()));
         assertThat(out.getHeight()).isEqualTo(1568);
         assertThat(out.getWidth()).isEqualTo(392);
     }
 
     @Test
     void argbPng_isFlattenedToJpeg() throws IOException {
-        var sized = ImageDownscaler.fit(png(3000, 3000, BufferedImage.TYPE_INT_ARGB), "image/png");
+        ImageDownscaler.Sized sized = ImageDownscaler.fit(png(3000, 3000, BufferedImage.TYPE_INT_ARGB), "image/png");
         assertThat(sized.mediaType()).isEqualTo("image/jpeg");
         assertThat(ImageIO.read(new ByteArrayInputStream(sized.bytes())).getWidth()).isEqualTo(1568);
     }
@@ -54,7 +55,7 @@ class ImageDownscalerTest {
     @Test
     void smallJpeg_passesThroughUnchanged() throws IOException {
         byte[] jpeg = jpeg(800, 600);
-        var sized = ImageDownscaler.fit(jpeg, "image/jpeg");
+        ImageDownscaler.Sized sized = ImageDownscaler.fit(jpeg, "image/jpeg");
         assertThat(sized.bytes()).isSameAs(jpeg);
         assertThat(sized.mediaType()).isEqualTo("image/jpeg");
     }
@@ -70,7 +71,7 @@ class ImageDownscalerTest {
         byte[] webp = new byte[64];
         System.arraycopy("RIFF".getBytes(US_ASCII), 0, webp, 0, 4);
         System.arraycopy("WEBP".getBytes(US_ASCII), 0, webp, 8, 4);
-        var sized = ImageDownscaler.fit(webp, "image/webp");
+        ImageDownscaler.Sized sized = ImageDownscaler.fit(webp, "image/webp");
         assertThat(sized.bytes()).isSameAs(webp);
         assertThat(sized.mediaType()).isEqualTo("image/webp");
     }
@@ -93,11 +94,11 @@ class ImageDownscalerTest {
     @Test
     void pngDeclaringHugeDimensions_passesThrough_withoutAllocatingItsRaster() throws IOException {
         byte[] bomb = pngHeaderOnly(20_000, 20_000);
-        var threads = (com.sun.management.ThreadMXBean) ManagementFactory.getThreadMXBean();
+        ThreadMXBean threads = (ThreadMXBean) ManagementFactory.getThreadMXBean();
         long thread = Thread.currentThread().threadId();
         long before = threads.getThreadAllocatedBytes(thread);
 
-        var sized = ImageDownscaler.fit(bomb, "image/png");
+        ImageDownscaler.Sized sized = ImageDownscaler.fit(bomb, "image/png");
 
         long allocated = threads.getThreadAllocatedBytes(thread) - before;
         assertThat(sized.bytes()).isSameAs(bomb);
@@ -107,8 +108,8 @@ class ImageDownscalerTest {
     /** A large image just under {@link ImageDownscaler#MAX_PIXELS} is still decoded and scaled. */
     @Test
     void largeImageUnderThePixelCap_isStillDownscaled() throws IOException {
-        var sized = ImageDownscaler.fit(jpeg(8000, 6000), "image/jpeg");
-        var out = ImageIO.read(new ByteArrayInputStream(sized.bytes()));
+        ImageDownscaler.Sized sized = ImageDownscaler.fit(jpeg(8000, 6000), "image/jpeg");
+        BufferedImage out = ImageIO.read(new ByteArrayInputStream(sized.bytes()));
         assertThat(out.getWidth()).isEqualTo(1568);
         assertThat(out.getHeight()).isEqualTo(1176);
     }
@@ -122,7 +123,7 @@ class ImageDownscalerTest {
     }
 
     private static BufferedImage render(int width, int height, int type) {
-        var image = new BufferedImage(width, height, type);
+        BufferedImage image = new BufferedImage(width, height, type);
         Graphics2D g = image.createGraphics();
         try {
             g.setPaint(new GradientPaint(0, 0, Color.GREEN, width, height, Color.BLUE));
@@ -134,7 +135,7 @@ class ImageDownscalerTest {
     }
 
     private static byte[] encode(BufferedImage image, String format) throws IOException {
-        var out = new ByteArrayOutputStream();
+        ByteArrayOutputStream out = new ByteArrayOutputStream();
         if (!ImageIO.write(image, format, out)) {
             throw new IOException("no ImageIO writer for " + format);
         }
@@ -145,11 +146,11 @@ class ImageDownscalerTest {
     private static byte[] pngHeaderOnly(int width, int height) throws IOException {
         byte[] ihdr = ByteBuffer.allocate(13).putInt(width).putInt(height)
                 .put((byte) 8).put((byte) 0).put((byte) 0).put((byte) 0).put((byte) 0).array();
-        var deflated = new ByteArrayOutputStream();
-        try (var z = new DeflaterOutputStream(deflated)) {
+        ByteArrayOutputStream deflated = new ByteArrayOutputStream();
+        try (DeflaterOutputStream z = new DeflaterOutputStream(deflated)) {
             z.write(new byte[width + 1]);
         }
-        var out = new ByteArrayOutputStream();
+        ByteArrayOutputStream out = new ByteArrayOutputStream();
         out.write(new byte[] {(byte) 0x89, 'P', 'N', 'G', '\r', '\n', 0x1A, '\n'});
         chunk(out, "IHDR", ihdr);
         chunk(out, "IDAT", deflated.toByteArray());
@@ -159,7 +160,7 @@ class ImageDownscalerTest {
 
     private static void chunk(ByteArrayOutputStream out, String type, byte[] data) throws IOException {
         byte[] name = type.getBytes(US_ASCII);
-        var crc = new CRC32();
+        CRC32 crc = new CRC32();
         crc.update(name);
         crc.update(data);
         out.write(ByteBuffer.allocate(4).putInt(data.length).array());

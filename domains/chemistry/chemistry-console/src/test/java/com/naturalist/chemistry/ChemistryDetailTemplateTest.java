@@ -1,7 +1,7 @@
 package com.naturalist.chemistry;
 
 import com.naturalist.spring.console.ConsoleSliceTemplates;
-
+import gg.jte.TemplateEngine;
 import com.naturalist.chemistry.compound.Compound;
 import com.naturalist.chemistry.compound.CompoundTestEntitySource;
 import com.naturalist.data.NaturalistTestExtension;
@@ -26,7 +26,7 @@ class ChemistryDetailTemplateTest {
 
     @Test
     void detail_rendersEveryCompoundWithoutError() {
-        var template = ConsoleSliceTemplates.create();
+        TemplateEngine template = ConsoleSliceTemplates.create();
         for (Compound compound : nte.getNamed(CompoundTestEntitySource.class).entityStream().toList()) {
             StringOutput output = new StringOutput();
             template.render("chemistry/detail.jte", Map.of("compound", compound), output);

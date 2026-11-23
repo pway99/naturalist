@@ -1,5 +1,6 @@
 package com.naturalist.insects;
 
+import com.naturalist.observation.OrganismImage;
 import com.naturalist.observation.test.ImageFixtures;
 import com.naturalist.data.NaturalistTestExtension;
 import com.naturalist.data.Page;
@@ -60,7 +61,7 @@ class InsectViewQueryImplTest {
         InsectViews.Viewer viewer = page.viewer();
         assertThat(viewer.collected()).isTrue();
         assertThat(viewer.ownImages().stream().toList()).hasSize(1);
-        var image = viewer.ownImages().stream().findFirst().orElseThrow();
+        OrganismImage<InsectImageId, InsectObservationId, InsectRankName> image = viewer.ownImages().stream().findFirst().orElseThrow();
         assertThat(viewer.ownObservationByImage()).containsOnlyKeys(image.id());
         assertThat(viewer.ownObservationByImage().get(image.id()).observedBy()).isEqualTo(FLORA);
         assertThat(viewer.ownObservationByImage().get(image.id()).id()).isEqualTo(image.observationId());

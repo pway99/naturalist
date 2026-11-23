@@ -1,12 +1,24 @@
 package com.naturalist.catalog.rdbms;
 
-import com.naturalist.catalog.*;
+import com.naturalist.catalog.Catalog;
+import com.naturalist.catalog.DomainId;
+import com.naturalist.catalog.EntityRef;
+import com.naturalist.catalog.MatchKind;
+import com.naturalist.catalog.ReferenceRouting;
+import com.naturalist.catalog.SearchHit;
+import com.naturalist.catalog.SearchResults;
+import com.naturalist.catalog.UnresolvedSearchObservation;
 import com.naturalist.ddd.EntityName;
 import com.naturalist.observability.Level;
 import com.naturalist.observability.Observer;
 import com.naturalist.resilience.Resilient;
 
-import java.util.*;
+import java.util.Comparator;
+import java.util.LinkedHashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.Optional;
+import java.util.Set;
 import java.util.function.Function;
 import org.apache.commons.lang3.StringUtils;
 

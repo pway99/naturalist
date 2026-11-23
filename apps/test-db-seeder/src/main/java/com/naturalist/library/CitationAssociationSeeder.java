@@ -33,10 +33,10 @@ public final class CitationAssociationSeeder {
     private CitationAssociationSeeder() {}
 
     public static void seed(DataSource dataSource, NaturalistDatabase database) {
-        var associations = database.getNamed(CitationAssociationTestEntitySource.class).entityStream().toList();
+        List<CitationAssociation> associations = database.getNamed(CitationAssociationTestEntitySource.class).entityStream().toList();
         SqlSessionFactory factory = MyBatisSupport.sessionFactory(dataSource, CitationAssociationMapper.class);
         try (SqlSession session = factory.openSession(false)) {
-            var repo = new CitationAssociationEntityRepositoryRdbms(
+            CitationAssociationEntityRepositoryRdbms repo = new CitationAssociationEntityRepositoryRdbms(
                     session.getMapper(CitationAssociationMapper.class),
                     new CompositeEntityRefResolverMock(List.of(
                             new InsectsEntityRefResolverMock(),

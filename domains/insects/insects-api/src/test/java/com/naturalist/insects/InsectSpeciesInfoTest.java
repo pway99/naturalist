@@ -44,14 +44,14 @@ class InsectSpeciesInfoTest {
 
     @Test
     void displayName_prefersAlphabeticallyFirstCommonName() {
-        var rank = speciesWith(Set.of(CommonName.of("Zebra Swallowtail"), CommonName.of("Pipevine Swallowtail")));
+        InsectSpeciesInfo rank = speciesWith(Set.of(CommonName.of("Zebra Swallowtail"), CommonName.of("Pipevine Swallowtail")));
 
         assertThat(rank.displayName()).isEqualTo("Pipevine Swallowtail");
     }
 
     @Test
     void displayName_fallsBackToScientificName() {
-        var rank = speciesWith(Set.of());
+        InsectSpeciesInfo rank = speciesWith(Set.of());
 
         assertThat(rank.displayName()).isEqualTo("battus-philenor");
     }
@@ -64,7 +64,7 @@ class InsectSpeciesInfoTest {
 
     @Test
     void displayName_breaksCaseOnlyTiesByNaturalOrder() {
-        var species = speciesWith(Set.of(CommonName.of("monarch"), CommonName.of("Monarch")));
+        InsectSpeciesInfo species = speciesWith(Set.of(CommonName.of("monarch"), CommonName.of("Monarch")));
 
         assertThat(species.displayName()).isEqualTo("Monarch");
     }

@@ -1,7 +1,9 @@
 package com.naturalist.console.account;
 
 import com.naturalist.account.AccessLevel;
+import com.naturalist.account.Account;
 import com.naturalist.account.AccountQuery;
+import com.naturalist.naturalist.Naturalist;
 import com.naturalist.notification.EmailMessage;
 import com.naturalist.notification.EmailSender;
 import com.naturalist.naturalist.NaturalistQuery;
@@ -110,9 +112,9 @@ class RegistrationFlowWebMvcTest {
                 .andExpect(authenticated().withUsername(email));
 
         // Both domain records exist and are linked, without VISION yet (unverified).
-        var account = accountQuery.getByEmail(email).orElseThrow();
+        Account account = accountQuery.getByEmail(email).orElseThrow();
         assertThat(account.access()).isEqualTo(AccessLevel.BROWSE_ONLY);
-        var naturalist = naturalistQuery.byAccount(account.name()).orElseThrow();
+        Naturalist naturalist = naturalistQuery.byAccount(account.name()).orElseThrow();
         assertThat(naturalist.publicHandle()).isEqualTo("ada-lovelace");
         assertThat(naturalist.givenName()).isEqualTo("Ada");
 

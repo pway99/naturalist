@@ -1,6 +1,10 @@
 package com.naturalist.insects;
 
-import com.naturalist.catalog.*;
+import com.naturalist.catalog.Catalog;
+import com.naturalist.catalog.EntityRef;
+import com.naturalist.catalog.MatchKind;
+import com.naturalist.catalog.SearchHit;
+import com.naturalist.catalog.SearchResults;
 import com.naturalist.catalog.inmem.CatalogAssembly;
 import com.naturalist.data.NaturalistTestExtension;
 import com.naturalist.data.Pages;

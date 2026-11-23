@@ -7,16 +7,18 @@ import org.apache.ibatis.session.SqlSessionFactory;
 
 import javax.sql.DataSource;
 
+import java.util.List;
+
 /** Seeds insect functional roles through the real RDBMS adapter (split-package with the rdbms module). */
 public final class InsectFunctionalRoleSeeder {
 
     private InsectFunctionalRoleSeeder() {}
 
     public static void seed(DataSource dataSource, NaturalistDatabase database) {
-        var entities = database.getNamed(InsectFunctionalRoleTestEntitySource.class).entityStream().toList();
+        List<InsectFunctionalRole> entities = database.getNamed(InsectFunctionalRoleTestEntitySource.class).entityStream().toList();
         SqlSessionFactory factory = MyBatisSupport.sessionFactory(dataSource, InsectFunctionalRoleMapper.class);
         try (SqlSession session = factory.openSession(false)) {
-            var repo = new InsectFunctionalRoleEntityRepositoryRdbms(session.getMapper(InsectFunctionalRoleMapper.class),
+            InsectFunctionalRoleEntityRepositoryRdbms repo = new InsectFunctionalRoleEntityRepositoryRdbms(session.getMapper(InsectFunctionalRoleMapper.class),
                     new InsectFunctionalRoleTransaction(session.getMapper(InsectFunctionalRoleMapper.class)));
             entities.forEach(repo::insert);
             session.commit();

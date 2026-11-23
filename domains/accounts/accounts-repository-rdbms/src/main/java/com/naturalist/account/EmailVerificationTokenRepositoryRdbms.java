@@ -97,7 +97,7 @@ class EmailVerificationTokenRepositoryRdbms
         MethodObserver getByTokenHash = observer().forMethod("getByTokenHash");
         getByTokenHash.arguments(i -> i.notBlank(tokenHash, "tokenHash"))
                 .throwWhenInvalid();
-        var result = Optional.ofNullable(mapper.selectByTokenHash(tokenHash)).map(EmailVerificationTokenDbo::toEntity);
+        Optional<EmailVerificationToken> result = Optional.ofNullable(mapper.selectByTokenHash(tokenHash)).map(EmailVerificationTokenDbo::toEntity);
         getByTokenHash.state(s -> s.namedEntityOrNull(result.orElse(null), "result")).observe(Level.WARN);
         return result;
     }

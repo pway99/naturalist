@@ -26,10 +26,10 @@ class InsectFeatureSaveTest {
 
     @Test
     void save_valueAlreadyExists_reusesExistingRowIdAndCreatesNoSecondRow() {
-        var value = "unobtainium carapace texture";
+        String value = "unobtainium carapace texture";
 
-        var first = repository.save(InsectFeature.of(InsectFeatureId.create(), value));
-        var second = repository.save(InsectFeature.of(InsectFeatureId.create(), value));
+        InsectFeature first = repository.save(InsectFeature.of(InsectFeatureId.create(), value));
+        InsectFeature second = repository.save(InsectFeature.of(InsectFeatureId.create(), value));
 
         assertThat(second.id()).isEqualTo(first.id());
         assertThat(repository.getByName(first.id())).isPresent();
@@ -43,9 +43,9 @@ class InsectFeatureSaveTest {
 
     @Test
     void save_newValue_insertsAsNew() {
-        var feature = InsectFeature.of(InsectFeatureId.create(), "unobtainium sternite pattern");
+        InsectFeature feature = InsectFeature.of(InsectFeatureId.create(), "unobtainium sternite pattern");
 
-        var persisted = repository.save(feature);
+        InsectFeature persisted = repository.save(feature);
 
         assertThat(persisted).isEqualTo(feature);
         assertThat(repository.getByName(feature.id())).contains(feature);

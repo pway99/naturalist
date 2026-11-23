@@ -2,6 +2,8 @@ package com.naturalist.library.clade;
 
 import com.naturalist.catalog.Catalog;
 import com.naturalist.catalog.EntityRefLinker;
+import com.naturalist.clades.Clade;
+import com.naturalist.fieldnotes.Description;
 import com.naturalist.fieldnotes.render.DescriptionRenderer;
 import com.naturalist.library.CladeQuery;
 import com.naturalist.library.CladeView;
@@ -13,6 +15,7 @@ import org.springframework.web.bind.annotation.PathVariable;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 import java.util.stream.Stream;
 
 @Controller
@@ -32,7 +35,7 @@ public class CladesController {
     @GetMapping("/clades")
     String tree(Model model) {
         model.addAttribute("root", cladeQuery.tree());
-        var eukaryota = cladeQuery.getBySlug("eukaryota");
+        Optional<CladeView> eukaryota = cladeQuery.getBySlug("eukaryota");
         eukaryota.ifPresent(view -> model.addAttribute("rootView", view));
         return "clades/tree";
     }
@@ -45,12 +48,12 @@ public class CladesController {
         if ("insecta".equals(slug)) {
             return "redirect:/insects/orders";
         }
-        var view = cladeQuery.getBySlug(slug);
+        Optional<CladeView> view = cladeQuery.getBySlug(slug);
         if (view.isEmpty()) {
             return "redirect:/clades";
         }
         CladeView v = view.get();
-        var description = findCladeDescription(slug);
+        String[] description = findCladeDescription(slug);
         model.addAttribute("view", v);
         model.addAttribute("rankLinks", rankLinks(v));
         model.addAttribute("descriptionPreschool", description[0]);
@@ -81,8 +84,8 @@ public class CladesController {
      */
     private String[] findCladeDescription(String slug) {
         try {
-            var clade = com.naturalist.clades.Clade.of(slug);
-            var description = clade.description();
+            Clade clade = Clade.of(slug);
+            Description description = clade.description();
             return new String[]{
                     descriptionRenderer.render(description.preschool()),
                     descriptionRenderer.render(description.elementary()),

@@ -1,7 +1,7 @@
 package com.naturalist.plants;
 
 import com.naturalist.spring.console.ConsoleSliceTemplates;
-
+import gg.jte.TemplateEngine;
 import com.naturalist.data.NaturalistTestExtension;
 import gg.jte.output.StringOutput;
 import org.junit.jupiter.api.Test;
@@ -25,7 +25,7 @@ class PlantsGenusDetailTemplateTest {
 
     @Test
     void genusDetail_rendersEveryGenusWithItsFamily() {
-        var template = ConsoleSliceTemplates.create();
+        TemplateEngine template = ConsoleSliceTemplates.create();
         Map<String, PlantFamily> families = new HashMap<>();
         nte.getNamed(PlantFamilyTestEntitySource.class).entityStream()
                 .forEach(f -> families.put(f.name().value(), f));
@@ -44,7 +44,7 @@ class PlantsGenusDetailTemplateTest {
 
     @Test
     void genusDetail_linksUpToItsParentFamily() {
-        var template = ConsoleSliceTemplates.create();
+        TemplateEngine template = ConsoleSliceTemplates.create();
         PlantGenus thymus = nte.getNamed(PlantGenusTestEntitySource.class).entityStream()
                 .filter(g -> g.name().value().equals("thymus"))
                 .findFirst()
@@ -63,7 +63,7 @@ class PlantsGenusDetailTemplateTest {
 
     @Test
     void genusDetail_rendersMemberSpeciesWhenPresent() {
-        var template = ConsoleSliceTemplates.create();
+        TemplateEngine template = ConsoleSliceTemplates.create();
         PlantGenus trifolium = nte.getNamed(PlantGenusTestEntitySource.class).entityStream()
                 .filter(g -> g.name().value().equals("trifolium"))
                 .findFirst()

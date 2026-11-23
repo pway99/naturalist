@@ -5,6 +5,7 @@ import com.anthropic.client.okhttp.AnthropicOkHttpClient;
 import com.anthropic.core.JsonValue;
 import com.anthropic.models.messages.CacheControlEphemeral;
 import com.anthropic.models.messages.ContentBlockParam;
+import com.anthropic.models.messages.Message;
 import com.anthropic.models.messages.MessageCreateParams;
 import com.anthropic.models.messages.TextBlockParam;
 import com.anthropic.models.messages.Tool;
@@ -60,22 +61,22 @@ public class AnthropicTextGenerationService implements TextGenerationService {
     @Override
     public ToolResult generate(ToolSchema tool, String systemPrompt, String userPrompt) {
         // 1. Build the tool definition from the ToolSchema
-        var toolDef = buildTool(tool);
+        Tool toolDef = buildTool(tool);
 
         // 2. Build the system prompt block with cache_control for prompt caching
-        var systemBlock = TextBlockParam.builder()
+        TextBlockParam systemBlock = TextBlockParam.builder()
                 .text(systemPrompt)
                 .cacheControl(CacheControlEphemeral.builder().build())
                 .build();
 
         // 3. Build the user text block
-        var textBlock = ContentBlockParam.ofText(
+        ContentBlockParam textBlock = ContentBlockParam.ofText(
                 TextBlockParam.builder()
                         .text(userPrompt)
                         .build());
 
         // 4. Send the request, forcing the model to use the named tool
-        var params = MessageCreateParams.builder()
+        MessageCreateParams params = MessageCreateParams.builder()
                 .model(config.model())
                 .maxTokens(config.maxTokens())
                 .systemOfTextBlockParams(List.of(systemBlock))
@@ -87,10 +88,10 @@ public class AnthropicTextGenerationService implements TextGenerationService {
                                 .build()))
                 .build();
 
-        var message = client.messages().create(params);
+        Message message = client.messages().create(params);
 
         // 5. Extract the tool_use block from the response
-        var toolUseBlock = message.content().stream()
+        ToolUseBlock toolUseBlock = message.content().stream()
                 .flatMap(block -> block.toolUse().stream())
                 .findFirst()
                 .orElseThrow(() -> new IllegalStateException(
@@ -98,7 +99,7 @@ public class AnthropicTextGenerationService implements TextGenerationService {
                         "stop_reason=" + message.stopReason()));
 
         // 6. Serialize the raw input JsonValue to a JSON string
-        var argumentsJson = serializeInput(toolUseBlock);
+        String argumentsJson = serializeInput(toolUseBlock);
 
         return new ToolResult(toolUseBlock.name(), argumentsJson);
     }
@@ -114,12 +115,12 @@ public class AnthropicTextGenerationService implements TextGenerationService {
                     schema.parametersJson(),
                     new TypeReference<>() {});
 
-            var inputSchemaBuilder = Tool.InputSchema.builder();
+            Tool.InputSchema.Builder inputSchemaBuilder = Tool.InputSchema.builder();
 
-            var properties = (Map<String, Object>) schemaMap.get("properties");
+            Map<String, Object> properties = (Map<String, Object>) schemaMap.get("properties");
             if (properties != null && !properties.isEmpty()) {
-                var propsBuilder = Tool.InputSchema.Properties.builder();
-                for (var entry : properties.entrySet()) {
+                Tool.InputSchema.Properties.Builder propsBuilder = Tool.InputSchema.Properties.builder();
+                for (Map.Entry<String, Object> entry : properties.entrySet()) {
                     propsBuilder.putAdditionalProperty(
                             entry.getKey(),
                             JsonValue.from(entry.getValue()));
@@ -127,7 +128,7 @@ public class AnthropicTextGenerationService implements TextGenerationService {
                 inputSchemaBuilder.properties(propsBuilder.build());
             }
 
-            var required = (List<String>) schemaMap.get("required");
+            List<String> required = (List<String>) schemaMap.get("required");
             if (required != null && !required.isEmpty()) {
                 inputSchemaBuilder.required(required);
             }

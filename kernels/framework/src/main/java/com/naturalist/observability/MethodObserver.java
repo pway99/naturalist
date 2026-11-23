@@ -21,7 +21,7 @@ import org.apache.commons.lang3.StringUtils;
  * private static final Observer observer = Observer.forClass(CompoundTest.class);
  *
  * @Test void compoundIsValid() {
- *     var mo = observer.forMethod("compoundIsValid");
+ *     MethodObserver mo = observer.forMethod("compoundIsValid");
  *     Compound c = ...;
  *     InvariantObservation result = mo.observable(c, "c");
  *     assertThat(result.violations()).isEmpty();

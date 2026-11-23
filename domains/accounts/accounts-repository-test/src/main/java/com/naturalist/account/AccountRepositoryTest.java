@@ -7,6 +7,7 @@ import com.naturalist.exception.InvariantViolationException;
 import org.junit.jupiter.api.Test;
 
 import java.util.List;
+import java.util.Optional;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
@@ -83,7 +84,7 @@ interface AccountRepositoryTest extends EntityRepositoryTest<AccountName, Accoun
 
     @Test
     default void getByEmail_returnsAccountWithMatchingEmail() {
-        var result = repository().getByEmail("gerald.durrell@oakvista.example");
+        Optional<Account> result = repository().getByEmail("gerald.durrell@oakvista.example");
 
         assertThat(result).isPresent();
         assertThat(result.get().name()).isEqualTo(DURRELL);

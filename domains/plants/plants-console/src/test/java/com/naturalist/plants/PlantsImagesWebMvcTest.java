@@ -1,6 +1,7 @@
 package com.naturalist.plants;
 
 import com.naturalist.observation.test.ImageFixtures;
+import com.naturalist.data.FileName;
 import com.naturalist.data.NaturalistTestExtension;
 import com.naturalist.observation.ImageUpload;
 import org.hamcrest.Matchers;
@@ -39,7 +40,7 @@ class PlantsImagesWebMvcTest {
 
     @Test
     void image_servesStoredUpload() throws Exception {
-        var name = PlantsControllerTestConfig.IMAGE_STORE.store("plants", ImageUpload.of(TINY_JPEG));
+        FileName name = PlantsControllerTestConfig.IMAGE_STORE.store("plants", ImageUpload.of(TINY_JPEG));
         mockMvc.perform(MockMvcRequestBuilders.get("/plants/images/" + name.value()))
                 .andExpect(MockMvcResultMatchers.status().isOk())
                 .andExpect(MockMvcResultMatchers.content().contentType("image/jpeg"))
@@ -48,8 +49,8 @@ class PlantsImagesWebMvcTest {
     }
 
     private static byte[] largeJpeg() {
-        var image = new BufferedImage(2000, 1500, BufferedImage.TYPE_INT_RGB);
-        var encoded = new ByteArrayOutputStream();
+        BufferedImage image = new BufferedImage(2000, 1500, BufferedImage.TYPE_INT_RGB);
+        ByteArrayOutputStream encoded = new ByteArrayOutputStream();
         try {
             ImageIO.write(image, "jpg", encoded);
         } catch (IOException e) {
@@ -60,13 +61,13 @@ class PlantsImagesWebMvcTest {
 
     @Test
     void tile_servesTheStoredTile() throws Exception {
-        var name = PlantsControllerTestConfig.IMAGE_STORE.store("plants", ImageUpload.of(largeJpeg()));
+        FileName name = PlantsControllerTestConfig.IMAGE_STORE.store("plants", ImageUpload.of(largeJpeg()));
         byte[] body = mockMvc.perform(MockMvcRequestBuilders.get("/plants/images/tile/" + name.value()))
                 .andExpect(MockMvcResultMatchers.status().isOk())
                 .andExpect(MockMvcResultMatchers.content().contentType("image/jpeg"))
                 .andExpect(MockMvcResultMatchers.header().string("Cache-Control", Matchers.containsString("immutable")))
                 .andReturn().getResponse().getContentAsByteArray();
-        var tile = ImageIO.read(new ByteArrayInputStream(body));
+        BufferedImage tile = ImageIO.read(new ByteArrayInputStream(body));
         Assertions.assertThat(tile.getWidth()).isEqualTo(640);
         Assertions.assertThat(tile.getHeight()).isEqualTo(480);
     }

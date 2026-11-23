@@ -91,7 +91,7 @@ interface PlantFamilyRepositoryTest
     default void getByOrderName_returnsFamiliesWithMatchingOrderName() {
         // Malpighiales carries two catalogued families — enough to distinguish a real
         // order join from a single-entity lookup.
-        var results = repository().getByOrderName(
+        List<PlantFamily> results = repository().getByOrderName(
                 TestPlantsIdentifiers.PlantOrders.Malpighiales.name);
 
         assertThat(results)
@@ -102,7 +102,7 @@ interface PlantFamilyRepositoryTest
 
     @Test
     default void getByOrderName_returnsEmptyForUnknownOrder() {
-        var results = repository().getByOrderName(
+        List<PlantFamily> results = repository().getByOrderName(
                 TestPlantsIdentifiers.PlantOrders.NotFound.name);
 
         assertThat(results).isEmpty();

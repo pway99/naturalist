@@ -1,6 +1,7 @@
 package com.naturalist.soil.observation;
 
 import com.naturalist.observability.InvariantObservation;
+import com.naturalist.observability.MethodObserver;
 import com.naturalist.observability.Observer;
 import org.junit.jupiter.api.Test;
 
@@ -15,7 +16,7 @@ class RecommendedAmountTest {
     /** Box 1's potassium row: {@code 11.2 Lbs/1000 SqFt}. */
     @Test
     void quantityHasNoViolations() {
-        var mo = observer.forMethod("quantityHasNoViolations");
+        MethodObserver mo = observer.forMethod("quantityHasNoViolations");
 
         InvariantObservation result = mo.observable(
                 new RecommendedAmount.Quantity(new BigDecimal("11.2")), "amount");
@@ -26,7 +27,7 @@ class RecommendedAmountTest {
     /** Box 1's Lime Requirement: {@code 0 Tons/AF}. A computed zero is a real answer. */
     @Test
     void quantityOfZeroHasNoViolations() {
-        var mo = observer.forMethod("quantityOfZeroHasNoViolations");
+        MethodObserver mo = observer.forMethod("quantityOfZeroHasNoViolations");
 
         InvariantObservation result =
                 mo.observable(new RecommendedAmount.Quantity(BigDecimal.ZERO), "amount");
@@ -36,7 +37,7 @@ class RecommendedAmountTest {
 
     @Test
     void noneHasNoViolations() {
-        var mo = observer.forMethod("noneHasNoViolations");
+        MethodObserver mo = observer.forMethod("noneHasNoViolations");
 
         InvariantObservation result = mo.observable(new RecommendedAmount.None(), "amount");
 
@@ -46,7 +47,7 @@ class RecommendedAmountTest {
     /** Both reports' Gypsum Requirement: {@code < 0.50 Tons/AF}. */
     @Test
     void belowDetectionLimitHasNoViolations() {
-        var mo = observer.forMethod("belowDetectionLimitHasNoViolations");
+        MethodObserver mo = observer.forMethod("belowDetectionLimitHasNoViolations");
 
         InvariantObservation result = mo.observable(
                 new RecommendedAmount.BelowDetectionLimit(new BigDecimal("0.50")), "amount");
@@ -56,7 +57,7 @@ class RecommendedAmountTest {
 
     @Test
     void negativeQuantityIsRejected() {
-        var mo = observer.forMethod("negativeQuantityIsRejected");
+        MethodObserver mo = observer.forMethod("negativeQuantityIsRejected");
 
         InvariantObservation result = mo.observable(
                 new RecommendedAmount.Quantity(new BigDecimal("-1")), "amount");
@@ -71,7 +72,7 @@ class RecommendedAmountTest {
      */
     @Test
     void nonPositiveDetectionLimitIsRejected() {
-        var mo = observer.forMethod("nonPositiveDetectionLimitIsRejected");
+        MethodObserver mo = observer.forMethod("nonPositiveDetectionLimitIsRejected");
 
         InvariantObservation result = mo.observable(
                 new RecommendedAmount.BelowDetectionLimit(BigDecimal.ZERO), "amount");
@@ -82,7 +83,7 @@ class RecommendedAmountTest {
 
     @Test
     void missingValuesProduceAViolation() {
-        var mo = observer.forMethod("missingValuesProduceAViolation");
+        MethodObserver mo = observer.forMethod("missingValuesProduceAViolation");
 
         assertThat(mo.observable(new RecommendedAmount.Quantity(null), "amount")
                 .violationNamesRemovingPrefix(mo.observationPoint()))

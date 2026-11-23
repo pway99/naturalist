@@ -1,6 +1,7 @@
 package com.naturalist.catalog.rdbms;
 
 import com.naturalist.catalog.Catalog;
+import com.naturalist.catalog.EntityRef;
 import com.naturalist.catalog.SearchResults;
 import com.naturalist.chemistry.compound.CompoundName;
 import com.naturalist.persistence.test.RdbmsTestExtension;
@@ -9,6 +10,7 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.RegisterExtension;
 
 import java.util.List;
+import java.util.Optional;
 
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertTrue;
@@ -33,7 +35,7 @@ class RdbmsCatalogChemistryIT {
 
     @Test
     void findBySlugResolvesToTypedCompoundRef() {
-        var ref = catalog().findBySlug("azadirachtin");
+        Optional<EntityRef> ref = catalog().findBySlug("azadirachtin");
         assertTrue(ref.isPresent());
         assertTrue(ref.get().name() instanceof CompoundName);
     }

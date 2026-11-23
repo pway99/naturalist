@@ -69,14 +69,14 @@ class InsectsImageNameWebMvcTest {
                 .andExpect(status().isNotFound())
                 .andExpect(header().string("Cache-Control", "no-store"));
 
-        var missing = violated("InsectsController.serve.found");
+        Counter missing = violated("InsectsController.serve.found");
         assertThat(missing).as("missing count").isNotNull();
         assertThat(missing.count()).as("missing count").isEqualTo(1.0);
     }
 
     /** The endpoint counted the refusal once and the store's own name check never ran. */
     private void assertStoppedAtEdge() {
-        var edge = violated("InsectsController.serve.filename");
+        Counter edge = violated("InsectsController.serve.filename");
         assertThat(edge).as("edge count").isNotNull();
         assertThat(edge.count()).as("edge count").isEqualTo(1.0);
         assertThat(violated("FilesystemImageStore.read.name")).as("the store was never asked").isNull();

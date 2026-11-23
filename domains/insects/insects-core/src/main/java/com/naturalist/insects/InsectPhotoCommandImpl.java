@@ -79,7 +79,7 @@ class InsectPhotoCommandImpl implements InsectCommand.PhotoCommand {
                     null);
         }
 
-        var image = new OrganismImage<>(
+        OrganismImage<InsectImageId, InsectObservationId, InsectRankName> image = new OrganismImage<>(
                 InsectImageId.create(), subject, Instant.now(), stored, observationId);
         PhotoAddition photoAddition = new PhotoAddition(image, observation);
         try {

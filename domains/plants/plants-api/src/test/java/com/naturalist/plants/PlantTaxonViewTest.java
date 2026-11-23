@@ -1,7 +1,6 @@
 package com.naturalist.plants;
 
 import com.naturalist.observability.Observer;
-import com.naturalist.plants.PlantEntityCollections.ImageCollection;
 import org.junit.jupiter.api.Test;
 
 import static org.assertj.core.api.Assertions.assertThat;

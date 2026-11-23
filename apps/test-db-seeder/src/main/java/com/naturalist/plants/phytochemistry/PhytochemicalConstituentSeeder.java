@@ -7,16 +7,18 @@ import org.apache.ibatis.session.SqlSessionFactory;
 
 import javax.sql.DataSource;
 
+import java.util.List;
+
 /** Seeds phytochemical constituents through the real RDBMS adapter (split-package with the rdbms module). */
 public final class PhytochemicalConstituentSeeder {
 
     private PhytochemicalConstituentSeeder() {}
 
     public static void seed(DataSource dataSource, NaturalistDatabase database) {
-        var entities = database.getNamed(PlantPhytochemicalConstituentTestEntitySource.class).entityStream().toList();
+        List<PhytochemicalConstituent> entities = database.getNamed(PlantPhytochemicalConstituentTestEntitySource.class).entityStream().toList();
         SqlSessionFactory factory = MyBatisSupport.sessionFactory(dataSource, PhytochemicalConstituentMapper.class);
         try (SqlSession session = factory.openSession(false)) {
-            var repo = new PhytochemicalConstituentEntityRepositoryRdbms(session.getMapper(PhytochemicalConstituentMapper.class),
+            PhytochemicalConstituentEntityRepositoryRdbms repo = new PhytochemicalConstituentEntityRepositoryRdbms(session.getMapper(PhytochemicalConstituentMapper.class),
                     new PhytochemicalConstituentTransaction(session.getMapper(PhytochemicalConstituentMapper.class)));
             entities.forEach(repo::insert);
             session.commit();

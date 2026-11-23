@@ -4,6 +4,7 @@ import com.naturalist.data.NaturalistTestExtension;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.RegisterExtension;
 
+import java.util.List;
 import java.util.Map;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -41,14 +42,14 @@ class ElementCatalogDataTest {
 
     @Test
     void everyNutrientElementIsCatalogued() {
-        var slugs = source().entityStream().map(e -> e.name().value()).toList();
+        List<String> slugs = source().entityStream().map(e -> e.name().value()).toList();
         assertThat(slugs).containsAll(NUTRIENT_ELEMENT_SYMBOLS.keySet());
         assertThat(slugs).containsAll(REMAINING_SYMBOLS.keySet());
     }
 
     @Test
     void eachNutrientElementCarriesItsIupacSymbol() {
-        var bySlug = source().entityStream()
+        Map<String, String> bySlug = source().entityStream()
                 .collect(java.util.stream.Collectors.toMap(e -> e.name().value(), Element::symbol));
         NUTRIENT_ELEMENT_SYMBOLS.forEach((slug, symbol) ->
                 assertThat(bySlug).containsEntry(slug, symbol));
@@ -79,9 +80,9 @@ class ElementCatalogDataTest {
 
     @Test
     void micronutrientCationsAreDivalent() {
-        var byName = source().entityStream()
+        Map<String, Element> byName = source().entityStream()
                 .collect(java.util.stream.Collectors.toMap(e -> e.name().value(), e -> e));
-        for (String slug : java.util.List.of("zinc", "manganese", "iron", "copper")) {
+        for (String slug : List.of("zinc", "manganese", "iron", "copper")) {
             assertThat(byName.get(slug).isDivalent())
                     .as("%s is reported as a divalent cation", slug)
                     .isTrue();

@@ -1,7 +1,5 @@
 package com.naturalist.insects.lifestage;
 
-import com.naturalist.observation.OrganismImage;
-
 import com.fasterxml.jackson.annotation.JsonSubTypes;
 import com.fasterxml.jackson.annotation.JsonTypeInfo;
 import com.naturalist.ddd.NamedEntity;

@@ -33,7 +33,7 @@ class InsectSpeciesTransactionProxyTest {
 
     @Test
     void proxiedInsertRunsEveryStatementInsideOneCommittedTransaction() {
-        try (var context = new AnnotationConfigApplicationContext(ProxiedTransactionConfiguration.class)) {
+        try (AnnotationConfigApplicationContext context = new AnnotationConfigApplicationContext(ProxiedTransactionConfiguration.class)) {
             InsectSpeciesTransaction transaction = context.getBean(InsectSpeciesTransaction.class);
             EventLog log = context.getBean(EventLog.class);
 
@@ -49,7 +49,7 @@ class InsectSpeciesTransactionProxyTest {
 
     @Test
     void proxiedUpdateRollsBackEveryStatementWhenOneFails() {
-        try (var context = new AnnotationConfigApplicationContext(ProxiedTransactionConfiguration.class)) {
+        try (AnnotationConfigApplicationContext context = new AnnotationConfigApplicationContext(ProxiedTransactionConfiguration.class)) {
             InsectSpeciesTransaction transaction = context.getBean(InsectSpeciesTransaction.class);
             EventLog log = context.getBean(EventLog.class);
             log.failOn("deleteCommonNames");

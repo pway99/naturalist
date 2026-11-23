@@ -80,12 +80,12 @@ interface InsectObservationEntityRepositoryTest
 
     @Test
     default void insertWithArea_readsBackTheSameCell() {
-        var cell = GridCell.of(1092, -2945);
-        var entity = newEntity().withArea(cell);
+        GridCell cell = GridCell.of(1092, -2945);
+        OrganismObservation<InsectObservationId, InsectRankName> entity = newEntity().withArea(cell);
 
         repository().insert(entity);
 
-        var persisted = repository().getByName(entity.key()).orElseThrow();
+        OrganismObservation<InsectObservationId, InsectRankName> persisted = repository().getByName(entity.key()).orElseThrow();
         assertThat(persisted.area()).isEqualTo(cell);
         assertEntityEquals(persisted, entity);
     }
@@ -99,14 +99,14 @@ interface InsectObservationEntityRepositoryTest
 
     @Test
     default void getByNaturalist_returnsOnlyThatNaturalistsObservations() {
-        var results = repository().getByNaturalist(PATRICK);
+        List<OrganismObservation<InsectObservationId, InsectRankName>> results = repository().getByNaturalist(PATRICK);
         assertThat(results).isNotEmpty();
         assertThat(results).allMatch(o -> o.observedBy().equals(PATRICK));
     }
 
     @Test
     default void getByNaturalistAndSubjects_matchesNaturalistAndSubject() {
-        var results = repository().getByNaturalistAndSubjects(
+        List<OrganismObservation<InsectObservationId, InsectRankName>> results = repository().getByNaturalistAndSubjects(
                 PATRICK, java.util.Set.of(TestInsectsIdentifiers.InsectSpecies.BattusPhilenor.name));
         assertThat(results).isNotEmpty();
         assertThat(results).allMatch(o -> o.observedBy().equals(PATRICK)
@@ -116,7 +116,7 @@ interface InsectObservationEntityRepositoryTest
     @Test
     default void getByNaturalistAndSubjects_excludesOtherNaturalists() {
         // delia also observed battus-philenor; patrick's query must not return it.
-        var results = repository().getByNaturalistAndSubjects(
+        List<OrganismObservation<InsectObservationId, InsectRankName>> results = repository().getByNaturalistAndSubjects(
                 PATRICK, java.util.Set.of(TestInsectsIdentifiers.InsectSpecies.BattusPhilenor.name));
         assertThat(results).noneMatch(o -> o.observedBy().equals(DELIA));
     }

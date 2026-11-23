@@ -2,6 +2,7 @@ package com.naturalist.data;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.type.CollectionType;
 import com.naturalist.ddd.Named;
 import com.naturalist.exception.EntityNotFoundException;
 import com.naturalist.exception.ForeignKeyConstraintException;
@@ -21,7 +22,12 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.nio.file.StandardCopyOption;
-import java.util.*;
+import java.util.Comparator;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.Optional;
+import java.util.Set;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
@@ -428,7 +434,7 @@ public abstract class TestEntitySource<NAME, ENTITY extends Named<NAME>> {
 
     private void writeJsonAtomic(Path target, List<ENTITY> entities) {
         try {
-            var listType = mapper().getTypeFactory()
+            CollectionType listType = mapper().getTypeFactory()
                     .constructCollectionType(List.class, writableClass());
             List<Object> writables = entities.stream()
                     .map(this::writable)

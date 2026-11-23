@@ -1,6 +1,15 @@
 package com.naturalist.catalog.inmem;
 
-import com.naturalist.catalog.*;
+import com.naturalist.catalog.Catalog;
+import com.naturalist.catalog.CatalogContribution;
+import com.naturalist.catalog.DomainId;
+import com.naturalist.catalog.EntityRef;
+import com.naturalist.catalog.EntityReferences;
+import com.naturalist.catalog.MatchKind;
+import com.naturalist.catalog.ReferenceRouting;
+import com.naturalist.catalog.SearchHit;
+import com.naturalist.catalog.SearchResults;
+import com.naturalist.catalog.UnresolvedSearchObservation;
 import com.naturalist.catalog.CatalogContribution.SearchableEntity;
 import com.naturalist.ddd.EntityName;
 import com.naturalist.observability.Level;
@@ -8,7 +17,15 @@ import com.naturalist.observability.Observer;
 import com.naturalist.resilience.Resilience;
 import com.naturalist.resilience.Resilient;
 
-import java.util.*;
+import java.util.Collections;
+import java.util.Comparator;
+import java.util.HashMap;
+import java.util.LinkedHashMap;
+import java.util.LinkedHashSet;
+import java.util.List;
+import java.util.Map;
+import java.util.Optional;
+import java.util.Set;
 import java.util.regex.Pattern;
 import java.util.stream.Stream;
 import org.apache.commons.lang3.StringUtils;

@@ -6,6 +6,7 @@ import com.naturalist.clades.Clade;
 import com.naturalist.clades.Holometabola;
 import com.naturalist.fieldnotes.Description;
 import com.naturalist.observability.InvariantObservation;
+import com.naturalist.observability.MethodObserver;
 import com.naturalist.observability.Observer;
 import com.naturalist.taxonomy.TaxonomicOrder;
 import org.junit.jupiter.api.Test;
@@ -19,7 +20,7 @@ class InsectOrderInfoTest {
 
     @Test
     void validOrderPassesAllInvariants() {
-        var mo = observer.forMethod("validOrderPassesAllInvariants");
+        MethodObserver mo = observer.forMethod("validOrderPassesAllInvariants");
         InsectOrderInfo order = new InsectOrderInfo(
                 InsectOrderName.of("diptera"),
                 TaxonomicOrder.of("Diptera"),
@@ -34,7 +35,7 @@ class InsectOrderInfoTest {
 
     @Test
     void nullComponentsProduceExpectedInvariantViolations() {
-        var mo = observer.forMethod("nullComponentsProduceExpectedInvariantViolations");
+        MethodObserver mo = observer.forMethod("nullComponentsProduceExpectedInvariantViolations");
         InsectOrderInfo order = new InsectOrderInfo(
                 null, null, null, null, null);
 
@@ -75,14 +76,14 @@ class InsectOrderInfoTest {
 
     @Test
     void displayName_prefersAlphabeticallyFirstCommonName() {
-        var rank = orderWith(Set.of(CommonName.of("Zebra Swallowtail"), CommonName.of("Pipevine Swallowtail")));
+        InsectOrderInfo rank = orderWith(Set.of(CommonName.of("Zebra Swallowtail"), CommonName.of("Pipevine Swallowtail")));
 
         assertThat(rank.displayName()).isEqualTo("Pipevine Swallowtail");
     }
 
     @Test
     void displayName_fallsBackToScientificName() {
-        var rank = orderWith(Set.of());
+        InsectOrderInfo rank = orderWith(Set.of());
 
         assertThat(rank.displayName()).isEqualTo("Lepidoptera");
     }

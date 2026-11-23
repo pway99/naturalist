@@ -97,7 +97,7 @@ class PlantImageEntityRepositoryRdbms
         MethodObserver getByParentName = observer().forMethod("getByParentName");
         getByParentName.arguments(i -> i.identifier(parentName, "parentName"))
                 .throwWhenInvalid();
-        var result = mapper.selectByParentName(parentName.rank().name(), parentName.value()).stream()
+        List<OrganismImage<PlantImageId, PlantObservationId, PlantRankName>> result = mapper.selectByParentName(parentName.rank().name(), parentName.value()).stream()
                 .map(PlantImageDbo::toEntity).toList();
         getByParentName.state(s -> s.observableCollection(result, "result")).observe(Level.WARN);
         return result;

@@ -42,14 +42,14 @@ class InsectGenusInfoTest {
 
     @Test
     void displayName_prefersAlphabeticallyFirstCommonName() {
-        var rank = genusWith(Set.of(CommonName.of("Zebra Swallowtail"), CommonName.of("Pipevine Swallowtail")));
+        InsectGenusInfo rank = genusWith(Set.of(CommonName.of("Zebra Swallowtail"), CommonName.of("Pipevine Swallowtail")));
 
         assertThat(rank.displayName()).isEqualTo("Pipevine Swallowtail");
     }
 
     @Test
     void displayName_fallsBackToScientificName() {
-        var rank = genusWith(Set.of());
+        InsectGenusInfo rank = genusWith(Set.of());
 
         assertThat(rank.displayName()).isEqualTo("Battus");
     }
