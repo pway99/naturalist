@@ -14,7 +14,7 @@ class PlantTest {
     void empty_hasNoRanks_andNoViolations() {
         Plant plant = Plant.empty();
         assertThat(plant.identifiedTo()).isEmpty();
-        assertThat(observer.forMethod("empty").observable(plant, "plant").violations()).isEmpty();
+        assertThat(observer.forMethod("empty_hasNoRanks_andNoViolations").observable(plant, "plant").violations()).isEmpty();
     }
 
     @Test
@@ -27,7 +27,7 @@ class PlantTest {
                 new com.naturalist.fieldnotes.Description("a", "b", "c", "d"),
                 java.util.Set.of());
         Plant plant = Plant.empty().withGenus(PlantTaxonView.GenusView.of(thymus));
-        MethodObserver mo = observer.forMethod("childRankWithoutAncestor");
+        MethodObserver mo = observer.forMethod("childRankWithoutAncestor_reportsAncestorPresenceViolation");
         assertThat(mo.observable(plant, "plant").violationNamesRemovingPrefix(mo.observationPoint()))
                 .contains(".plant.genus:family");
     }
@@ -55,7 +55,7 @@ class PlantTest {
     void emptyPlant_hasNullFeatures_andNoViolations() {
         Plant plant = Plant.empty();
         assertThat(plant.features()).isNull();
-        assertThat(observer.forMethod("emptyFeatures").observable(plant, "plant").violations()).isEmpty();
+        assertThat(observer.forMethod("emptyPlant_hasNullFeatures_andNoViolations").observable(plant, "plant").violations()).isEmpty();
     }
 
     @Test
@@ -73,12 +73,12 @@ class PlantTest {
     void emptyPlant_hasEmptyChildren_notNull_andNoViolations() {
         Plant plant = Plant.empty();
         assertThat(plant.children()).isEmpty();
-        assertThat(observer.forMethod("emptyChildren").observable(plant, "plant").violations()).isEmpty();
+        assertThat(observer.forMethod("emptyPlant_hasEmptyChildren_notNull_andNoViolations").observable(plant, "plant").violations()).isEmpty();
     }
 
     @Test
     void nullChildren_reportsViolation() {
-        MethodObserver mo = observer.forMethod("nullChildren");
+        MethodObserver mo = observer.forMethod("nullChildren_reportsViolation");
         Plant plant = Plant.empty().withChildren(null);
         assertThat(mo.observable(plant, "plant").violationNamesRemovingPrefix(mo.observationPoint()))
                 .contains(".plant.children");
@@ -99,7 +99,7 @@ class PlantTest {
     void emptyPlant_roleNull_imagesEmpty_noViolations() {
         Plant plant = Plant.empty();
         assertThat(plant.role()).isNull();
-        assertThat(observer.forMethod("roleImages").observable(plant, "plant").violations()).isEmpty();
+        assertThat(observer.forMethod("emptyPlant_roleNull_imagesEmpty_noViolations").observable(plant, "plant").violations()).isEmpty();
     }
 
     @Test
@@ -108,12 +108,12 @@ class PlantTest {
         assertThat(plant.cultivars().isEmpty()).isTrue();
         assertThat(plant.programs().isEmpty()).isTrue();
         assertThat(plant.constituents().isEmpty()).isTrue();
-        assertThat(observer.forMethod("extras").observable(plant, "plant").violations()).isEmpty();
+        assertThat(observer.forMethod("withCultivars_carries_andEmptyDefaultsAreNonNull").observable(plant, "plant").violations()).isEmpty();
     }
 
     @Test
     void nullCultivars_reportsViolation() {
-        MethodObserver mo = observer.forMethod("nullCultivars");
+        MethodObserver mo = observer.forMethod("nullCultivars_reportsViolation");
         Plant plant = Plant.empty().withCultivars(null);
         assertThat(mo.observable(plant, "plant").violationNamesRemovingPrefix(mo.observationPoint()))
                 .contains(".plant.cultivars");

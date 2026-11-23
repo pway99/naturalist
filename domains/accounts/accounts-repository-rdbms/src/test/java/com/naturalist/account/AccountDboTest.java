@@ -32,7 +32,7 @@ class AccountDboTest {
         AccountDbo dbo = AccountDbo.from(sample("acct-018f3a2eabcd", "someone@example.org", true));
         dbo.name = "x".repeat(65); // exceeds VARCHAR(64)
         Set<Constraint<?>> violations = Observer.forClass(AccountDboTest.class)
-                .arguments("t", i -> i.observable(dbo, "dbo")).violations();
+                .arguments("invariants_flagOverLongName", i -> i.observable(dbo, "dbo")).violations();
         assertThat(violations).isNotEmpty();
     }
 

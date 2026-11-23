@@ -24,7 +24,7 @@ class PlantTaxonViewTest {
         assertThat(view.name()).isEqualTo(PlantFamilyName.of("asteraceae"));
         assertThat(view.orderName()).isEqualTo(PlantOrderName.of("asterales"));
         assertThat(view.images().isEmpty()).isTrue();
-        assertThat(observer.forMethod("valid").observable(view, "view").violations()).isEmpty();
+        assertThat(observer.forMethod("familyView_of_exposesNameAndFk_andHasNoViolations").observable(view, "view").violations()).isEmpty();
     }
 
     @Test

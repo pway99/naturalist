@@ -37,7 +37,7 @@ class EmailVerificationTokenDboTest {
         EmailVerificationTokenDbo dbo = EmailVerificationTokenDbo.from(sample(null));
         dbo.tokenHash = "x".repeat(129); // exceeds VARCHAR(128)
         Set<Constraint<?>> violations = Observer.forClass(EmailVerificationTokenDboTest.class)
-                .arguments("t", i -> i.observable(dbo, "dbo")).violations();
+                .arguments("invariants_flagOverLongTokenHash", i -> i.observable(dbo, "dbo")).violations();
         assertThat(violations).isNotEmpty();
     }
 }

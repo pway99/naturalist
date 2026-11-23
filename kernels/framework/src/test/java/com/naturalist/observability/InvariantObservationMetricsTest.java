@@ -22,8 +22,6 @@ import static org.assertj.core.api.Assertions.assertThatThrownBy;
 class InvariantObservationMetricsTest {
 
     private static final String CHECK = "naturalist.invariant.check";
-    private static final String PRESENT = "InvariantObservationMetricsTest.register.present";
-    private static final String ABSENT = "InvariantObservationMetricsTest.register.absent";
 
     private final SimpleMeterRegistry meters = new SimpleMeterRegistry();
 
@@ -37,9 +35,14 @@ class InvariantObservationMetricsTest {
         Metrics.removeRegistry(meters);
     }
 
-    private static InvariantObservation oneHeldOneViolated(Observer.MonitoringMode mode) {
-        return Observer.forClass(InvariantObservationMetricsTest.class, mode)
-                .arguments("register", i -> i.notNull("value", "present").notNull(null, "absent"));
+    /** One held and one violated argument check, observed under the calling test's own method name. */
+    private static InvariantObservation oneHeldOneViolated(Observer.MonitoringMode mode, String testMethod) {
+        return Observer.forClass(InvariantObservationMetricsTest.class, mode).forMethod(testMethod)
+                .arguments(i -> i.notNull("value", "present").notNull(null, "absent"));
+    }
+
+    private static String checkName(String testMethod, String constraint) {
+        return "InvariantObservationMetricsTest." + testMethod + "." + constraint;
     }
 
     private Counter check(String name, String outcome) {
@@ -55,26 +58,26 @@ class InvariantObservationMetricsTest {
 
     @Test
     void onFailure_emitsOnlyTheViolatedCheck() {
-        oneHeldOneViolated(Observer.MonitoringMode.ON_FAILURE).observe(Level.WARN);
+        oneHeldOneViolated(Observer.MonitoringMode.ON_FAILURE, "onFailure_emitsOnlyTheViolatedCheck").observe(Level.WARN);
 
-        assertThat(check(ABSENT, "violated").count()).isEqualTo(1);
+        assertThat(check(checkName("onFailure_emitsOnlyTheViolatedCheck", "absent"), "violated").count()).isEqualTo(1);
         // The global composite replays meters other tests registered into this registry at
         // zero, so "not emitted" is a zero count, not a missing meter.
-        Counter held = check(PRESENT, "held");
+        Counter held = check(checkName("onFailure_emitsOnlyTheViolatedCheck", "present"), "held");
         assertThat(held == null ? 0 : held.count()).isZero();
     }
 
     @Test
     void always_emitsHeldAndViolatedChecks() {
-        oneHeldOneViolated(Observer.MonitoringMode.ALWAYS).observe(Level.WARN);
+        oneHeldOneViolated(Observer.MonitoringMode.ALWAYS, "always_emitsHeldAndViolatedChecks").observe(Level.WARN);
 
-        assertThat(check(ABSENT, "violated").count()).isEqualTo(1);
-        assertThat(check(PRESENT, "held").count()).isEqualTo(1);
+        assertThat(check(checkName("always_emitsHeldAndViolatedChecks", "absent"), "violated").count()).isEqualTo(1);
+        assertThat(check(checkName("always_emitsHeldAndViolatedChecks", "present"), "held").count()).isEqualTo(1);
     }
 
     @Test
     void always_countsEachConstraintExactlyOnce() {
-        oneHeldOneViolated(Observer.MonitoringMode.ALWAYS).observe(Level.WARN);
+        oneHeldOneViolated(Observer.MonitoringMode.ALWAYS, "always_countsEachConstraintExactlyOnce").observe(Level.WARN);
 
         // Two constraints inspected, two increments: a violation is not also counted elsewhere.
         assertThat(totalIncrements()).isEqualTo(2);
@@ -83,36 +86,36 @@ class InvariantObservationMetricsTest {
 
     @Test
     void throwWhenInvalid_tagsViolatedErrorAndHeldInfo() {
-        assertThatThrownBy(() -> oneHeldOneViolated(Observer.MonitoringMode.ALWAYS).throwWhenInvalid())
+        assertThatThrownBy(() -> oneHeldOneViolated(Observer.MonitoringMode.ALWAYS, "throwWhenInvalid_tagsViolatedErrorAndHeldInfo").throwWhenInvalid())
                 .isInstanceOf(InvariantViolationException.class);
 
-        assertThat(check(ABSENT, "violated").getId().getTag("level")).isEqualTo("error");
-        assertThat(check(PRESENT, "held").getId().getTag("level")).isEqualTo("info");
+        assertThat(check(checkName("throwWhenInvalid_tagsViolatedErrorAndHeldInfo", "absent"), "violated").getId().getTag("level")).isEqualTo("error");
+        assertThat(check(checkName("throwWhenInvalid_tagsViolatedErrorAndHeldInfo", "present"), "held").getId().getTag("level")).isEqualTo("info");
     }
 
     @Test
     void observe_tagsViolatedAtTheCallSiteLevelAndHeldInfo() {
-        oneHeldOneViolated(Observer.MonitoringMode.ALWAYS).observe(Level.WARN);
+        oneHeldOneViolated(Observer.MonitoringMode.ALWAYS, "observe_tagsViolatedAtTheCallSiteLevelAndHeldInfo").observe(Level.WARN);
 
-        assertThat(check(ABSENT, "violated").getId().getTag("level")).isEqualTo("warn");
-        assertThat(check(PRESENT, "held").getId().getTag("level")).isEqualTo("info");
+        assertThat(check(checkName("observe_tagsViolatedAtTheCallSiteLevelAndHeldInfo", "absent"), "violated").getId().getTag("level")).isEqualTo("warn");
+        assertThat(check(checkName("observe_tagsViolatedAtTheCallSiteLevelAndHeldInfo", "present"), "held").getId().getTag("level")).isEqualTo("info");
     }
 
     @Test
     void arguments_tagsKindArgument() {
-        oneHeldOneViolated(Observer.MonitoringMode.ALWAYS).observe(Level.WARN);
+        oneHeldOneViolated(Observer.MonitoringMode.ALWAYS, "arguments_tagsKindArgument").observe(Level.WARN);
 
-        assertThat(check(ABSENT, "violated").getId().getTag("kind")).isEqualTo("argument");
-        assertThat(check(PRESENT, "held").getId().getTag("kind")).isEqualTo("argument");
+        assertThat(check(checkName("arguments_tagsKindArgument", "absent"), "violated").getId().getTag("kind")).isEqualTo("argument");
+        assertThat(check(checkName("arguments_tagsKindArgument", "present"), "held").getId().getTag("kind")).isEqualTo("argument");
     }
 
     @Test
     void state_tagsKindState() {
         Observer.forClass(InvariantObservationMetricsTest.class)
-                .state("acquire", s -> s.notNull(null, "owner"))
+                .state("state_tagsKindState", s -> s.notNull(null, "owner"))
                 .observe(Level.WARN);
 
-        Counter counter = check("InvariantObservationMetricsTest.acquire.owner", "violated");
+        Counter counter = check("InvariantObservationMetricsTest.state_tagsKindState.owner", "violated");
         assertThat(counter.count()).isEqualTo(1);
         assertThat(counter.getId().getTag("kind")).isEqualTo("state");
     }
@@ -120,11 +123,11 @@ class InvariantObservationMetricsTest {
     @Test
     void state_throwWhenInvalid_throwsAndTagsKindState() {
         assertThatThrownBy(() -> Observer.forClass(InvariantObservationMetricsTest.class)
-                .state("count", s -> s.atLeast(0, 1, "plots"))
+                .state("state_throwWhenInvalid_throwsAndTagsKindState", s -> s.atLeast(0, 1, "plots"))
                 .throwWhenInvalid())
                 .isInstanceOf(InvariantViolationException.class);
 
-        Counter counter = check("InvariantObservationMetricsTest.count.plots", "violated");
+        Counter counter = check("InvariantObservationMetricsTest.state_throwWhenInvalid_throwsAndTagsKindState.plots", "violated");
         assertThat(counter.getId().getTag("kind")).isEqualTo("state");
         assertThat(counter.getId().getTag("level")).isEqualTo("error");
     }
@@ -132,11 +135,11 @@ class InvariantObservationMetricsTest {
     @Test
     void methodObserverState_tagsKindState() {
         Observer.forClass(InvariantObservationMetricsTest.class)
-                .forMethod("lookup")
+                .forMethod("methodObserverState_tagsKindState")
                 .state(s -> s.notBlank("", "handle"))
                 .observe(Level.WARN);
 
-        Counter counter = check("InvariantObservationMetricsTest.lookup.handle", "violated");
+        Counter counter = check("InvariantObservationMetricsTest.methodObserverState_tagsKindState.handle", "violated");
         assertThat(counter.getId().getTag("kind")).isEqualTo("state");
     }
 
@@ -157,12 +160,12 @@ class InvariantObservationMetricsTest {
     @Test
     void noticeError_countsOneErrorViolation_taggedWithTheException() {
         Observer observer = Observer.forClass(InvariantObservationMetricsTest.class);
-        observer.forMethod("register").noticeError("stored", new UncheckedIOException(new IOException("disk")), Handling.RETHROWN);
-        observer.noticeError("register", "stored", new IllegalStateException("boom"), Handling.WRAPPED);
+        observer.forMethod("noticeError_countsOneErrorViolation_taggedWithTheException").noticeError("stored", new UncheckedIOException(new IOException("disk")), Handling.RETHROWN);
+        observer.noticeError("noticeError_countsOneErrorViolation_taggedWithTheException", "stored", new IllegalStateException("boom"), Handling.WRAPPED);
 
-        Counter io = meters.find(CHECK).tag("name", "InvariantObservationMetricsTest.register.stored")
+        Counter io = meters.find(CHECK).tag("name", "InvariantObservationMetricsTest.noticeError_countsOneErrorViolation_taggedWithTheException.stored")
                 .tag("class", "InvariantObservationMetricsTest")
-                .tag("method", "register")
+                .tag("method", "noticeError_countsOneErrorViolation_taggedWithTheException")
                 .tag("exception", "UncheckedIOException")
                 .tag("handling", "rethrown")
                 .tag("outcome", "violated")
@@ -171,7 +174,7 @@ class InvariantObservationMetricsTest {
                 .counter();
         assertThat(io).isNotNull();
         assertThat(io.count()).isEqualTo(1);
-        Counter state = meters.find(CHECK).tag("name", "InvariantObservationMetricsTest.register.stored")
+        Counter state = meters.find(CHECK).tag("name", "InvariantObservationMetricsTest.noticeError_countsOneErrorViolation_taggedWithTheException.stored")
                 .tag("exception", "IllegalStateException")
                 .tag("handling", "wrapped")
                 .tag("kind", "caught")
@@ -188,10 +191,10 @@ class InvariantObservationMetricsTest {
     void noticeError_neverThrows() {
         Observer observer = Observer.forClass(InvariantObservationMetricsTest.class);
         observer.noticeError(null, null, null, null);
-        observer.forMethod("register").noticeError(null, null, Handling.RETHROWN);
-        observer.forMethod("register").noticeError("anonymous", new RuntimeException() { }, Handling.RETHROWN);
+        observer.forMethod("noticeError_neverThrows").noticeError(null, null, Handling.RETHROWN);
+        observer.forMethod("noticeError_neverThrows").noticeError("anonymous", new RuntimeException() { }, Handling.RETHROWN);
 
-        Counter anonymous = meters.find(CHECK).tag("name", "InvariantObservationMetricsTest.register.anonymous")
+        Counter anonymous = meters.find(CHECK).tag("name", "InvariantObservationMetricsTest.noticeError_neverThrows.anonymous")
                 .tag("kind", "caught")
                 .counter();
         assertThat(anonymous).isNotNull();
