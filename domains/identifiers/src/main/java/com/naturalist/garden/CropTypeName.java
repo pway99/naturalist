@@ -1,6 +1,5 @@
 package com.naturalist.garden;
 
-import com.fasterxml.jackson.annotation.JsonCreator;
 import com.naturalist.ddd.EntityName;
 
 /**
@@ -30,7 +29,6 @@ public final class CropTypeName extends EntityName {
         super(value);
     }
 
-    @JsonCreator
     public static CropTypeName of(String value) {
         return new CropTypeName(value);
     }

@@ -1,6 +1,5 @@
 package com.naturalist.insects;
 
-import com.fasterxml.jackson.annotation.JsonCreator;
 import com.naturalist.ddd.EntityName;
 import com.naturalist.taxonomy.LinealRank;
 
@@ -26,7 +25,6 @@ public final class InsectSubspeciesName extends EntityName implements InsectRank
         super(value);
     }
 
-    @JsonCreator
     public static InsectSubspeciesName of(String value) {
         return new InsectSubspeciesName(value);
     }

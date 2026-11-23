@@ -1,6 +1,5 @@
 package com.naturalist.usage;
 
-import com.fasterxml.jackson.annotation.JsonCreator;
 import com.naturalist.ddd.EntityId;
 
 import java.util.UUID;
@@ -11,7 +10,6 @@ public final class UsageCounterId extends EntityId {
         super(value);
     }
 
-    @JsonCreator
     public static UsageCounterId of(UUID value) {
         return new UsageCounterId(value);
     }

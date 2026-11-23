@@ -1,6 +1,5 @@
 package com.naturalist.chemistry;
 
-import com.fasterxml.jackson.annotation.JsonCreator;
 import com.naturalist.ddd.NumericNamedValue;
 
 import java.math.BigDecimal;
@@ -18,7 +17,6 @@ import java.math.RoundingMode;
  */
 public record TemperatureFahrenheit(BigDecimal value) implements NumericNamedValue {
 
-    @JsonCreator
     public static TemperatureFahrenheit of(BigDecimal value) {
         return new TemperatureFahrenheit(value);
     }

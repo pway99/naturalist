@@ -604,7 +604,7 @@ through `Compound`.
 
 Four `NumericNamedValue` records in chemistry-api. All implement
 `com.naturalist.ddd.NumericNamedValue`, all carry a single `BigDecimal value`, all
-declare `@JsonCreator public static of(BigDecimal)`, all use `RoundingMode.HALF_UP`.
+declare `public static of(BigDecimal)`, all use `RoundingMode.HALF_UP`.
 
 | Type                    | Scale | Sign rule      | Notes                                                                                  |
 |-------------------------|-------|----------------|----------------------------------------------------------------------------------------|

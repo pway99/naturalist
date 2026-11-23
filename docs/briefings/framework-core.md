@@ -264,8 +264,8 @@ Representative locations:
 Concrete implementations are records with an `of(T)` factory. Contract:
 `T value()`, `boolean isValid()`. Distinguished from `EntityName`
 (no uniqueness claim, never a query parameter) and from `ValueObject`
-(single value, not `Observable`). `@JsonCreator` IS required on the
-`of(...)` factory.
+(single value, not `Observable`). The `of(...)` factory is required and
+carries no `@JsonCreator`: the supertype reads JSON through it.
 
 `NumericNamedValue extends NamedValue<BigDecimal>` — for decimal domain
 quantities. Adds `int scale()`, `RoundingMode roundingMode()`, and
@@ -277,9 +277,9 @@ decimal domain values. Integer quantities use `NamedValue<Integer>`.
 - Jackson 2.19.x natively deserializes records — **no `@JsonCreator` on
   entity / aggregate / value-object records.**
 - JSON field names must match component names exactly.
-- **`@JsonCreator` IS required on the `public static of(...)` factory
-  of any non-record Jackson must deserialize:** `EntityName` subclasses,
-  `NamedValue<T>` implementations.
+- **`EntityName`, `EntityId` and `NamedValue<T>` subtypes declare no
+  `@JsonCreator`:** the supertype's `@JsonDeserialize` reads each through
+  its one `public static of(String | BigDecimal | UUID)` (`NamedValues`).
 - Enum values serialize by constant name (`"INORGANIC_SALT"`,
   `"ROOT_MASS_FLOW"`).
 - Sealed hierarchies Jackson must round-trip need `@JsonTypeInfo` +
@@ -466,9 +466,9 @@ Open interface — each domain ships its own `DomainId` subtype from its
 
 **Do not add `@JsonCreator` to records.**
 
-- Jackson 2.19 handles records natively. `@JsonCreator` belongs on the
-  `public static of(...)` factory of `EntityName` subclasses and
-  `NamedValue<T>` implementations only.
+- Jackson 2.19 handles records natively. Named values (`EntityName`,
+  `EntityId`, `NamedValue<T>`) need none either: their supertype reads
+  them through `of(...)`.
 
 **Do not use raw `List<T>` at api query method signatures.**
 

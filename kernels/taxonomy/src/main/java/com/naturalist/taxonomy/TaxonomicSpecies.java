@@ -1,6 +1,5 @@
 package com.naturalist.taxonomy;
 
-import com.fasterxml.jackson.annotation.JsonCreator;
 import com.naturalist.ddd.NamedValue;
 import org.apache.commons.lang3.StringUtils;
 
@@ -18,7 +17,6 @@ import org.apache.commons.lang3.StringUtils;
  */
 public record TaxonomicSpecies(String value) implements NamedValue<String> {
 
-    @JsonCreator
     public static TaxonomicSpecies of(String value) {
         return new TaxonomicSpecies(value);
     }

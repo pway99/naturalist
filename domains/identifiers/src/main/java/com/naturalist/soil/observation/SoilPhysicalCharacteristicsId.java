@@ -1,6 +1,5 @@
 package com.naturalist.soil.observation;
 
-import com.fasterxml.jackson.annotation.JsonCreator;
 import com.naturalist.ddd.EntityId;
 
 import java.util.UUID;
@@ -15,7 +14,6 @@ public final class SoilPhysicalCharacteristicsId extends EntityId {
         super(value);
     }
 
-    @JsonCreator
     public static SoilPhysicalCharacteristicsId of(UUID value) {
         return new SoilPhysicalCharacteristicsId(value);
     }

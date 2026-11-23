@@ -1,6 +1,5 @@
 package com.naturalist.worms;
 
-import com.fasterxml.jackson.annotation.JsonCreator;
 import com.naturalist.ddd.EntityName;
 
 public final class WormName extends EntityName {
@@ -8,7 +7,6 @@ public final class WormName extends EntityName {
         super(value);
     }
 
-    @JsonCreator
     public static WormName of(String value) {
         return new WormName(value);
     }

@@ -1,6 +1,5 @@
 package com.naturalist.soil.observation;
 
-import com.fasterxml.jackson.annotation.JsonCreator;
 import com.naturalist.ddd.EntityName;
 
 /**
@@ -15,7 +14,6 @@ public final class NutrientName extends EntityName {
         super(value);
     }
 
-    @JsonCreator
     public static NutrientName of(String value) {
         return new NutrientName(value);
     }

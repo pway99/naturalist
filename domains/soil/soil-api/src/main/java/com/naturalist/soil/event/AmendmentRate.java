@@ -1,6 +1,5 @@
 package com.naturalist.soil.event;
 
-import com.fasterxml.jackson.annotation.JsonCreator;
 import com.naturalist.ddd.NumericNamedValue;
 
 import java.math.BigDecimal;
@@ -17,7 +16,6 @@ import java.math.RoundingMode;
  */
 public record AmendmentRate(BigDecimal value) implements NumericNamedValue {
 
-    @JsonCreator
     public static AmendmentRate of(BigDecimal value) {
         return new AmendmentRate(value);
     }

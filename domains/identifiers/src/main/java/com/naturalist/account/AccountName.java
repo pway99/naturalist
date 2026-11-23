@@ -1,6 +1,5 @@
 package com.naturalist.account;
 
-import com.fasterxml.jackson.annotation.JsonCreator;
 import com.naturalist.ddd.EntityId;
 import com.naturalist.ddd.EntityName;
 
@@ -18,7 +17,6 @@ public final class AccountName extends EntityName {
         super(value);
     }
 
-    @JsonCreator
     public static AccountName of(String value) {
         return new AccountName(value);
     }

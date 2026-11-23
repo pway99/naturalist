@@ -1,6 +1,5 @@
 package com.naturalist.soil.observation;
 
-import com.fasterxml.jackson.annotation.JsonCreator;
 import com.naturalist.ddd.EntityName;
 
 /**
@@ -22,7 +21,6 @@ public final class RecommendedInputName extends EntityName {
         super(value);
     }
 
-    @JsonCreator
     public static RecommendedInputName of(String value) {
         return new RecommendedInputName(value);
     }

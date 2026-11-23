@@ -1,6 +1,5 @@
 package com.naturalist.chemistry.compound;
 
-import com.fasterxml.jackson.annotation.JsonCreator;
 import com.naturalist.ddd.NumericNamedValue;
 
 import java.math.BigDecimal;
@@ -17,7 +16,6 @@ import java.math.RoundingMode;
  */
 public record MolecularWeight(BigDecimal value) implements NumericNamedValue {
 
-    @JsonCreator
     public static MolecularWeight of(BigDecimal value) {
         return new MolecularWeight(value);
     }

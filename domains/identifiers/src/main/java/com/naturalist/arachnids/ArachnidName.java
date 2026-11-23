@@ -1,6 +1,5 @@
 package com.naturalist.arachnids;
 
-import com.fasterxml.jackson.annotation.JsonCreator;
 import com.naturalist.ddd.EntityName;
 
 public final class ArachnidName extends EntityName {
@@ -8,7 +7,6 @@ public final class ArachnidName extends EntityName {
         super(value);
     }
 
-    @JsonCreator
     public static ArachnidName of(String value) {
         return new ArachnidName(value);
     }

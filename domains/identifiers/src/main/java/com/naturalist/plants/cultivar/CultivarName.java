@@ -1,6 +1,5 @@
 package com.naturalist.plants.cultivar;
 
-import com.fasterxml.jackson.annotation.JsonCreator;
 import com.naturalist.ddd.EntityName;
 
 public final class CultivarName extends EntityName {
@@ -9,7 +8,6 @@ public final class CultivarName extends EntityName {
         super(value);
     }
 
-    @JsonCreator
     public static CultivarName of(String value) {
         return new CultivarName(value);
     }

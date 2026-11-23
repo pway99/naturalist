@@ -37,7 +37,6 @@ import java.math.RoundingMode;
  * <pre>{@code
  * public record MolecularWeight(BigDecimal value) implements NumericNamedValue {
  *
- *     @JsonCreator
  *     public static MolecularWeight of(BigDecimal value) {
  *         return new MolecularWeight(value);
  *     }

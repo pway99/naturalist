@@ -1,6 +1,5 @@
 package com.naturalist.soil.observation;
 
-import com.fasterxml.jackson.annotation.JsonCreator;
 import com.naturalist.ddd.EntityId;
 
 import java.util.UUID;
@@ -17,7 +16,6 @@ public final class NutrientReadingId extends EntityId {
         super(value);
     }
 
-    @JsonCreator
     public static NutrientReadingId of(UUID value) {
         return new NutrientReadingId(value);
     }

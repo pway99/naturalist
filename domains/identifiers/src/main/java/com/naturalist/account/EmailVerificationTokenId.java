@@ -1,6 +1,5 @@
 package com.naturalist.account;
 
-import com.fasterxml.jackson.annotation.JsonCreator;
 import com.naturalist.ddd.EntityId;
 
 import java.util.UUID;
@@ -16,7 +15,6 @@ public final class EmailVerificationTokenId extends EntityId {
         super(value);
     }
 
-    @JsonCreator
     public static EmailVerificationTokenId of(UUID value) {
         return new EmailVerificationTokenId(value);
     }

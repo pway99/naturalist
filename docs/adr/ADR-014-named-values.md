@@ -34,8 +34,11 @@ public interface NamedValue<T> {
 - **No throwing constructor** — may exist in invalid state; `isValid()` + `NamedValueConstraint`
   surface invalidity at the boundary.
 - `public static of(T value)` factory per ADR-012.
-- **`@JsonCreator` on every `of(...)` factory** (Jackson would otherwise bypass it — same
-  as `EntityName` / `PersistenceId<Long>` subclasses).
+- ~~`@JsonCreator` on every `of(...)` factory~~ — *superseded 2026-11-22:* the `NamedValue`,
+  `EntityName` and `EntityId` supertypes carry one class-level `@JsonDeserialize` that reads every
+  subtype through its single `public static of(String | BigDecimal | UUID)` (`NamedValues`); a
+  subtype declares no `@JsonCreator` (`NamedValueHasFactory`, `NoSubtypeJsonCreator`; see
+  `docs/plans/2026-11-18-named-value-serialization-design.md`).
 - Domain behaviors on the concrete type derive only from the wrapped value — no
   cross-domain refs.
 
