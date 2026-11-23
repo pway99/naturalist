@@ -56,9 +56,10 @@ Rules:
   record; `name()` is immutable
 - Jackson 2.19.x natively deserializes records. No `@JsonCreator` on entity/aggregate/
   value object records. JSON field names must match component names exactly
-- `@JsonCreator` **is** required on the `public static of(...)` factory of any non-record
-  Jackson must deserialize: `EntityName` subclasses, `NamedValue<T>` implementations.
-  Without it, deserialization fails silently or with a misleading error
+- Named values (`EntityName`, `EntityId`, `NamedValue<T>` subtypes) declare one
+  `public static of(String | BigDecimal | UUID)` and **no** `@JsonCreator`: the supertype's
+  `@JsonDeserialize` reads JSON, map keys and request parameters through that factory
+  (`NamedValues`). `NamedValueHasFactory` and `NoSubtypeJsonCreator` enforce both
 - `@EntityIdentifier` placed before the type: `@EntityIdentifier FooName name`
 - Optional-returning query methods must not share a name with any component: a component
   `String biologicalCatalyst` needs accessor `biologicalCatalystOptional()`, not

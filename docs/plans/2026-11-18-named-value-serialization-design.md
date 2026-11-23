@@ -143,6 +143,10 @@ Where the body used the String (`"redirect:/insects/" + name`), it uses `name.va
 3. `TypedPathVariable` lands report-only (its own composite, outside `EnforceArchitecture`),
    then one controller per diff, insects first (7 endpoints), so each diff watches the count
    drop. Armed in `EnforceArchitecture` with the last controller.
+   *Baseline 2026-11-22* (`mvn rewrite:dryRun -Drewrite.activeRecipes=com.naturalist.NamedValueEdges`):
+   27 `TYPED`, 0 `REQUIRED` — plants 8, insects 8 (the 7 path variables and `updateNotes`'
+   `observationId`), chemistry 4, garden 3, soil, glossary, concepts and registration 1 each.
+   Insects converted first: 27 → 19.
 
 ## Decisions
 
@@ -157,6 +161,11 @@ Where the body used the String (`"redirect:/insects/" + name`), it uses `name.va
   Without it, a name key read only through the subtype's `@JsonCreator` (which step 2 removes) and an id or
   numeric key could not be read at all (spike, Jackson 2.21.5). *My call:* an unreadable id or numeric key is a
   `null` key, like a value.
+- A refused edge says so (B1; Pat, 2026-11-22): a GET page whose name is not a valid slug, or a
+  valid one the catalog does not hold, answers a 404 not-found page (both counted: `name`,
+  `nameFound`); a post redirects with an error its target page shows (`?error=name` on the species
+  list, `?error=observation` beside the notes form). Supersedes "redirect as for an unknown name"
+  in Edges above.
 - *My call:* `invalidName` is a per-controller helper, like `notesTooLong`, rather than a shared
   console module.
 - *My call:* the deserializer observes nothing for an invalid value. A missing factory (a defect

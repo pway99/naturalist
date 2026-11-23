@@ -27,3 +27,14 @@ description: >-
   gate; call the batched sibling once instead.
 recipeList:
   - com.naturalist.rewrite.NoSelectInIteration
+---
+type: specs.openrewrite.org/v1beta/recipe
+name: com.naturalist.NamedValueEdges
+displayName: Naturalist named-value edges (report-only)
+description: >-
+  Marks a Spring handler parameter that should take a named value's type instead of String, and
+  an id or numeric named-value handler parameter that is still required. Report-only while the
+  controllers are converted one per diff; it joins EnforceArchitecture with the last one
+  (docs/plans/2026-11-18-named-value-serialization-design.md, step 3).
+recipeList:
+  - com.naturalist.rewrite.TypedPathVariable

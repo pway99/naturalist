@@ -3,6 +3,7 @@ package com.naturalist.insects;
 import com.naturalist.clades.Clade;
 import com.naturalist.exception.InvariantViolationException;
 import com.naturalist.observability.Handling;
+import com.naturalist.ddd.EntityName;
 import com.naturalist.observability.Level;
 import com.naturalist.observability.MethodObserver;
 import com.naturalist.observability.Observer;
@@ -22,6 +23,7 @@ import com.naturalist.library.CladeStep;
 import com.naturalist.library.CladeView;
 import com.naturalist.library.GlossaryLinker;
 import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletResponse;
 import org.apache.commons.lang3.StringUtils;
 import org.jspecify.annotations.Nullable;
 import com.naturalist.resilience.BulkheadFullException;
@@ -506,6 +508,7 @@ public class InsectsController {
 
     @GetMapping("/species")
     String list(@RequestParam(defaultValue = "0") int page,
+                @RequestParam(name = "error", required = false) String error,
                 HttpServletRequest request, Model model) {
         java.util.Optional<com.naturalist.naturalist.NaturalistName> viewer = currentNaturalist(request);
         boolean mine = collectionLensOn(request) && viewer.isPresent();
@@ -515,6 +518,7 @@ public class InsectsController {
                 : insectViewQuery.speciesCards(pageRequest, viewer.orElse(null));
         model.addAttribute("cards", cards);
         model.addAttribute("mine", mine);
+        model.addAttribute("nameError", "name".equals(error));
         model.addAttribute("ancestorIntros", classOnlyIntros());
         model.addAttribute("breadcrumb", cladePrefix());
         model.addAttribute("cladeTrail", cladeTrail(List.of()));
@@ -531,12 +535,16 @@ public class InsectsController {
     }
 
     @GetMapping("/families/{name}")
-    String familyDetail(@PathVariable String name,
+    String familyDetail(@PathVariable InsectFamilyName name,
                         @RequestParam(name = "error", required = false) String error,
-                        HttpServletRequest request, Model model) {
-        var rankPage = insectViewQuery.rankPage(InsectFamilyName.of(name), currentNaturalist(request).orElse(null));
-        if (rankPage.isEmpty()) {
-            return "redirect:/insects/families";
+                        HttpServletRequest request, HttpServletResponse response, Model model) {
+        MethodObserver methodObserver = OBSERVER.forMethod("familyDetail");
+        if (invalidName(methodObserver, name)) {
+            return notFound(response, model, name, "/insects/families");
+        }
+        var rankPage = insectViewQuery.rankPage(name, currentNaturalist(request).orElse(null));
+        if (unknownName(methodObserver, rankPage.isPresent())) {
+            return notFound(response, model, name, "/insects/families");
         }
         Insect insect = rankPage.get().insect();
         InsectFamilyInfo family = insect.family().info();
@@ -554,6 +562,9 @@ public class InsectsController {
         if ("notes".equals(error)) {
             model.addAttribute("notesError", true);
         }
+        if ("observation".equals(error)) {
+            model.addAttribute("observationError", true);
+        }
         return "insects/family";
     }
 
@@ -567,12 +578,16 @@ public class InsectsController {
     }
 
     @GetMapping("/orders/{name}")
-    String orderDetail(@PathVariable String name,
+    String orderDetail(@PathVariable InsectOrderName name,
                         @RequestParam(name = "error", required = false) String error,
-                        HttpServletRequest request, Model model) {
-        var rankPage = insectViewQuery.rankPage(InsectOrderName.of(name), currentNaturalist(request).orElse(null));
-        if (rankPage.isEmpty()) {
-            return "redirect:/insects/orders";
+                        HttpServletRequest request, HttpServletResponse response, Model model) {
+        MethodObserver methodObserver = OBSERVER.forMethod("orderDetail");
+        if (invalidName(methodObserver, name)) {
+            return notFound(response, model, name, "/insects/orders");
+        }
+        var rankPage = insectViewQuery.rankPage(name, currentNaturalist(request).orElse(null));
+        if (unknownName(methodObserver, rankPage.isPresent())) {
+            return notFound(response, model, name, "/insects/orders");
         }
         InsectOrderInfo order = rankPage.get().insect().order().info();
         var description = order.description();
@@ -588,6 +603,9 @@ public class InsectsController {
         if ("notes".equals(error)) {
             model.addAttribute("notesError", true);
         }
+        if ("observation".equals(error)) {
+            model.addAttribute("observationError", true);
+        }
         return "insects/order";
     }
 
@@ -601,12 +619,16 @@ public class InsectsController {
     }
 
     @GetMapping("/genera/{name}")
-    String genusDetail(@PathVariable String name,
+    String genusDetail(@PathVariable InsectGenusName name,
                         @RequestParam(name = "error", required = false) String error,
-                        HttpServletRequest request, Model model) {
-        var rankPage = insectViewQuery.rankPage(InsectGenusName.of(name), currentNaturalist(request).orElse(null));
-        if (rankPage.isEmpty()) {
-            return "redirect:/insects/genera";
+                        HttpServletRequest request, HttpServletResponse response, Model model) {
+        MethodObserver methodObserver = OBSERVER.forMethod("genusDetail");
+        if (invalidName(methodObserver, name)) {
+            return notFound(response, model, name, "/insects/genera");
+        }
+        var rankPage = insectViewQuery.rankPage(name, currentNaturalist(request).orElse(null));
+        if (unknownName(methodObserver, rankPage.isPresent())) {
+            return notFound(response, model, name, "/insects/genera");
         }
         Insect insect = rankPage.get().insect();
         InsectGenusInfo genus = insect.genus().info();
@@ -624,6 +646,9 @@ public class InsectsController {
         model.addAttribute("ancestorIntros", introsForGenus(order, family));
         if ("notes".equals(error)) {
             model.addAttribute("notesError", true);
+        }
+        if ("observation".equals(error)) {
+            model.addAttribute("observationError", true);
         }
         return "insects/genus";
     }
@@ -647,13 +672,17 @@ public class InsectsController {
     }
 
     @GetMapping("/{name}")
-    String detail(@PathVariable String name,
+    String detail(@PathVariable InsectSpeciesName name,
                   @RequestParam(name = "error", required = false) String error,
-                  HttpServletRequest request, Model model) {
+                  HttpServletRequest request, HttpServletResponse response, Model model) {
+        MethodObserver methodObserver = OBSERVER.forMethod("detail");
+        if (invalidName(methodObserver, name)) {
+            return notFound(response, model, name, "/insects/species");
+        }
         java.util.Optional<com.naturalist.naturalist.NaturalistName> viewer = currentNaturalist(request);
-        var rankPage = insectViewQuery.rankPage(InsectSpeciesName.of(name), viewer.orElse(null));
-        if (rankPage.isEmpty()) {
-            return "redirect:/insects";
+        var rankPage = insectViewQuery.rankPage(name, viewer.orElse(null));
+        if (unknownName(methodObserver, rankPage.isPresent())) {
+            return notFound(response, model, name, "/insects/species");
         }
         Insect i = rankPage.get().insect();
         InsectSpeciesInfo s = i.species().info();
@@ -669,6 +698,9 @@ public class InsectsController {
         }
         if ("notes".equals(error)) {
             model.addAttribute("notesError", true);
+        }
+        if ("observation".equals(error)) {
+            model.addAttribute("observationError", true);
         }
         if ("busy".equals(error)) {
             model.addAttribute("busyError", true);
@@ -697,22 +729,26 @@ public class InsectsController {
     }
 
     @PostMapping("/{name}/observe")
-    String observe(@PathVariable String name,
+    String observe(@PathVariable InsectSpeciesName name,
                    @RequestParam(name = "notes", required = false) String notes,
                    HttpServletRequest request) {
+        MethodObserver methodObserver = OBSERVER.forMethod("observe");
+        if (invalidName(methodObserver, name)) {
+            return "redirect:/insects/species?error=name";
+        }
         java.util.Optional<com.naturalist.naturalist.NaturalistName> me = currentNaturalist(request);
         if (me.isEmpty()) {
             return "redirect:/insects/" + name;
         }
-        if (notesTooLong(OBSERVER.forMethod("observe"), notes)) {
+        if (notesTooLong(methodObserver, notes)) {
             return "redirect:/insects/" + name + "?error=notes";
         }
-        insectCommand.sightings().record(InsectSpeciesName.of(name), me.get(), notes);
+        insectCommand.sightings().record(name, me.get(), notes);
         return "redirect:/insects/" + name;
     }
 
     @PostMapping("/{name}/images")
-    String addImage(@PathVariable String name,
+    String addImage(@PathVariable InsectSpeciesName name,
                     @RequestParam("image") MultipartFile imageFile,
                     @RequestParam(name = "location", required = false) String location,
                     @RequestParam(name = "notes", required = false) String notes,
@@ -720,10 +756,12 @@ public class InsectsController {
                     @RequestParam(name = "areaLon", required = false) String areaLon,
                     HttpServletRequest request) throws IOException {
         MethodObserver methodObserver = OBSERVER.forMethod("addImage");
+        if (invalidName(methodObserver, name)) {
+            return "redirect:/insects/species?error=name";
+        }
         if (notesTooLong(methodObserver, notes)) {
             return "redirect:/insects/" + name + "?error=notes";
         }
-        var species = InsectSpeciesName.of(name);
         var me = currentNaturalist(request);
         GridCell area = GridCell.of(areaLat, areaLon);
         if (areaOffTheLattice(methodObserver, area)) {
@@ -742,7 +780,7 @@ public class InsectsController {
             return "redirect:/insects/" + name + "?error=image";
         }
         try {
-            insectCommand.photos().add(species, upload, me.orElse(null), notes, location, area);
+            insectCommand.photos().add(name, upload, me.orElse(null), notes, location, area);
         } catch (ImageRefusedException unstorable) {
             // the store refused the photo's body (counted there) -- nothing is stored
             return "redirect:/insects/" + name + "?error=image";
@@ -769,6 +807,37 @@ public class InsectsController {
     }
 
     /**
+     * Answers a request for a name the catalog does not hold with the not-found page and a 404, linking back to
+     * the list {@code back}. The caller has already observed why (invalid slug or unknown name).
+     */
+    private static String notFound(HttpServletResponse response, Model model, EntityName name, String back) {
+        response.setStatus(HttpServletResponse.SC_NOT_FOUND);
+        model.addAttribute("name", name.value());
+        model.addAttribute("back", back);
+        return "insects/not-found";
+    }
+
+    /** Observes whether a valid name found a catalog entry (WARN when not) and answers true when it did not. */
+    private static boolean unknownName(MethodObserver methodObserver, boolean found) {
+        return !methodObserver.state(i -> i
+                        .isTrue(found, "nameFound"))
+                .observe(Level.WARN)
+                .violations().isEmpty();
+    }
+
+    /**
+     * Stops a request whose path names no valid slug before it reaches a query or command: Spring hands the
+     * name on as given ({@code NamedValueConversion}), so the endpoint observes it here and answers true, and
+     * the caller answers as it does for an unknown name.
+     */
+    private static boolean invalidName(MethodObserver methodObserver, EntityName name) {
+        return !methodObserver.arguments(i -> i
+                        .entityName(name, "name"))
+                .observe(Level.WARN)
+                .violations().isEmpty();
+    }
+
+    /**
      * Stops a request whose claimed {@code area} is unreadable or off the lattice before the image is
      * read: observes the refusal through the endpoint's {@code methodObserver} and answers true, so the
      * caller redirects with {@code ?error=area}. No claimed cell ({@code null}) is not a refusal.
@@ -782,25 +851,27 @@ public class InsectsController {
 
     @PostMapping("/{name}/notes")
     String updateNotes(@PathVariable String name,
-                       @RequestParam("observationId") String observationId,
+                       @RequestParam(name = "observationId", required = false) @Nullable InsectObservationId observationId,
                        @RequestParam("notes") String notes,
                        @RequestParam(value = "returnPath", required = false) String returnPath,
                        HttpServletRequest request) {
         var destination = safeReturnPath(returnPath, "/insects/" + name);
-        if (notesTooLong(OBSERVER.forMethod("updateNotes"), notes)) {
+        MethodObserver methodObserver = OBSERVER.forMethod("updateNotes");
+        if (notesTooLong(methodObserver, notes)) {
             return "redirect:" + destination + (destination.contains("?") ? "&" : "?") + "error=notes";
         }
-        InsectObservationId obsId;
-        try {
-            obsId = InsectObservationId.of(java.util.UUID.fromString(observationId));
-        } catch (IllegalArgumentException e) {
-            // Malformed observationId -- same outcome as not-found, not a 500.
-            return "redirect:" + destination;
+        if (!methodObserver.arguments(i -> i
+                        .entityId(observationId, "observationId"))
+                .observe(Level.WARN)
+                .violations().isEmpty()) {
+            // a missing, malformed or non-v7 observationId (Spring hands an unreadable one on as null). It names no
+            // observation, so saying so leaks nothing about who owns one (a non-owner's edit stays silent below).
+            return "redirect:" + destination + (destination.contains("?") ? "&" : "?") + "error=observation";
         }
         // The sighting port owns the ownership rule: a missing id or a non-owner changes nothing
         // and looks identical to the caller (no 403, so nothing leaks about who owns what).
         currentNaturalist(request).ifPresent(viewer ->
-                insectCommand.sightings().updateNotes(obsId, viewer, notes));
+                insectCommand.sightings().updateNotes(observationId, viewer, notes));
         return "redirect:" + destination;
     }
 
@@ -828,10 +899,14 @@ public class InsectsController {
     }
 
     @GetMapping("/{name}/life-stages")
-    String lifeStages(@PathVariable String name, Model model) {
-        var insect = insectQuery.getByName(InsectSpeciesName.of(name));
-        if (insect.isEmpty()) {
-            return "redirect:/insects";
+    String lifeStages(@PathVariable InsectSpeciesName name, HttpServletResponse response, Model model) {
+        MethodObserver methodObserver = OBSERVER.forMethod("lifeStages");
+        if (invalidName(methodObserver, name)) {
+            return notFound(response, model, name, "/insects/species");
+        }
+        var insect = insectQuery.getByName(name);
+        if (unknownName(methodObserver, insect.isPresent())) {
+            return notFound(response, model, name, "/insects/species");
         }
         Insect i = insect.get();
         InsectSpeciesInfo s = i.species().info();

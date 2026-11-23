@@ -16,6 +16,7 @@
 @param List<AncestorIntro> ancestorIntros = List.of()
 @param GlossaryLinker glossaryLinker = GlossaryLinker.none()
 @param boolean notesError = false
+@param boolean observationError = false
 
 !{var insect = page.insect();}
 !{var children = insect.children();}
@@ -55,7 +56,8 @@
         returnPath = "/insects/families/" + family.name().value(),
         csrfParam = _csrfParam,
         csrfToken = _csrfToken,
-        notesError = notesError)
+        notesError = notesError,
+        observationError = observationError)
 
     <section>
         <h2>Genera in this family</h2>
