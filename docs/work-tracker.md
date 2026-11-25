@@ -35,7 +35,7 @@ work comes first; the paused engineering threads follow.
 | Effort | State | Where | Left |
 |--------|-------|-------|------|
 | Public launch ([plan](plans/2026-11-05-public-launch-work-plan.md), [checklist](hosting-readiness.md)) | In progress | main | Phase 0 ✅. Phase 1: 1.1, 1.3, 1.4, 1.6, 1.7 ✅; **1.2** (Pat), **1.5**, **1.8** open. Phases 2–4 not started. Pat also owes a `backyardnaturalist.app` address in `secrets/alert-email` on the host |
-| Java4Shell hardening ([plan](../Naturalist%20Java4Shell%20hardening%20plan.md), untracked file at repo root) | In progress | WI-1 `f8d9de23` | WI-1 ✅ (verified on arm64 only). WI-5 ✅ (`62f05c18` SECURITY.md; private reporting, Dependabot alerts, CodeQL on). WI-6 part done (read-only token `9e27d97f`; SHA pinning and Dependabot for actions open). WI-7 ✅ ("main safety net" ruleset). **WI-2, WI-3, WI-4, WI-8 open.** Deploy WI-1 to the host once one exists |
+| Java4Shell hardening ([plan](plans/2026-11-19-java4shell-hardening-plan.md)) | In progress | WI-1 `f8d9de23` | WI-1 ✅ (verified on arm64 only). WI-5 ✅ (`62f05c18` SECURITY.md; private reporting, Dependabot alerts, CodeQL on). WI-6 part done (read-only token `9e27d97f`; SHA pinning and Dependabot for actions open). WI-7 ✅ ("main safety net" ruleset). **WI-2, WI-3, WI-4, WI-8 open.** Deploy WI-1 to the host once one exists |
 | Cloudflare edge ([ADR-027](adr/ADR-027-cloudflare-edge-and-abuse-protection.md)) | Code done | PRs 1–7 on main | Real-widget login check and deployment (launch 4.1, 4.2) |
 | Secrets + model spend ([ADR-028](adr/ADR-028-secrets-and-model-spend-protection.md)) | Code done | main | Operational only: step 0 vendor workspaces/limits/keys (launch 2.1), step 7 rotation rehearsal (4.8), step 8 deploy config + forged-address check + refusal alert rule (4.3). Turnstile secret is on `SecretProvider` ✅ |
 | Named-value serialization ([design](plans/2026-11-18-named-value-serialization-design.md)) | Paused 2026-11-22 | steps 1–2 + insects step 3 on main | Step 3 for 7 more controllers, then arm `TypedPathVariable` |
@@ -61,7 +61,6 @@ service; 2.6 who gets identification at launch; a metrics backend.
 **Small calls:**
 - Is a core module's test-scope dependency on another domain's `-test-context` within "core depends only on apis"?
 - The Battus genus description says "(see InsectSpecies.chemicalDefense)": drop or reword (needs a test-DB reseed).
-- Move the Java4Shell plan into `docs/plans/`?
 
 **Housekeeping:**
 - Delete the leftover `~/dev` folders from the history rewrite. `naturalist-old-history`, `naturalist-backup-2026-09-26.git` and `public/naturalist` still contain the address.
