@@ -64,7 +64,6 @@ service; 2.6 who gets identification at launch; a metrics backend.
 
 **Housekeeping:**
 - Delete the leftover `~/dev` folders from the history rewrite. `naturalist-old-history`, `naturalist-backup-2026-09-26.git` and `public/naturalist` still contain the address.
-- Remove the merged worktrees and branches listed below.
 - Review GitHub installed apps, tokens and SSH keys; save recovery codes in 1Password.
 
 ## Small backlog
@@ -74,13 +73,16 @@ service; 2.6 who gets identification at launch; a metrics backend.
 - Traffic snapshot job: a failed run only writes a FAILED line to `~/dev/naturalist-traffic/snapshot.log`.
 - Kaname engine issues #1 and #2 (kaname-evaluators), waiting on the engine team.
 
-## Merged worktrees and branches (safe to remove)
+## Worktrees and branches
 
-All fully merged into `main`:
-- Worktrees `agitated-bartik-83b314`, `java4shell-base64-intrinsic-c45d1f`, `test-stub-cleanup` (holds an uncommitted copy of `temp/kaname-engine-evaluation.md`; copy it out first) and `observable-request-472254` (clean; recreate when named values resumes).
-- Branches `feature/dynamic-test-contexts`, `feature/photo-location-privacy`, `fix/serve-and-cleanup-observability`, `backup/main-before-rebase-2026-11-15`.
+Cleaned up 2026-11-25: four merged worktrees and seven merged branches removed. The only worktree left
+is `observe-every-throw-8d0d18`, kept because it carries open PR #3. Recreate a worktree when named
+values resumes.
 
-Keep `observe-every-throw-8d0d18`: it carries open PR #3.
+Still to delete (Pat; both fully on `main`):
+- Local `backup/main-before-rebase-2026-11-15`: pre-rebase copies of the photo-sizes commits, each patch-equivalent to one on main.
+- Local and remote `fix/serve-and-cleanup-observability`: `3e314273` is on main.
+- The empty `.claude/worktrees/notes-length-18afa0` folder.
 
 ## Later (designed or noted, not scheduled)
 
