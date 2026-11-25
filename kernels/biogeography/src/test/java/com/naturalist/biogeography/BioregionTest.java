@@ -1,6 +1,7 @@
 package com.naturalist.biogeography;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.naturalist.exception.InvariantViolationException;
 import com.naturalist.fieldnotes.Description;
 import com.naturalist.observability.InvariantObservation;
 import com.naturalist.observability.MethodObserver;
@@ -60,8 +61,8 @@ class BioregionTest {
     @Test
     void unknownSlugThrows() {
         assertThatThrownBy(() -> Bioregion.of("atlantis"))
-                .isInstanceOf(IllegalArgumentException.class)
-                .hasMessageContaining("atlantis");
+                .isInstanceOf(InvariantViolationException.class)
+                .hasMessageContaining("[Bioregion.of.bioregion]");
     }
 
     @Test

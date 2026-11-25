@@ -72,12 +72,7 @@ final class InsectCladeAnchors {
     }
 
     private static boolean isClade(String slug) {
-        try {
-            Clade.of(slug);
-            return true;
-        } catch (IllegalArgumentException e) {
-            return false;
-        }
+        return Clade.find(slug).isPresent();
     }
 
     record LineageEntry(String slug, String displayName) {

@@ -27,7 +27,7 @@ work comes first; the paused engineering threads follow.
 | 7  | **Launch phases 2–3: outside accounts and production** (vendor workspace + spend limit, Cloudflare zone, email + SPF/DKIM, heartbeat, VM, secrets, tunnel, backups) | Pat (+ Claude for 3.3, 3.5) | M–L | Needs #1 |
 | 8  | **Launch phase 4: prove it unannounced** (real widget, edge checks, Secure cookie, real identification, email, rotation rehearsal, restore) | Both | M | Needs #7 |
 | 9  | **Named values step 3**: plants controller (8 markers) → chemistry 4 → garden 3 → soil / glossary / concepts / registration 1 each; then `TypedPathVariable` joins `EnforceArchitecture` | Claude | M | Paused 2026-11-22 mid-sweep; four Pat decisions listed below |
-| 10 | **Observability: settle PR #3, then resume the sweep**: path-mode reviews (plants, insects-console); rework, merge or close PR #3 (slice 3); slices 4–8 | Pat → Claude | L | On hold until Pat finishes reviewing the rules; PL-19 shipped and unblocks 5 catch sites |
+| 10 | **Observability: resume the sweep**: path-mode reviews (plants, insects-console); slices 4–8, plus the 5 catch sites PL-19 unblocks | Pat → Claude | L | Slices 1–3 on main (PR #3 merged 2026-11-25); on hold until Pat finishes reviewing the rules |
 | 11 | **Small backlog** (see the table below) | Claude | S each | Fill-in work |
 
 ## Active efforts
@@ -40,7 +40,7 @@ work comes first; the paused engineering threads follow.
 | Secrets + model spend ([ADR-028](adr/ADR-028-secrets-and-model-spend-protection.md)) | Code done | main | Operational only: step 0 vendor workspaces/limits/keys (launch 2.1), step 7 rotation rehearsal (4.8), step 8 deploy config + forged-address check + refusal alert rule (4.3). Turnstile secret is on `SecretProvider` ✅ |
 | Named-value serialization ([design](plans/2026-11-18-named-value-serialization-design.md)) | Paused 2026-11-22 | steps 1–2 + insects step 3 on main | Step 3 for 7 more controllers, then arm `TypedPathVariable` |
 | Observability standards + reviewer ([standards](observability-standards.md)) | Paused | main | Next path-mode chunks: plants, insects-console. Optional Sonnet trial of the reviewer |
-| Observe-every-throw sweep ([plan](plans/2026-11-14-observe-every-throw-plan.md)) | On hold since 2026-11-15 | slices 1–2 on main (PR #2); slice 3 = PR #3 **open**, `f068ba13` | Pat decides PR #3; re-check slices 1–3 against the standards; slices 4–8 |
+| Observe-every-throw sweep ([plan](plans/2026-11-14-observe-every-throw-plan.md)) | On hold since 2026-11-15 | slices 1–3 on main (PR #2, PR #3 merged 2026-11-25) | Re-check slices 1–3 against the standards; slices 4–8 |
 | Security review follow-ups ([notes](notes/2026-11-03-security-review.md)) | Open | — | S1 closes with launch 1.5; S2 is checked at launch 4.3 |
 
 ## Waiting on Pat
@@ -56,7 +56,6 @@ service; 2.6 who gets identification at launch; a metrics backend.
 - Whether the standards gain a named-value-edge rule.
 - The deferred `InsectsController.addImage` diff.
 - Existing-code rows in `InsectIdentificationCommandImpl`: J2, M4, M8, M11.
-- PR #3.
 
 **Small calls:**
 - Is a core module's test-scope dependency on another domain's `-test-context` within "core depends only on apis"?
@@ -75,9 +74,9 @@ service; 2.6 who gets identification at launch; a metrics backend.
 
 ## Worktrees and branches
 
-Cleaned up 2026-11-25: four merged worktrees and seven merged branches removed. The only worktree left
-is `observe-every-throw-8d0d18`, kept because it carries open PR #3. Recreate a worktree when named
-values resumes.
+Cleaned up 2026-11-25: four merged worktrees and seven merged branches removed. The last one,
+`observe-every-throw-8d0d18` (PR #3), is merged too and can be removed with its branch
+`claude/observe-every-throw-8d0d18`. Recreate a worktree when named values resumes.
 
 Still to delete (Pat; both fully on `main`):
 - Local `backup/main-before-rebase-2026-11-15`: pre-rebase copies of the photo-sizes commits, each patch-equivalent to one on main.
@@ -113,6 +112,7 @@ Still to delete (Pat; both fully on `main`):
 | Serve/cleanup observability fixes | 2026-11-19 | `3e314273` |
 | Java4Shell WI-1: `-XX:-UseBASE64Intrinsics` | 2026-11-19 | `f8d9de23` |
 | Observability standards + reviewer agent; image-store path review | 2026-11-18 | `861a4467`..`a90d4653`, `8dc6b59e` |
+| Observe-every-throw slice 3 (PR #3): `Clade.find` / `Bioregion.find`, catalog assemblies, `RankNameDeserializer` | 2026-11-25 | `4af1d00d` |
 | PL-19 `noticeError` caught-failure counter (PR #4) | 2026-11-15 | `a1a5cec6` |
 | Observe-every-throw slices 1–2 (PR #2) | 2026-11-14 | `2243a37c` |
 | Dynamic test contexts, all nine domains; Mockito excluded from Spring test starters | 2026-11-07 | `10665af4`, `7af7e140` |

@@ -315,12 +315,11 @@ public class PlantsController {
      */
     @GetMapping("/clades/{slug}")
     String cladeDetail(@PathVariable String slug, Model model) {
-        Clade clade;
-        try {
-            clade = Clade.of(slug);
-        } catch (IllegalArgumentException notAClade) {
+        Optional<Clade> found = Clade.find(slug);
+        if (found.isEmpty()) {
             return "redirect:/plants/orders";
         }
+        Clade clade = found.get();
         if (PlantCladeTree.isAnimal(clade)) {
             return "redirect:/insects/clades/" + slug;
         }

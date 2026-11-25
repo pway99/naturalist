@@ -5,6 +5,7 @@ import com.naturalist.catalog.DomainId;
 import com.naturalist.catalog.EntityRef;
 import com.naturalist.catalog.SearchResults;
 import com.naturalist.ddd.EntityName;
+import com.naturalist.exception.InvariantViolationException;
 import com.naturalist.insects.InsectRankName;
 import com.naturalist.insects.InsectSpeciesName;
 import com.naturalist.persistence.test.RdbmsTestExtension;
@@ -69,7 +70,7 @@ class RdbmsCatalogIT {
         Map<String, Function<String, EntityName>> incomplete = new HashMap<>(CatalogTestRegistry.reconstructors());
         incomplete.remove("insect-order");
 
-        assertThrows(IllegalStateException.class, () -> RdbmsCatalogAssembly.from(
+        assertThrows(InvariantViolationException.class, () -> RdbmsCatalogAssembly.from(
                 rdbms.mapper(CatalogSearchMapper.class),
                 CatalogTestRegistry.domains(), incomplete, List.of(), Resilience.noOp()));
     }
@@ -87,7 +88,7 @@ class RdbmsCatalogIT {
         List<DomainId> domains = new ArrayList<>(CatalogTestRegistry.domains());
         domains.add(new RogueInsects());
 
-        assertThrows(IllegalArgumentException.class, () -> RdbmsCatalogAssembly.from(
+        assertThrows(InvariantViolationException.class, () -> RdbmsCatalogAssembly.from(
                 rdbms.mapper(CatalogSearchMapper.class),
                 domains, CatalogTestRegistry.reconstructors(), List.of(), Resilience.noOp()));
     }
