@@ -301,10 +301,20 @@ A plain result record handed back to startup or tooling code (a tally such as
 `invariants()`. Pat, 2026-11-17.
 
 The same goes for any constraint, inside `invariants()` or not: **a constraint that can never fail
-is a finding.** It checks something that is always true (a record's `toString()`, a value already
-guaranteed by an earlier check), so it looks like an observation but counts nothing. Example:
+by construction is a finding.** It checks something the same code already guarantees (a record's
+`toString()`, a value built on the previous line, a value already guaranteed by an earlier check in
+the same method), so it looks like an observation but counts nothing. Example:
 `isTrue(!stored.toString().isBlank(), "storedNamed")` is never false, because a record's
 `toString()` is `FileName[value=…]`; observe `valueObject(stored, "stored")` or `stored.isValid()`.
+
+**A guard is not a finding.** A constraint that cannot fail only because of how *other* code
+behaves today is a guard: a producer's unwritten contract, or a cross-field rule the factory
+happens to satisfy. It is what catches the refactor that breaks the contract, and removing it
+lowers the confidence a refactor needs. Keep it, and name the contract it guards. Example: a rank
+page's `isTrue(plant, Plant::hasSpecies, "hasSpecies")` cannot fail while `PlantFactory.buildByName`
+always sets the asked-for rung, but a query that degrades to the genus would trip it. It would not
+render a species page with no species. The test: *does it fail only if code elsewhere changes?* Then
+it is a guard. Pat, 2026-11-26.
 
 **Exception: a restricted path announces itself.** Under `MonitoringMode.ALWAYS`, a constraint
 placed inside the branch it names counts every entry to that branch. That is a deliberate
@@ -550,3 +560,6 @@ None.
 - A constraint that can never fail is still kept when, under `ALWAYS`, it sits inside a restricted
   branch and counts entries to it (the config-admin login): a critical non-error signal for the
   maintainer (J5). Pat, 2026-11-25.
+- A constraint that can't fail today only because other code keeps a contract is a guard, kept
+  and named after the contract it guards. Only a constraint that can never fail by construction is
+  a finding (J5). Removing guards lowers the confidence a refactor needs. Pat, 2026-11-26.
