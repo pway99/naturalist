@@ -70,6 +70,10 @@ updates:
       - dependency-name: "org.junit.jupiter:*"
       - dependency-name: "org.assertj:assertj-core"
       - dependency-name: "net.bytebuddy:*"
+      # 3.38.0 imports org.openrewrite:rewrite-bom:8.91.0, which was never published to Maven
+      # Central (PR #9). Skip that release only, so a fixed one still comes through.
+      - dependency-name: "org.openrewrite.recipe:rewrite-recipe-bom"
+        versions: ["3.38.0"]
     groups:
       spring-boot:
         patterns: ["org.springframework.boot:*"]
