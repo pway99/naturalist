@@ -116,7 +116,7 @@ git commit -m "feat(plants): findByName answers the nearest plant the catalog ho
 
 **Interfaces:**
 - Consumes: `PlantQuery.findByName`, `PlantMatch` (Task 1).
-- Produces: `genusDetail(@PathVariable("name") PlantGenusName genusName, @RequestParam(name = "missing", required = false) @Nullable PlantSpeciesName missing, HttpServletResponse, Model)`, and the model attribute `missing` (`String` or absent).
+- Produces: `genusDetail(@PathVariable("name") PlantGenusName genusName, @RequestParam(name = "missing", required = false) @Nullable PlantSpeciesName missing, HttpServletResponse, Model)`, and the model attribute `missing` (`PlantSpeciesName` or absent).
 
 - [ ] **Step 1: Write the failing tests** (in the edge test; replace `detail_unknownName_isNotFound_andIsCounted`'s path with one whose genus is also unknown — it already is, `unobtainium-vine`)
 
@@ -159,7 +159,7 @@ Expected: the redirect test gets 404; the note test finds no "No record for".
 
 `genusDetail`:
 - Check `missing` with `arguments(c -> c.whenNotNull(missing, ...entityName(missing, "missing")))`, observed at INFO and folded into the existing `genusName` check.
-- Pass `missing.value()` to `genusPage` only when it is present and valid, else `null`.
+- Pass `missing` to `genusPage` only when it is present, valid and of this genus (`PlantMatch.genusOf(missing).equals(genusName)`), else `null`.
 
 `genusPage`:
 - Gains a `@Nullable PlantSpeciesName missing` parameter and sets the model attribute when it is non-null.

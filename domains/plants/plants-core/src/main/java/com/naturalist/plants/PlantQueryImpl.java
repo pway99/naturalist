@@ -124,7 +124,7 @@ class PlantQueryImpl implements PlantQuery {
                 ? nearest(name)
                 : Optional.of(new PlantMatch(name, name, exact.get()));
         // a match that breaks its own rules is a fault in this producer, not a signal about the asked name
-        match.ifPresent(m -> methodObserver.observable(m, "match").observe(Level.WARN));
+        match.ifPresent(m -> methodObserver.state(c -> c.valueObject(m, "match")).observe(Level.WARN));
         return match;
     }
 
