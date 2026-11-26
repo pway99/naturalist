@@ -47,8 +47,19 @@ public interface PlantQuery {
      * The composed {@link Plant} read model for a taxon at the given rank — the rank
      * record plus its resolved ancestry spine (later chunks fold in features, children,
      * role, images, and species extras). Empty when no entity exists at that rank name.
+     * Exact: it never answers a different name than the one asked for. See
+     * {@link #findByName(PlantRankName)} for the nearest-match sibling.
      */
     Optional<Plant> getByName(PlantRankName rankName);
+
+    /**
+     * The plant asked for or, failing that, the nearest one the catalog holds. A species the
+     * catalog lacks answers its genus (the first segment of the binomial slug); the answer says
+     * which name it found through {@link PlantMatch#found()}, and {@link PlantMatch#exact()}
+     * is false. Genus, family and order misses are empty. Unlike {@link #getByName(PlantRankName)},
+     * the answer may be at a different rank than the one asked for.
+     */
+    Optional<PlantMatch> findByName(PlantRankName name);
 
     interface SpeciesQuery extends EntityQuery<PlantSpeciesName, PlantSpecies, SpeciesCollection> {
 

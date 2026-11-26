@@ -1,6 +1,7 @@
 package com.naturalist.plants;
 
 import com.naturalist.infrastructure.DomainService;
+import com.naturalist.observability.Level;
 import com.naturalist.observability.Observer;
 import com.naturalist.plants.cultivar.CultivarQuery;
 import com.naturalist.plants.management.PlantProgramQuery;
@@ -10,6 +11,8 @@ import java.util.Optional;
 
 @DomainService
 class PlantQueryImpl implements PlantQuery {
+
+    private static final Observer OBSERVER = Observer.forClass(PlantQueryImpl.class);
 
     private final SpeciesQuery plantEntityQuery;
     private final OrderQuery plantOrderEntityQuery;
@@ -107,5 +110,29 @@ class PlantQueryImpl implements PlantQuery {
     @Override
     public Optional<Plant> getByName(PlantRankName name) {
         return plantFactory.buildByName(name);
+    }
+
+    @Override
+    public Optional<PlantMatch> findByName(PlantRankName name) {
+        OBSERVER.arguments("findByName", i -> i.identifier(name, "name")).throwWhenInvalid();
+        Optional<Plant> exact = getByName(name);
+        if (OBSERVER.state("findByName", c -> c.isPresent(exact, "exact")).observe(Level.INFO).isNotValid()) {
+            return nearest(name);
+        }
+        return Optional.of(new PlantMatch(name, name, exact.get()));
+    }
+
+    /** The catalog lacks {@code name}: only a species climbs, to the genus its binomial slug names. */
+    private Optional<PlantMatch> nearest(PlantRankName name) {
+        if (!(name instanceof PlantSpeciesName)) {
+            return Optional.empty();
+        }
+        String slug = name.value();
+        int dash = slug.indexOf('-');
+        PlantGenusName genus = PlantGenusName.of(dash < 0 ? slug : slug.substring(0, dash));
+        if (!genus.isValid()) {
+            return Optional.empty();
+        }
+        return getByName(genus).map(plant -> new PlantMatch(name, genus, plant));
     }
 }
