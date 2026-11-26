@@ -45,7 +45,7 @@ services:
 
   # The only way in. It connects out to the edge and publishes nothing.
   cloudflared:
-    image: cloudflare/cloudflared:2026.10.7
+    image: cloudflare/cloudflared:2026.11.1
     restart: unless-stopped
     command: tunnel --no-autoupdate run
     environment:
