@@ -6,6 +6,10 @@
 #   Production: docker compose -f compose.yaml -f compose.production.yaml up -d
 #
 # First run: deploy/create-secrets.sh, and see docs/runbooks/local-stack.md.
+#
+# Outbound access (ADR-029): app, db and db-init sit on `internal` alone, which has no route out
+# and resolves container names only. The app reaches the outside through egress-proxy, which allows
+# a short list of hosts. Prove it with deploy/egress-proxy/check.sh.
 
 name: naturalist
 
@@ -27,6 +31,7 @@ services:
       timeout: 5s
       retries: 20
     mem_limit: 512m
+    networks: [internal]
 
   # One-shot. Safe on every start: see DeploymentDbInitializer.
   db-init:
@@ -47,6 +52,7 @@ services:
     depends_on:
       db:
         condition: service_healthy
+    networks: [internal]
 
   app:
     image: naturalist-app:${NATURALIST_VERSION:-local}
@@ -55,6 +61,8 @@ services:
       target: app
     restart: unless-stopped
     environment:
+      # Every HTTPS call (the model API, the challenge check) goes through the allowlist proxy.
+      JAVA_OPTS: -Dhttps.proxyHost=egress-proxy -Dhttps.proxyPort=3128
       SPRING_CONFIG_IMPORT: configtree:/run/secrets/app/
       SPRING_DATASOURCE_URL: jdbc:postgresql://db:5432/naturalist
       SPRING_DATASOURCE_USERNAME: naturalist
@@ -82,11 +90,38 @@ services:
       retries: 30
       start_period: 30s
     mem_limit: 1536m
+    networks: [internal]
     depends_on:
       db:
         condition: service_healthy
       db-init:
         condition: service_completed_successfully
+      egress-proxy:
+        condition: service_healthy
+
+  # The app's only way out: CONNECT tunnels to the hosts in deploy/egress-proxy/squid.conf.template,
+  # nothing else (ADR-029). On both networks, so it is the one bridge between them. No port.
+  egress-proxy:
+    image: ubuntu/squid:6.6-24.04_edge@sha256:d9c34c5ab74c6dd41cf1070d9b4221aac072e67e983527ca2d41512958f77506
+    restart: unless-stopped
+    entrypoint: ["/etc/egress-proxy/start.sh"]
+    volumes:
+      - ./deploy/egress-proxy:/etc/egress-proxy:ro
+    read_only: true
+    tmpfs:
+      - /tmp
+      - /run
+      - /var/spool/squid
+      # Bounded: tmpfs pages count against mem_limit. squid.conf.template rotates every minute.
+      - /var/log/squid:size=16m
+    # A real request, so Squid answers it (403) and squid.conf.template keeps it out of the log.
+    healthcheck:
+      test: ["CMD", "bash", "-c", "exec 3<>/dev/tcp/127.0.0.1/3128 && printf 'GET http://healthcheck.invalid/ HTTP/1.0\\r\\n\\r\\n' >&3 && read -r -t 3 line <&3 && [[ $$line == HTTP/* ]]"]
+      interval: 5s
+      timeout: 5s
+      retries: 20
+    mem_limit: 128m
+    networks: [internal, default]
 
   # Reads the app's management port over this private network. See deploy/prometheus.
   prometheus:
@@ -107,6 +142,8 @@ services:
       timeout: 5s
       retries: 10
     mem_limit: 256m
+    # internal to scrape the app; default to reach Alertmanager.
+    networks: [internal, default]
     depends_on:
       - alertmanager
 
@@ -123,6 +160,12 @@ services:
       timeout: 5s
       retries: 10
     mem_limit: 64m
+
+networks:
+  # No route out, and Docker's DNS answers container names only (Docker Engine 26 or later).
+  internal:
+    internal: true
+  default: {}
 
 volumes:
   db-data:

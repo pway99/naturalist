@@ -10,6 +10,9 @@ services:
       SPRING_MAIL_USERNAME: ${SPRING_MAIL_USERNAME:?set the mail username}
       SPRING_MAIL_PROPERTIES_MAIL_SMTP_AUTH: "true"
       SPRING_MAIL_PROPERTIES_MAIL_SMTP_STARTTLS_ENABLE: "true"
+      # Mail leaves through the allowlist proxy too, as a CONNECT tunnel (ADR-029).
+      SPRING_MAIL_PROPERTIES_MAIL_SMTP_PROXY_HOST: egress-proxy
+      SPRING_MAIL_PROPERTIES_MAIL_SMTP_PROXY_PORT: "3128"
       NATURALIST_EMAIL_FROM: ${NATURALIST_EMAIL_FROM:?set the sending address}
       NATURALIST_EMAIL_PUBLIC_URL: https://backyardnaturalist.app
       NATURALIST_CHALLENGE_SITE_KEY: ${NATURALIST_CHALLENGE_SITE_KEY:?set the challenge site key}
@@ -25,6 +28,12 @@ services:
         target: app/naturalist.usage.alert-email
       - challenge-credential
       - model-credential
+
+  # Allows the mail host on the mail port, the same values the app uses.
+  egress-proxy:
+    environment:
+      SMTP_HOST: ${SPRING_MAIL_HOST:?set the mail host}
+      SMTP_PORT: ${SPRING_MAIL_PORT:?set the mail port}
 
   # Loopback only, so the UI is reachable through an SSH tunnel and from nowhere else.
   prometheus:
@@ -50,6 +59,8 @@ services:
     command: tunnel --no-autoupdate run
     environment:
       TUNNEL_TOKEN: ${TUNNEL_TOKEN:?set the tunnel token}
+    # internal to forward to the app; default to reach the edge. Deliberately not behind the proxy.
+    networks: [internal, default]
     depends_on:
       app:
         condition: service_healthy

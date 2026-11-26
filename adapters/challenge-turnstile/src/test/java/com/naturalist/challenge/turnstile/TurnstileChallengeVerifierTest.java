@@ -18,6 +18,9 @@ import org.junit.jupiter.params.provider.ValueSource;
 
 import java.io.IOException;
 import java.net.InetSocketAddress;
+import java.net.Proxy;
+import java.net.ProxySelector;
+import java.net.SocketAddress;
 import java.net.URI;
 import java.net.URLDecoder;
 import java.nio.charset.StandardCharsets;
@@ -86,6 +89,35 @@ class TurnstileChallengeVerifierTest {
 
         assertThat(verdict.outcome()).isEqualTo(ChallengeVerdict.Outcome.PASSED);
         assertThat(violations("challengePassed")).isZero();
+    }
+
+    /**
+     * In the deployment the JVM's proxy properties point at the egress proxy (ADR-029). A client
+     * built without a selector ignores them and tries to go direct, which the network refuses.
+     */
+    @Test
+    void request_asksTheDefaultProxySelectorWhereToConnect() {
+        respond(200, PASS_BODY);
+        List<URI> asked = new CopyOnWriteArrayList<>();
+        ProxySelector previous = ProxySelector.getDefault();
+        ProxySelector.setDefault(new ProxySelector() {
+            @Override
+            public List<Proxy> select(URI uri) {
+                asked.add(uri);
+                return List.of(Proxy.NO_PROXY);
+            }
+
+            @Override
+            public void connectFailed(URI uri, SocketAddress address, IOException failure) {
+            }
+        });
+        try {
+            verifier(Resilience.noOp()).verify(submission("a-token"));
+        } finally {
+            ProxySelector.setDefault(previous);
+        }
+
+        assertThat(asked).contains(endpoint);
     }
 
     @Test

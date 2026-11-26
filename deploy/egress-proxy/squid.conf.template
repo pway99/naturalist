@@ -1,0 +1,50 @@
+# The app's only way out (ADR-029). It tunnels HTTPS and SMTP to the hosts listed here and refuses
+# everything else. It never decrypts anything: every allowed request is a CONNECT tunnel.
+# start.sh fills in @SMTP_HOST@ and @SMTP_PORT@ and writes the result to /tmp/squid.conf.
+#
+# To allow a new host: add it to the right acl line below and to the host table in ADR-029.
+
+http_port 3128
+
+# Exact names only, never a wildcard. -n: an IP literal never matches by reverse lookup.
+acl https_hosts dstdomain -n api.anthropic.com challenges.cloudflare.com
+acl https_port port 443
+acl mail_host dstdomain -n @SMTP_HOST@
+acl mail_port port @SMTP_PORT@
+
+# Inward addresses: the cloud provider's metadata service, the host, the other containers, and an
+# allowed name that has been made to resolve to any of them.
+acl inward dst 10.0.0.0/8 172.16.0.0/12 192.168.0.0/16 127.0.0.0/8 169.254.0.0/16 fc00::/7 fe80::/10
+
+# The name and port are checked before the address. ACLs on one line are tested left to right and
+# stop at the first miss, so an unlisted name is refused without Squid ever looking it up: a lookup
+# would itself carry data out, to whoever runs that name's DNS. Only an allowed name is resolved,
+# and its address must not be inward.
+http_access deny !CONNECT
+http_access allow CONNECT https_hosts https_port !inward
+http_access allow CONNECT mail_host mail_port !inward
+http_access deny all
+
+# A tunnel only, so nothing to cache and nothing to say about the client.
+cache deny all
+cache_mem 8 MB
+pinger_enable off
+# Fail a tunnel to an unreachable host well before probe.sh stops waiting for an answer.
+connect_timeout 10 seconds
+forwarded_for delete
+
+# Every request, allowed (TCP_TUNNEL) or refused (TCP_DENIED), is logged. Squid cannot open
+# /dev/stdout once it runs as its own user, so it writes to the tmpfs and start.sh tails the files
+# into `docker compose logs`, which is the real record. start.sh rotates every minute, and one old
+# file is kept, so the tmpfs (counted against mem_limit) holds about two minutes of lines.
+# The healthcheck (compose.yaml) asks every 5 s from loopback; leave it out, or it fills the log.
+acl healthcheck src 127.0.0.1/32 ::1
+access_log stdio:/var/log/squid/access.log !healthcheck
+cache_log /var/log/squid/cache.log
+logfile_rotate 1
+pid_filename /run/squid.pid
+coredump_dir /tmp
+
+# Squid sizes its tables from the file descriptor limit, and Docker's default is huge: left alone it
+# reserves hundreds of MB. A handful of tunnels needs far fewer.
+max_filedescriptors 1024

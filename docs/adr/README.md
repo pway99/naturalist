@@ -29,6 +29,7 @@ Closed decisions are not revisited without a new ADR.
 | [ADR-026](ADR-026-resilience-first-order-concern.md)          | Resilience as a First-Order Concern                                                     | Accepted              |
 | [ADR-027](ADR-027-cloudflare-edge-and-abuse-protection.md)         | Cloudflare at the Edge; Abuse Protection for Login and Registration                       | Accepted              |
 | [ADR-028](ADR-028-secrets-and-model-spend-protection.md) | Deployment Secrets and Model Spend Protection                                      | Accepted              |
+| [ADR-029](ADR-029-egress-allowlist.md) | Egress Allowlist for the App Container | Accepted |
 
 ## Archived (rationale only, not in active read path)
 
