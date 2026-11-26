@@ -79,4 +79,25 @@ class ConditionalObservationTest {
         assertThat(answer).isEqualTo("page");
         assertThat(notValidRan).hasValue(0);
     }
+
+    @Test
+    void isTrueByFunction_nullParent_passes_andThePredicateNeverRuns() {
+        AtomicInteger ran = new AtomicInteger();
+
+        InvariantObservation observation = OBSERVER.state(i -> i
+                .notNull(null, "parent")
+                .isTrue((String) null, value -> ran.incrementAndGet() > 0, "predicate"));
+
+        assertThat(observation.violationNames()).containsExactly("ConditionalObservationTest.observe.parent");
+        assertThat(ran).hasValue(0);
+    }
+
+    @Test
+    void isTrueByFunction_failingPredicate_isViolated() {
+        InvariantObservation observation = OBSERVER.state(i -> i
+                .isTrue("", String::isEmpty, "isEmpty")
+                .isTrue("", value -> !value.isEmpty(), "notEmpty"));
+
+        assertThat(observation.violationNames()).containsExactly("ConditionalObservationTest.observe.notEmpty");
+    }
 }

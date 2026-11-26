@@ -21,6 +21,7 @@ import com.naturalist.observability.constraints.InRangeOrNullConstraint;
 import com.naturalist.observability.constraints.IsFalseConstraint;
 import com.naturalist.observability.constraints.IsPresentConstraint;
 import com.naturalist.observability.constraints.IsTrueConstraint;
+import com.naturalist.observability.constraints.IsTrueOfConstraint;
 import com.naturalist.observability.constraints.KebabFormatConstraint;
 import com.naturalist.observability.constraints.NamedEntityOrNullConstraint;
 import com.naturalist.observability.constraints.NamedValueConstraints;
@@ -44,6 +45,7 @@ import java.util.Optional;
 import java.util.Set;
 import java.util.function.Consumer;
 import java.util.function.Function;
+import java.util.function.Predicate;
 import java.lang.String;
 
 
@@ -479,6 +481,16 @@ public class Constraints {
      */
     public Constraints isTrue(boolean value, String name) {
         return add(new IsTrueConstraint(value, name));
+    }
+
+    /**
+     * By-function form of {@link #isTrue(boolean, String)}: fires a violation under {@code name} when
+     * {@code predicate} does not hold for {@code o} — {@code isTrue(plant, Plant::hasSpecies, "hasSpecies")}, named
+     * after the predicate method. The predicate runs only on a non-null {@code o}; a null {@code o} passes, so pair it
+     * with the constraint that checks {@code o} itself ({@code readModel(plant, "plant")}), which counts the null once.
+     */
+    public <O> Constraints isTrue(@Nullable O o, Predicate<O> predicate, String name) {
+        return add(new IsTrueOfConstraint<>(o, predicate, name));
     }
 
     /**
