@@ -51,7 +51,7 @@
         <spring-context-version>7.0.9</spring-context-version>
 
         <!-- Persistence -->
-        <mybatis-version>3.5.19</mybatis-version>
+        <mybatis-version>3.6.0</mybatis-version>
         <mybatis-spring-boot-starter-version>4.1.0</mybatis-spring-boot-starter-version>
         <postgresql-version>42.7.13</postgresql-version>       <!-- Boot-managed -->
         <hikaricp-version>7.0.2</hikaricp-version>             <!-- Boot-managed -->
@@ -76,13 +76,13 @@
         <uuid-creator-version>6.1.1</uuid-creator-version>
 
         <!-- Domain-specific third party -->
-        <cdk.version>2.13</cdk.version>
+        <cdk.version>2.14.1</cdk.version>
         <anthropic-sdk-version>2.59.0</anthropic-sdk-version>
 
         <!-- Test -->
         <junit-version>6.0.3</junit-version>                   <!-- Boot-managed -->
         <assertj-version>3.27.7</assertj-version>              <!-- Boot-managed -->
-        <archunit.version>1.5.0</archunit.version>
+        <archunit.version>1.5.1</archunit.version>
         <byte-buddy.version>1.18.11</byte-buddy.version>       <!-- Boot-managed -->
 
         <!-- Build tooling. openrewrite is pinned to recipe-bom 3.37.0, NOT the newer 3.38.0:
