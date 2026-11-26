@@ -134,7 +134,7 @@ public class PlantsController {
     private String speciesPage(PlantSpeciesName plantName, Plant plant, Model model, HttpServletResponse response) {
         if (observer.arguments("speciesPage", c -> c
                 .readModel(plant, "plant")
-                .notNull(plant, Plant::species, "species"))
+                .isTrue(plant, Plant::hasSpecies, "hasSpecies"))
                 .observe(Level.WARN)
                 .isNotValid()) {
             // the catalog holds it, but the stored record is invalid: counted to fix, answered as not found
@@ -328,7 +328,7 @@ public class PlantsController {
     private String orderPage(PlantOrderName orderName, Plant plant, Model model, HttpServletResponse response) {
         if (observer.arguments("orderPage", c -> c
                 .readModel(plant, "plant")
-                .notNull(plant, Plant::order, "order"))
+                .isTrue(plant, Plant::hasOrder, "hasOrder"))
                 .observe(Level.WARN)
                 .isNotValid()) {
             // the catalog holds it, but the stored record is invalid: counted to fix, answered as not found
@@ -417,7 +417,7 @@ public class PlantsController {
     private String familyPage(PlantFamilyName familyName, Plant plant, Model model, HttpServletResponse response) {
         if (observer.arguments("familyPage", c -> c
                 .readModel(plant, "plant")
-                .notNull(plant, Plant::family, "family"))
+                .isTrue(plant, Plant::hasFamily, "hasFamily"))
                 .observe(Level.WARN)
                 .isNotValid()) {
             // the catalog holds it, but the stored record is invalid: counted to fix, answered as not found
@@ -455,7 +455,7 @@ public class PlantsController {
     private String genusPage(PlantGenusName genusName, Plant plant, Model model, HttpServletResponse response) {
         if (observer.arguments("genusPage", c -> c
                 .readModel(plant, "plant")
-                .notNull(plant, Plant::genus, "genus"))
+                .isTrue(plant, Plant::hasGenus, "hasGenus"))
                 .observe(Level.WARN)
                 .isNotValid()) {
             // the catalog holds it, but the stored record is invalid: counted to fix, answered as not found

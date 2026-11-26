@@ -44,6 +44,21 @@ class PlantTest {
     }
 
     @Test
+    void hasRank_answersWhichRungsThePlantCarries() {
+        PlantOrder order = new PlantOrder(
+                PlantOrderName.of("lamiales"),
+                com.naturalist.taxonomy.TaxonomicOrder.of("Lamiales"),
+                new com.naturalist.fieldnotes.Description("a", "b", "c", "d"),
+                java.util.Set.of(), null);
+        Plant plant = Plant.empty().withOrder(PlantTaxonView.OrderView.of(order));
+
+        assertThat(plant.hasOrder()).isTrue();
+        assertThat(plant.hasFamily()).isFalse();
+        assertThat(plant.hasGenus()).isFalse();
+        assertThat(plant.hasSpecies()).isFalse();
+    }
+
+    @Test
     void withFeatures_carriesFeatureView() {
         com.naturalist.taxonomy.OrganismFeatureView<PlantRankName, PlantFeature> fv =
                 new com.naturalist.taxonomy.OrganismFeatureView<>(PlantOrderName.of("asterales"), java.util.List.of());

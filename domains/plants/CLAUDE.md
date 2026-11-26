@@ -295,6 +295,10 @@ call sites:
 - `PlantEcologicalRole.isNitrogenFixer()` — `roles.contains(NITROGEN_FIXER)`.
 - `PlantEcologicalRole.playsRole(PlantRole)` — generic membership check.
 - `PlantSpecies.isNativeTo(Bioregion)` — membership check on `nativeBioregions`.
+- `Plant.hasOrder()`, `hasFamily()`, `hasGenus()`, `hasSpecies()` — which rungs the composed read model
+  carries. A rank page checks `readModel(plant, "plant").isTrue(plant, Plant::hasSpecies, "hasSpecies")`:
+  the plant walk already covers a present rank, so a second `readModel` on it would count it twice, and the
+  by-function `isTrue` skips a null plant (`readModel` counts that).
 
 Cultivar has parallel predicates: `breedsTrueFromSeed()`, `requiresSeedSaving()`,
 `isSauceVariety()`. SeedLineage has `hasActiveAdaptationProgram()`.
