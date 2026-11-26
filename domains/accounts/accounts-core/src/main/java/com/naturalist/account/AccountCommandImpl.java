@@ -50,7 +50,8 @@ class AccountCommandImpl implements AccountCommand {
     private static final Duration VERIFICATION_TTL = Duration.ofHours(24);
     private static final Duration RESET_TTL = Duration.ofHours(1);
 
-    private final Observer observer = Observer.forClass(getClass(), Observer.MonitoringMode.ALWAYS);
+    private static final Observer observer =
+            Observer.forClass(AccountCommandImpl.class, Observer.MonitoringMode.ALWAYS);
 
     private final AccountRepository.AccountEntityRepository accounts;
     private final AccountRepository.VerificationTokenRepository tokens;

@@ -18,7 +18,7 @@ import java.util.Set;
 @DomainService
 class NaturalistCommandImpl implements NaturalistCommand {
 
-    private final Observer observer = Observer.forClass(getClass());
+    private static final Observer observer = Observer.forClass(NaturalistCommandImpl.class);
 
     private final NaturalistRepository.NaturalistEntityRepository naturalists;
 
