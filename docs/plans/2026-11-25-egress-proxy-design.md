@@ -1,6 +1,6 @@
 # Egress allowlist proxy: design (Java4Shell WI-3)
 
-Status: draft for Pat's approval, 2026-11-25. Source: [Java4Shell hardening plan](2026-11-19-java4shell-hardening-plan.md), WI-3; [work tracker](../work-tracker.md) row #7.
+Status: approved by Pat and built, 2026-11-25. Merged to main as PR #17 (`d2947203`). [ADR-029](../adr/ADR-029-egress-allowlist.md) is the short form. Source: [Java4Shell hardening plan](2026-11-19-java4shell-hardening-plan.md), WI-3; [work tracker](../work-tracker.md) row #7.
 
 ## Intent
 
