@@ -1,6 +1,7 @@
 package com.naturalist.plants;
 
 import com.naturalist.RandomValue;
+import com.naturalist.exception.InvariantViolationException;
 import com.naturalist.fieldnotes.CommonName;
 import com.naturalist.fieldnotes.Description;
 import com.naturalist.observability.InvariantObservation;
@@ -18,6 +19,7 @@ import org.junit.jupiter.api.Test;
 import java.util.Set;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.catchThrowable;
 
 class PlantMatchTest {
 
@@ -79,6 +81,30 @@ class PlantMatchTest {
 
         assertThat(result.violationNamesRemovingPrefix(mo.observationPoint()))
                 .containsExactly(".match.foundIsAskedOrItsGenus");
+    }
+
+
+    @Test
+    void genusOf_isTheSlugsFirstSegment_orTheWholeSlug() {
+        assertThat(PlantMatch.genusOf(PlantSpeciesName.of("thymus-vulgaris"))).isEqualTo(PlantGenusName.of("thymus"));
+        assertThat(PlantMatch.genusOf(PlantSpeciesName.of("thymus"))).isEqualTo(PlantGenusName.of("thymus"));
+    }
+
+    @Test
+    void genusOf_nullOrInvalidSpecies_isRefused() {
+        assertThat(catchThrowable(() -> PlantMatch.genusOf(null))).isInstanceOf(InvariantViolationException.class);
+        assertThat(catchThrowable(() -> PlantMatch.genusOf(PlantSpeciesName.of("Not_A_Slug"))))
+                .isInstanceOf(InvariantViolationException.class);
+    }
+
+    @Test
+    void invalidAsked_isViolated_notThrown() {
+        MethodObserver mo = observer.forMethod("invalidAsked_isViolated_notThrown");
+        PlantMatch match = new PlantMatch(PlantSpeciesName.of("Not_A_Slug"), PlantGenusName.of("thymus"), thymusPlant());
+
+        InvariantObservation result = mo.observable(match, "match");
+
+        assertThat(result.violationNamesRemovingPrefix(mo.observationPoint())).contains(".match.foundIsAskedOrItsGenus");
     }
 
     private static Plant thymusPlant() {

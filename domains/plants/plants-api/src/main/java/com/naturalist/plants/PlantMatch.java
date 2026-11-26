@@ -2,6 +2,7 @@ package com.naturalist.plants;
 
 import com.naturalist.ddd.ValueObject;
 import com.naturalist.observability.Constraints;
+import com.naturalist.observability.Observer;
 
 import java.util.function.Consumer;
 
@@ -13,6 +14,8 @@ import java.util.function.Consumer;
  * answered the nearest plant it does hold instead.
  */
 public record PlantMatch(PlantRankName asked, PlantRankName found, Plant plant) implements ValueObject {
+
+    private static final Observer observer = Observer.forClass(PlantMatch.class);
 
     /** True when the catalog holds the very name asked for. */
     public boolean exact() {
@@ -26,9 +29,13 @@ public record PlantMatch(PlantRankName asked, PlantRankName found, Plant plant) 
 
     /**
      * The genus a species slug names: the segment before its first '-', or the whole slug when
-     * it has none. The one place the binomial rule lives; the name returned may not be valid.
+     * it has none. The one place the binomial rule lives. A null or invalid species is refused; the
+     * name returned may still not be valid.
      */
     public static PlantGenusName genusOf(PlantSpeciesName species) {
+        observer.arguments("genusOf", i -> i
+                .entityName(species, "species"))
+                .throwWhenInvalid();
         String slug = species.value();
         int dash = slug.indexOf('-');
         return PlantGenusName.of(dash < 0 ? slug : slug.substring(0, dash));
@@ -40,7 +47,7 @@ public record PlantMatch(PlantRankName asked, PlantRankName found, Plant plant) 
             return false;
         }
         return found.equals(asked)
-                || asked instanceof PlantSpeciesName species && found.equals(genusOf(species));
+                || asked instanceof PlantSpeciesName species && species.isValid() && found.equals(genusOf(species));
     }
 
     @Override
