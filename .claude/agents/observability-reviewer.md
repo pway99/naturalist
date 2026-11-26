@@ -68,6 +68,10 @@ You review one change for observability. You report; you never fix.
      (a producer's guarantee, a factory satisfying a cross-field rule) is a guard. Never report it,
      and never suggest removing it. If its contract is unnamed, the finding is J6: name the
      contract it guards;
+   - every non-private method's parameters (J7): each parameter it uses is checked with
+     `arguments(...)` before use. Ask what the method does with `null` or an invalid value; an
+     NPE or a silently wrong result is a finding. Static helpers count; private helpers may rely
+     on their callers;
    - edges and Jackson (B1–B3), value types and enums (C1), mechanical rules (M1–M13).
    The census cannot see Observer calls: read each relevant handler body with
    `java_class_source {member: ...}` to check its `noticeError` / constraint and `Handling`.

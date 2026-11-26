@@ -111,6 +111,7 @@ does not confuse same-named methods and does not match comments.
 | J2 | Where is this domain exception thrown? | `jvm_find_type` on the exception, `siteKind: body` |
 | J4 | Who consumes this producer's value, and which parts do they use? | `jvm_find_method` for callers, then `java_class_source` with `member` |
 | J5 | What does this type declare as valid? | `java_class_source` with `member: invariants` |
+| J7 | Which non-private methods in the diff's units take parameters, and does each open with an `arguments(...)` check? | `java_file_outline` for the signatures, then `java_class_source` with `member` |
 | C1 | Where are project enums mapped with `valueOf`? | `jvm_find_method` with `methodName: valueOf` |
 | M5, M6, M7 | Any `Objects.requireNonNull`, logger, or `io.micrometer` use in the diff's units? | `jvm_find_method` / `jvm_find_type` on those owners |
 
@@ -340,6 +341,24 @@ A constraint's name becomes the metric tag and the alert, so it has to explain i
 **Test.** *Read only the tag `Class.method.name`. Can you say what happened without opening the
 code?*
 
+#### J7. A callable method observes its parameters
+
+**Kind:** Judgment, partly tool-checkable.
+
+A method another class can call (public, protected or package-private, static or not) checks
+every parameter it uses before using it: `arguments(...)` with the kind's constraint (M14:
+`identifier`, `entityName`, `readModel`, `notNull` for a plain reference, ...), ending in
+`throwWhenInvalid()` (M1) or, at an edge that answers instead of throwing, in `observe(...)` (B1).
+Without the check, a `null` throws an NPE nobody counts (J1), and an invalid value produces a
+silently wrong result. A private helper may rely on its caller's check, when every caller checks the
+value it passes. A constructor is covered by M5.
+
+Example: `PlantMatch.genusOf(PlantSpeciesName species)` read `species.value()` unchecked. It now
+opens with `observer.arguments("genusOf", i -> i.entityName(species, "species")).throwWhenInvalid()`.
+
+**Test.** *What does this method do with `null`, or with an invalid value of the parameter's type?*
+If the answer is an NPE or a silently wrong result, it is a finding. Pat, 2026-11-26.
+
 ### Boundary rules
 
 #### B1. Edges reject bad input and notice it
@@ -563,3 +582,5 @@ None.
 - A constraint that can't fail today only because other code keeps a contract is a guard, kept
   and named after the contract it guards. Only a constraint that can never fail by construction is
   a finding (J5). Removing guards lowers the confidence a refactor needs. Pat, 2026-11-26.
+- A method another class can call observes every parameter it uses before using it; only a
+  private helper may rely on its caller's check (J7). Pat, 2026-11-26.
