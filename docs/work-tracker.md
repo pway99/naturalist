@@ -81,15 +81,15 @@ settled 2026-11-25.
 ## Worktrees and branches
 
 No worktrees: only the main checkout. Cleaned up 2026-11-25: four merged worktrees and seven merged
-branches removed, then the `observe-every-throw-8d0d18` worktree (reused by the Java4Shell WI-2
-session) and its branch `claude/java4shell-wi2-pinning-fa05da`, both fully on `main`; later the same
-day the `dependabot-followups-954d84` worktree and its branch, after PR #12 merged. Recreate a
-worktree when named values resumes.
+branches removed; then the `observe-every-throw-8d0d18` worktree (reused by the Java4Shell WI-2
+session) and its branch `claude/java4shell-wi2-pinning-fa05da`; the `dependabot-followups-954d84`
+worktree and its branch, after PR #12 merged; the launch 1.5 and 1.9 worktrees and branches; and the
+PR #3 branch `claude/observe-every-throw-8d0d18`. All were fully on `main`. Recreate a worktree when
+named values resumes.
 
-Still to delete (Pat; all fully on `main`):
-- Local `claude/observe-every-throw-8d0d18`: the PR #3 branch.
+Still to delete (Pat; fully on `main`):
 - Local `backup/main-before-rebase-2026-11-15`: pre-rebase copies of the photo-sizes commits, each patch-equivalent to one on main.
-- The `.claude/worktrees/notes-length-18afa0` folder, which holds only an `.idea` folder.
+- The `.claude/worktrees/launch-1-5-account-recovery-c3a363` folder, which holds only an `.idea` folder IntelliJ recreated after the worktree was removed.
 
 ## Later (designed or noted, not scheduled)
 
