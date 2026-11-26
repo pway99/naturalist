@@ -1,11 +1,24 @@
-# Weekly rebuild of the two deployment images with --pull, so a broken base image or Dockerfile
-# fails here rather than on the host (Java4Shell plan, WI-2). It pushes nothing. The base-image
-# tags are pinned, so --pull only picks up images re-published under the same tag; version bumps
-# arrive as Dependabot PRs. Never switch the trigger to pull_request_target.
+# Builds the two deployment images whenever something that shapes them changes, so a Dependabot
+# base-image bump (or a Dockerfile edit) is proven to build before it merges. ci.yml runs Maven
+# only and never builds an image (Java4Shell plan, WI-2). It pushes nothing.
+#
+# No schedule yet: a weekly --pull rebuild only pays off once a rebuilt image is deployed. Add one
+# with the production rebuild-and-redeploy job. Never switch a trigger to pull_request_target.
 name: image
 on:
-  schedule:
-    - cron: '0 6 * * 1'   # Mondays 06:00 UTC, after Dependabot's weekly run
+  pull_request:
+    paths:
+      - Dockerfile
+      - .dockerignore
+      - 'compose*.yaml'
+      - .github/workflows/image.yml
+  push:
+    branches: [main]
+    paths:
+      - Dockerfile
+      - .dockerignore
+      - 'compose*.yaml'
+      - .github/workflows/image.yml
   workflow_dispatch:
 permissions:
   contents: read
@@ -14,6 +27,11 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4.4.0
+      # Production needs real hosts and tokens to interpolate, so it is checked for structure only.
+      - name: Check the compose files
+        run: |
+          docker compose config -q
+          docker compose -f compose.yaml -f compose.production.yaml config -q --no-interpolate
       - name: Build db-init
         run: docker build --pull --target db-init -t naturalist-db-init:ci .
       - name: Build app
