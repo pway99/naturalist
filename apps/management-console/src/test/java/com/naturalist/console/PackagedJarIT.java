@@ -175,6 +175,20 @@ class PackagedJarIT {
                 .contains("outcome=\"violated\"");
     }
 
+    /** The storage alerts in deploy/prometheus/alerts.yml read these, for the image store's file system. */
+    @Test
+    void theManagementPort_servesTheImageRootsFreeSpace() throws Exception {
+        // The real path, as the jar sees its working directory: a temporary directory may sit behind a link (macOS)
+        String imageRoot = "path=\"" + workingDirectory.toRealPath().resolve("data/images") + "\"";
+
+        HttpResponse<String> scrape = getFromPort(managementPort, "/actuator/prometheus");
+
+        assertThat(scrape.statusCode()).as(log()).isEqualTo(200);
+        assertThat(scrape.body().lines())
+                .anyMatch(line -> line.startsWith("disk_free_bytes{") && line.contains(imageRoot))
+                .anyMatch(line -> line.startsWith("disk_total_bytes{") && line.contains(imageRoot));
+    }
+
     @Test
     void thePublicPort_servesNoMetrics() throws Exception {
         HttpResponse<String> scrape = get("/actuator/prometheus");

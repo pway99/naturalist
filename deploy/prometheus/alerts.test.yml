@@ -142,3 +142,128 @@ tests:
               severity: heartbeat
             exp_annotations:
               summary: The alerting path is working.
+
+  - name: a disk under 20% free warns after 15 minutes, and plenty free never does
+    interval: 1m
+    input_series:
+      - series: 'disk_total_bytes{job="naturalist", path="/data/images"}'
+        values: "1000x60"
+      - series: 'disk_free_bytes{job="naturalist", path="/data/images"}'
+        values: "300x10 150x50"
+      - series: 'disk_total_bytes{job="naturalist", path="/data/database"}'
+        values: "1000x60"
+      - series: 'disk_free_bytes{job="naturalist", path="/data/database"}'
+        values: "300x60"
+    alert_rule_test:
+      - eval_time: 20m
+        alertname: DiskSpaceLow
+        exp_alerts: []
+      - eval_time: 35m
+        alertname: DiskSpaceLow
+        exp_alerts:
+          - exp_labels:
+              severity: ticket
+              job: naturalist
+              path: /data/images
+            exp_annotations:
+              summary: "Under 20% of the disk under /data/images is free."
+      - eval_time: 35m
+        alertname: DiskSpaceCritical
+        exp_alerts: []
+
+  - name: a disk under 5% free pages after 5 minutes
+    interval: 1m
+    input_series:
+      - series: 'disk_total_bytes{job="naturalist", path="/data/database"}'
+        values: "1000x30"
+      - series: 'disk_free_bytes{job="naturalist", path="/data/database"}'
+        values: "100x10 40x20"
+    alert_rule_test:
+      - eval_time: 13m
+        alertname: DiskSpaceCritical
+        exp_alerts: []
+      - eval_time: 17m
+        alertname: DiskSpaceCritical
+        exp_alerts:
+          - exp_labels:
+              severity: page
+              job: naturalist
+              path: /data/database
+            exp_annotations:
+              summary: "Under 5% of the disk under /data/database is free. Uploads and the database stop when it is full."
+
+  - name: a disk filling fast warns while still mostly free, and a steady one never does
+    interval: 1m
+    input_series:
+      # 5 a minute from 900: about 7200 a day, so three days ahead is far past empty
+      - series: 'disk_free_bytes{job="naturalist", path="/data/images"}'
+        values: "900-5x120"
+      - series: 'disk_free_bytes{job="naturalist", path="/data/database"}'
+        values: "500x120"
+    alert_rule_test:
+      - eval_time: 30m
+        alertname: DiskFillsWithinThreeDays
+        exp_alerts: []
+      - eval_time: 90m
+        alertname: DiskFillsWithinThreeDays
+        exp_alerts:
+          - exp_labels:
+              severity: ticket
+              job: naturalist
+              path: /data/images
+            exp_annotations:
+              summary: "At its current rate, the disk under /data/images fills within three days."
+
+  - name: a first failed photo delete warns, then clears
+    interval: 1m
+    input_series:
+      - series: 'naturalist_invariant_check_total{outcome="violated", kind="caught", handling="wrapped", name="FilesystemImageStore.delete.removed"}'
+        values: "_x5 1x30"
+    alert_rule_test:
+      - eval_time: 3m
+        alertname: PhotoDeleteFailed
+        exp_alerts: []
+      - eval_time: 6m
+        alertname: PhotoDeleteFailed
+        exp_alerts:
+          - exp_labels:
+              severity: ticket
+              name: FilesystemImageStore.delete.removed
+            exp_annotations:
+              summary: "A photo file could not be deleted (FilesystemImageStore.delete.removed), so it stays on disk."
+      - eval_time: 25m
+        alertname: PhotoDeleteFailed
+        exp_alerts: []
+
+  - name: a half-written file left by a failed store warns as it keeps happening
+    interval: 1m
+    input_series:
+      - series: 'naturalist_invariant_check_total{outcome="violated", kind="caught", handling="swallowed", name="FilesystemImageStore.store.discarded"}'
+        values: "1x20 2+1x10"
+    alert_rule_test:
+      - eval_time: 15m
+        alertname: PhotoDeleteFailed
+        exp_alerts: []
+      - eval_time: 25m
+        alertname: PhotoDeleteFailed
+        exp_alerts:
+          - exp_labels:
+              severity: ticket
+              name: FilesystemImageStore.store.discarded
+            exp_annotations:
+              summary: "A photo file could not be deleted (FilesystemImageStore.store.discarded), so it stays on disk."
+
+  - name: other caught image-store failures are not failed deletes
+    interval: 1m
+    input_series:
+      - series: 'naturalist_invariant_check_total{outcome="violated", kind="caught", handling="wrapped", name="FilesystemImageStore.read.found"}'
+        values: "_x5 1+1x30"
+      - series: 'naturalist_invariant_check_total{outcome="violated", kind="caught", handling="swallowed", name="InsectPhotoCommandImpl.add.storedDiscarded"}'
+        values: "_x5 1+1x30"
+    alert_rule_test:
+      - eval_time: 6m
+        alertname: PhotoDeleteFailed
+        exp_alerts: []
+      - eval_time: 20m
+        alertname: PhotoDeleteFailed
+        exp_alerts: []
