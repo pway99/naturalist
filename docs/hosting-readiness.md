@@ -12,7 +12,7 @@ are built. What remains is the code gaps below and the setup that only happens o
 | Decision | Options and context |
 |---|---|
 | Host | Undecided. The [secrets plan](plans/2026-11-02-secrets-and-endpoint-protection-plan.md) suggests Fly.io, then Cloud Run. It must offer Postgres, a persistent disk or an image-store alternative, and secret injection. |
-| Email provider | Undecided. It needs a sending domain with SPF and DKIM. |
+| Email provider | Undecided. It needs a sending domain with SPF and DKIM. DigitalOcean blocks outbound SMTP ports 25, 465 and 587 on new Droplets, so either pick a provider that accepts port 2525 or ask DigitalOcean to unblock 587. The egress proxy follows `SPRING_MAIL_PORT` either way (ADR-029). |
 | Model spend limit | The secrets plan proposes $60 a month for the production workspace. |
 | Who gets identification | `naturalist.access.grant-policy` is `self-serve`, so every registrant gets `VISION`, within the usage budgets. Confirm this is right for launch. |
 | Outside heartbeat check | Undecided. It receives the `Watchdog` alert every few minutes and must alert you when it stops, because nothing on the host can report the host dying. |
@@ -56,7 +56,9 @@ The first two need no host and can start now.
 - [ ] **Cloudflare** ([edge runbook](runbooks/cloudflare-edge.md), steps 1, 3 and 4): zone and TLS,
   the challenge widget, and the security rules.
 - [ ] **Host:** Postgres with backups, persistent storage for `naturalist.images.root`, and secret
-  injection.
+  injection. Install Docker from Docker's own `docker-ce` packages, **Engine 26 or later**, not
+  Ubuntu's `docker.io`: older engines still resolve outside names on the app's internal network
+  (ADR-029).
 - [ ] **Tunnel** (edge runbook, step 2), with no inbound ports on the origin.
 - [ ] **Email:** the sending domain, and a real `naturalist.email.from`.
 - [ ] **Heartbeat:** create the outside check, and put its private address in `secrets/heartbeat-url`.
@@ -100,6 +102,9 @@ Run these against the deployment while the address is still unannounced.
 - [ ] **Alerts arrive by real email.** The rules are written and tested (below), but delivery has only
   been seen in Mailpit.
 - [ ] **The heartbeat check alerts** when Alertmanager is stopped.
+- [ ] **The app reaches only its allowed hosts:** `deploy/egress-proxy/check.sh -f compose.yaml -f
+  compose.production.yaml` prints `egress allowlist holds`, including the mail host (ADR-029). Then
+  the identification, real email and real login checks above prove the proxy carries the real calls.
 - [ ] **The tunnel can't reach metrics:** `https://backyardnaturalist.app/actuator/prometheus` is refused.
 
 ## Already done
@@ -108,6 +113,8 @@ Run these against the deployment while the address is still unannounced.
 - Edge design, and the [runbook](runbooks/cloudflare-edge.md) to stand it up (ADR-027).
 - Bot challenge on login and registration, failing closed, with per-client and global rate limits.
 - Secrets through `SecretProvider`, and layered spend ceilings for identification (ADR-028).
+- The app can reach only the model vendor, the challenge endpoint and the mail host, through an
+  allowlist proxy, with no other route or DNS out (ADR-029).
 - Client address trusted only from the local connector.
 - Metrics on a private port, read by Prometheus, with alerts through Alertmanager
   ([local stack runbook](runbooks/local-stack.md)).

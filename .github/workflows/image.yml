@@ -1,6 +1,7 @@
 # Builds the two deployment images whenever something that shapes them changes, so a Dependabot
 # base-image bump (or a Dockerfile edit) is proven to build before it merges. ci.yml runs Maven
-# only and never builds an image (Java4Shell plan, WI-2). It pushes nothing.
+# only and never builds an image (Java4Shell plan, WI-2). It pushes nothing. It also proves the
+# egress allowlist (ADR-029).
 #
 # No schedule yet: a weekly --pull rebuild only pays off once a rebuilt image is deployed. Add one
 # with the production rebuild-and-redeploy job. Never switch a trigger to pull_request_target.
@@ -11,6 +12,7 @@ on:
       - Dockerfile
       - .dockerignore
       - 'compose*.yaml'
+      - 'deploy/egress-proxy/**'
       - .github/workflows/image.yml
   push:
     branches: [main]
@@ -18,6 +20,7 @@ on:
       - Dockerfile
       - .dockerignore
       - 'compose*.yaml'
+      - 'deploy/egress-proxy/**'
       - .github/workflows/image.yml
   workflow_dispatch:
 permissions:
@@ -38,3 +41,13 @@ jobs:
         run: docker build --pull --target app -t naturalist-app:ci .
       - name: Report the runtime JDK
         run: docker run --rm --entrypoint java naturalist-app:ci -version
+      # The allowlist proxy alone, probed from the app image on the internal network (ADR-029):
+      # listed hosts tunnel, everything else is refused, and there is no direct route or DNS out.
+      - name: Check the egress allowlist
+        run: |
+          docker compose up -d --wait egress-proxy
+          docker run --rm -i --network naturalist_internal --entrypoint bash naturalist-app:ci -s \
+            < deploy/egress-proxy/probe.sh
+      - name: Show the egress proxy log
+        if: always()
+        run: docker compose logs egress-proxy

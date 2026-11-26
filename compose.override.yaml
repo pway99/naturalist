@@ -11,6 +11,10 @@ services:
       SPRING_MAIL_PORT: "1025"
     ports:
       - "127.0.0.1:8080:8080"
+    # Docker publishes no port for a container on an internal network alone, so locally the app and
+    # the database also join default. HTTPS still goes through egress-proxy (JAVA_OPTS); only the
+    # no-route-out half of ADR-029 is production-only. check.sh says which checks that affects.
+    networks: [internal, default]
     depends_on:
       mailpit:
         condition: service_started
@@ -19,6 +23,7 @@ services:
     ports:
       # 5433 so it never collides with the standing test database on 5432.
       - "127.0.0.1:5433:5432"
+    networks: [internal, default]
 
   prometheus:
     ports:
@@ -39,3 +44,5 @@ services:
     restart: unless-stopped
     ports:
       - "127.0.0.1:8025:8025"
+    # internal for the app's mail, default for Alertmanager's and the published UI.
+    networks: [internal, default]

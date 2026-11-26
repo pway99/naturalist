@@ -31,12 +31,27 @@ Sign in to the admin pages as `admin`, with the password in `secrets/admin-crede
 | File | Purpose |
 |---|---|
 | `Dockerfile` | Builds the `app` and `db-init` images from source |
-| `compose.yaml` | The deployment itself: `db`, `db-init` and `app`, with no published ports |
+| `compose.yaml` | The deployment itself: `db`, `db-init`, `app` and `egress-proxy`, with no published ports |
 | `compose.override.yaml` | Local only, loaded automatically: published ports, a mail catcher, and the challenge in log-only mode |
 | `compose.production.yaml` | Production only: real mail, the real challenge, and `cloudflared` |
 | `deploy/create-secrets.sh` | Generates the local secrets in `secrets/`, which git ignores |
 | `deploy/prometheus/` | What Prometheus scrapes, the alert rules, and their tests |
 | `deploy/alertmanager/` | Where alerts go, locally and in production |
+| `deploy/egress-proxy/` | The app's only way out: the Squid allowlist, its start script, and `check.sh` to prove it (ADR-029) |
+
+## Outbound access
+
+`app`, `db` and `db-init` sit on the `internal` network, which has no route out. The app's HTTPS
+calls go through `egress-proxy`, which tunnels only to the hosts in
+`deploy/egress-proxy/squid.conf.template` and logs each request:
+
+```bash
+docker compose logs egress-proxy | grep -E 'TCP_(TUNNEL|DENIED)'
+```
+
+A call to a new outside host fails with a `TCP_DENIED/403` line there. To allow it, add the host to
+the template and to the table in ADR-029, then `docker compose up -d egress-proxy`. Check the
+allowlist with `deploy/egress-proxy/check.sh`.
 
 ## Database initialization
 
@@ -106,6 +121,10 @@ docker compose down -v
 - The bot challenge passes everything, because the real one needs the vendor's widget on the real
   hostname. Never use `compose.override.yaml` in production.
 - Mail stops at Mailpit, and there is no Cloudflare edge or tunnel.
+- `app` and `db` also join the `default` network, because Docker publishes no port for a container on
+  an internal network alone. HTTPS still goes through `egress-proxy`, but the app has a direct route
+  out, so `check.sh` reports the "no direct route out" and "outside names do not resolve" checks as
+  failed. Mail goes straight to Mailpit, not through the proxy.
 - Alerts stop at Mailpit, and the heartbeat goes nowhere. Production sends the heartbeat to an outside
   check, which reports the host dying.
 - There is no Grafana in either: it needs at least 512 MB, and the Prometheus UI covers the queries.
