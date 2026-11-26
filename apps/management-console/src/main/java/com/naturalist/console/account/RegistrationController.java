@@ -13,6 +13,8 @@ import com.naturalist.exception.InvariantViolationException;
 import com.naturalist.notification.EmailMessage;
 import com.naturalist.notification.EmailSender;
 import com.naturalist.observability.Constraint;
+import com.naturalist.observability.Handling;
+import com.naturalist.observability.Observer;
 import com.naturalist.resilience.RateLimitExceededException;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
@@ -57,6 +59,10 @@ import org.apache.commons.lang3.StringUtils;
  */
 @Controller
 class RegistrationController {
+
+    /** ALWAYS: registration is an attack surface (rule M11). */
+    private static final Observer observer =
+            Observer.forClass(RegistrationController.class, Observer.MonitoringMode.ALWAYS);
 
     /** The action the widget declares and the vendor echoes back (ADR-027 D6). */
     private static final String CHALLENGE_ACTION = "register";
@@ -227,7 +233,9 @@ class RegistrationController {
             UserDetails refreshed = userDetailsService.loadUserByUsername(current.getName());
             establishSession(refreshed, request, response, false);
         } catch (UsernameNotFoundException unresolved) {
-            // Current principal no longer resolvable here (e.g. the config admin) — leave the session as-is.
+            // Current principal no longer resolvable here (e.g. its account was purged or unlinked
+            // meanwhile) — counted, and the session is left as-is.
+            observer.noticeError("reDeriveAuthorities", "authoritiesRederived", unresolved, Handling.SWALLOWED);
         }
     }
 
