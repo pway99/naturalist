@@ -38,14 +38,18 @@ spring:
 # trusts forwarded headers from any peer, letting a client choose its own rate-limit key.
 # The test application.yml replaces this file wholesale and repeats this block.
 server:
-  forward-headers-strategy: native
+  request:
+    header:
+      forwarded:
+        strategy: web-server
   tomcat:
     remoteip:
       remote-ip-header: CF-Connecting-IP
       protocol-header: X-Forwarded-Proto
     # TLS ends at the edge; honour X-Forwarded-Proto rather than the container's own scheme
     # when building a context-root redirect.
-    redirect-context-root: false
+    servlet:
+      redirect-context-root: false
 
 # Metrics and health, on their own port so they never share a route with the public site. Nothing
 # publishes this port: Prometheus reaches it over the private network, and the tunnel points only at
