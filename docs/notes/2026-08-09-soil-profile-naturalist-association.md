@@ -40,7 +40,7 @@ right. They are attached, but to a **place**, not a **person**:
 ([ZoneInfo](../../domains/zone/zone-api/src/main/java/com/naturalist/zone/ZoneInfo.java)) —
 and there is **no concept above Zone at all.** The whole hierarchy —
 Zone → SubZone → SoilProfile — is owner-less, rooted at nothing, implicitly single-property
-("Oak Vista"). `SubZone` already holds a soft back-reference to its `SoilProfileName`.
+("The garden"). `SubZone` already holds a soft back-reference to its `SoilProfileName`.
 
 `Naturalist` ([Naturalist](../../domains/naturalists/naturalists-api/src/main/java/com/naturalist/naturalist/Naturalist.java))
 is a person — `NamedEntity<NaturalistName>` — and owns no collection referencing places or soil.
@@ -145,7 +145,7 @@ console work lands with the Property write path and the tenancy scope.
 - `Property` aggregate + `PropertyVisibility` enum in `zone-api`, in the
   `com.naturalist.zone.property` sub-context package, with the `PRIVATE ⇔ owner` invariant.
 - `PropertyName` in `domains/identifiers/` (cross-domain identifier).
-- Property `TestEntitySource` + JSON catalog; a seed **private** Property for Oak Vista
+- Property `TestEntitySource` + JSON catalog; a seed **private** Property for the garden
   owned by a seed `Naturalist`, plus at least one **public** Property to exercise the
   ownerless path.
 - Property repository + mock + behavioral contract test.
@@ -157,7 +157,7 @@ console work lands with the Property write path and the tenancy scope.
   `new ZoneInfo(...)` construction site breaks — Zone aggregate assembly / factory, the
   `ZoneInfo` TestEntitySource, JTE templates, tests. Grep the whole repo; do not trust a
   partial file list.
-- Zone `TestEntitySource` + `zone/*.json` — every zone gains a `property` slug; Oak Vista
+- Zone `TestEntitySource` + `zone/*.json` — every zone gains a `property` slug; the garden's
   zones point at the seed private Property.
 - Referential integrity: zone → property is a new soft FK; property → naturalist another.
   Both deferred to the RDBMS layer per convention.
@@ -173,7 +173,7 @@ session seam already exists. Console work arrives with the Property write path a
 scoping, not here.
 
 **Migration / nullability:** existing zones need a `property`. Land it non-null by
-creating the seed Oak Vista Property and pointing every current zone at it in the same
+creating the garden's seed Property and pointing every current zone at it in the same
 change. `Property.owner` is `@Nullable` by type (public case) but constrained non-null for
 the private seed by the aggregate invariant.
 

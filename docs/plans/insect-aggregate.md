@@ -1,7 +1,7 @@
 # Insect Aggregate — Effort Plan
 
 A new top-level aggregate that composes everything known about an insect at
-Oak Vista — its photographic observation, its identified rank chain (Order
+The garden — its photographic observation, its identified rank chain (Order
 through Species), and its life stages — into a single in-memory domain
 object whose `invariants()` becomes the legitimate home for cross-rank
 constraints.
@@ -50,7 +50,7 @@ Two concrete problems point at one missing construct:
    this invariant did not exist.
 
 The `Insect` aggregate is that missing construct. It is the consistency
-boundary for *"what we know about an organism at Oak Vista, at whatever
+boundary for *"what we know about an organism in the garden, at whatever
 identification depth has been reached"* — composing the rank chain, the
 observation that started identification, and the life-stages catalogued
 for the organism. Invariants that span any subset of these pieces find

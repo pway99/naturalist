@@ -16,7 +16,7 @@ import java.util.List;
 import java.util.Optional;
 
 /**
- * Read-only viewer for the Oak Vista soil profiles: a list of profiles and a per-profile detail
+ * Read-only viewer for the garden's soil profiles: a list of profiles and a per-profile detail
  * page showing each dated analysis's nutrient panel and physical characteristics.
  */
 @Controller

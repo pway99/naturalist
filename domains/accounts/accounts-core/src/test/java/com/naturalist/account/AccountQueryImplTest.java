@@ -56,7 +56,7 @@ class AccountQueryImplTest
 
     @Test
     void getByEmail_returnsMatchingAccount() {
-        Optional<Account> result = query.getByEmail("gerald.durrell@oakvista.example");
+        Optional<Account> result = query.getByEmail("gerald.durrell@naturalist.example");
 
         assertThat(result).isPresent();
         assertThat(result.get().name()).isEqualTo(AccountName.of("acct-018f3a2e9b71"));

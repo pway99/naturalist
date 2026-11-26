@@ -19,7 +19,7 @@ import java.util.function.Consumer;
  * <b>Nick's Italian Pear</b> is the inaugural and highest-priority lineage in the
  * system. This paste tomato variety was maintained for 50+ years in coastal California,
  * selecting for eating quality and sauce performance. The 2026 season at
- * Oak Vista (Chico) is Generation 1 of the Chico climate adaptation program —
+ * The garden (Sacramento Valley) is Generation 1 of the Sacramento Valley climate adaptation program —
  * selecting for earliest ripening, highest production, and best flavour under
  * Sacramento Valley heat conditions (100-110F summer peaks).
  * <p>

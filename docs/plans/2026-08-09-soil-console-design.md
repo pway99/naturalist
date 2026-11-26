@@ -10,7 +10,7 @@ color-coded report.
 ## Goal
 
 Surface the assembled `SoilProfile` in the management console so we can *see* the model work
-end-to-end in the real Spring app: browse the Oak Vista soil profiles, open one, and view its
+end-to-end in the real Spring app: browse the garden's soil profiles, open one, and view its
 dated analyses with the grouped nutrient panel and physical characteristics — the real March 2026
 FGL data, rendered as structured facts.
 

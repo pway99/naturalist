@@ -7,7 +7,7 @@
     ],
     "properties": {
       "safeRateLbsPer1000Sqft": "2-4",
-      "oakVistaAppliedRate": "3.3 lbs/100sqft — April 1 2026",
+      "gardenAppliedRate": "3.3 lbs/100sqft — April 1 2026",
       "rehabilitationTarget": "Coco coir Ca2+ binding sites",
       "projectedSeasonsToOptimum": "3-5"
     }
@@ -48,7 +48,7 @@
     "properties": {
       "box1AppliedRate": "7.7 lbs/1000sqft",
       "backyardAppliedRate": "1.2 lbs/1000sqft",
-      "phEffect": "Mild acidification — largely neutralized by limestone in Oak Vista soil",
+      "phEffect": "Mild acidification — largely neutralized by limestone in garden soil",
       "insituReaction": "Sulfur + limestone → in-situ gypsum formation",
       "biologicalCatalyst": "Thiobacillus bacteria — accelerates above 77°F"
     }
@@ -73,7 +73,7 @@
       "calcium-carbonate"
     ],
     "properties": {
-      "oakVistaSource": "Native Chico Valley parent material + post-hole subsoil",
+      "gardenSource": "Native Sacramento Valley parent material + post-hole subsoil",
       "box1Percent": "1.7%",
       "backyardPercent": "2.9%",
       "optimumPercent": "less than 0.50%",
@@ -106,9 +106,9 @@
     ],
     "properties": {
       "varroaEfficacy": "High — penetrates capped brood cells",
-      "chicoRisk": "HIGH — summer temperatures exceed safe application window June-September",
-      "californiaStatus": "Verify CDPR approval with Dadant Chico before procurement",
-      "alternativeForChico": "Apiguard (thymol) preferred for August-September treatment window"
+      "localRisk": "HIGH — summer temperatures exceed safe application window June-September",
+      "californiaStatus": "Verify CDPR approval with a local beekeeping supplier before procurement",
+      "alternativeLocally": "Apiguard (thymol) preferred for August-September treatment window"
     }
   },
   {
@@ -119,9 +119,9 @@
     ],
     "properties": {
       "bestApplicationTiming": "Broodless period — winter or post-swarm",
-      "chicoWindow": "December-January during winter broodless period",
-      "californiaStatus": "Verify CDPR approval with Dadant Chico",
-      "advantageOverFormic": "Wider temperature safety window — viable in Chico conditions"
+      "localWindow": "December-January during winter broodless period",
+      "californiaStatus": "Verify CDPR approval with a local beekeeping supplier",
+      "advantageOverFormic": "Wider temperature safety window — viable in the Sacramento Valley conditions"
     }
   },
   {
@@ -134,7 +134,7 @@
       "concentration": "25% thymol in gel",
       "applicationWindow": "Late August through September — temperatures moderating from summer peak",
       "honeyWarning": "Remove honey super before treatment — thymol taints honey",
-      "advantageOverFormic": "Safer temperature profile for Chico climate — viable when formic acid is too risky",
+      "advantageOverFormic": "Safer temperature profile for the Sacramento Valley climate — viable when formic acid is too risky",
       "varroaEfficacy": "Good — 90%+ efficacy in two-treatment protocol"
     }
   },
@@ -147,7 +147,7 @@
     "properties": {
       "applicationRate": "2 tbsp neem oil per gallon with 2 tbsp dish soap emulsifier",
       "targetPests": "Thrips, spider mites, aphids, whitefly, fungus gnats",
-      "oakVistaUse": "Straw mulch drench for thrips control — April 7 2026 TSWV outbreak",
+      "gardenUse": "Straw mulch drench for thrips control — April 7 2026 TSWV outbreak",
       "uvDegradation": "Breaks down within 24-48 hours in sunlight — evening application required",
       "repeatInterval": "5-7 days for 3 applications minimum"
     }

@@ -27,7 +27,7 @@ decision or touches data.
   package-private concrete classes in `plants-core`, never in `plants-api`.
 - `new Foo(...)` only inside the type's own class; elsewhere use static factories.
 - Invariant tests use the Observer idiom, not `assertThrows`.
-- Catalogs are real Oak Vista data. A failing test means a domain model error or a
+- Catalogs are real garden data. A failing test means a domain model error or a
   real-world change — never "fix the fixture to match the code".
 - **Record arity changes ripple repo-wide.** Adding a component to `Plant` breaks every
   `new Plant(...)` site: contract tests, api tests, JSON catalogs, and any JTE template

@@ -773,7 +773,7 @@ void identify_bulkheadRejection_refusesBusy_beforeBudgetStoreAndVision() throws 
     IdentificationBudget trackingBudget = naturalist -> budgetReserveCalls.incrementAndGet();
     var cmd = buildCommand(new RejectingBulkheadResilience(), trackingBudget, trackingVision);
 
-    assertThatThrownBy(() -> cmd.identify(ImageUpload.of(JPEG), new ImageMetadata("Chico, CA", null), NaturalistName.of("pat"), null))
+    assertThatThrownBy(() -> cmd.identify(ImageUpload.of(JPEG), new ImageMetadata("Sacramento Valley, CA", null), NaturalistName.of("pat"), null))
             .isInstanceOfSatisfying(IdentificationRefused.class, refused ->
                     assertThat(refused.reason()).isEqualTo(IdentificationRefused.Reason.BUSY));
 

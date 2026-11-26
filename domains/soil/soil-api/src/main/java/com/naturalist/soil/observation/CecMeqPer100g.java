@@ -11,7 +11,7 @@ import java.math.RoundingMode;
  * <p>
  * CEC measures the soil's capacity to hold positively charged ions (cations) on
  * exchange sites. Higher CEC indicates greater buffering capacity and nutrient
- * retention. FGL reports CEC to one decimal place. Oak Vista reference values:
+ * retention. FGL reports CEC to one decimal place. Garden reference values:
  * Box 1 ≈ 18.9, Backyard ≈ 24.3 meq/100g (both in the moderate-high range).
  * <p>
  * Scale: 1 decimal place. Rounding: {@link RoundingMode#HALF_UP}.

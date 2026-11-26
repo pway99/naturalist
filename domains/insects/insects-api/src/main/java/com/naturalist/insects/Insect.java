@@ -13,7 +13,7 @@ import java.util.function.Consumer;
 
 /**
  * The Insect read model — sum-of-parts in-memory composition of everything known
- * about an insect at Oak Vista, at whatever identification depth has been
+ * about an insect in the garden, at whatever identification depth has been
  * reached.
  *
  * <p>Composes:

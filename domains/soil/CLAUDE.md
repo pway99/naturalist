@@ -6,7 +6,7 @@
 biological activity, physical structure.
 
 **LabAnalysis** — Immutable value object. External laboratory soil chemistry test.
-Current lab: FGL Environmental, Chico CA. Lab ID CH 2671853. Nutrient values in lbs/1000 sqft.
+Current lab: FGL Environmental. Lab ID CH 2671853. Nutrient values in lbs/1000 sqft.
 
 **NutrientPanel** — ValueObject owned by LabAnalysis. Measured nutrient values.
 `NutrientStatus`: VERY_LOW, LOW, SATISFACTORY, HIGH, VERY_HIGH.
@@ -35,7 +35,7 @@ Gypsum calcium rehabilitation: 3–5 seasons. Tracked annually by FGL March soil
 biological activity, physical structure. Contains child entities and value objects.
 
 **LabAnalysis** — Immutable value object. External laboratory soil chemistry test.
-Current lab: FGL Environmental, Chico CA. Lab ID CH 2671853. Nutrient values in lbs/1000 sqft.
+Current lab: FGL Environmental. Lab ID CH 2671853. Nutrient values in lbs/1000 sqft.
 
 **NutrientPanel** — ValueObject owned by LabAnalysis. Measured nutrient values.
 `NutrientStatus`: VERY_LOW, LOW, SATISFACTORY, HIGH, VERY_HIGH.
@@ -63,7 +63,7 @@ Use AD values for custom calibration on non-mineral soils.
 | pH        | 6.5–7.5               |
 | Limestone | below 0.50%           |
 
-**Oak Vista pH is ~7.2 — already optimal. Never recommend lime.**
+**garden pH is ~7.2 — already optimal. Never recommend lime.**
 
 ## Biological Amplification Factor
 
@@ -72,7 +72,7 @@ Worm casting blend: 1.6–2.0× mineral soil baseline.
 Blood meal nitrogen mineralises faster than standard tables predict.
 Must account for this factor in `NitrogenStatus` computation (see pending Q3 in root CLAUDE.md).
 
-## Oak Vista Baseline Values (April 2026 FGL test CH 2671853)
+## The garden Baseline Values (April 2026 FGL test CH 2671853)
 
 These are real measured values — use them as test fixture data:
 
@@ -82,7 +82,7 @@ These are real measured values — use them as test fixture data:
 
 ## Sensor Calibration
 
-WH51 factory calibration is for mineral soil. Oak Vista worm casting/coco coir blend reads
+WH51 factory calibration is for mineral soil. Garden worm casting/coco coir blend reads
 3-5% high. AD values (raw hardware measurements) are usable for custom calibration.
 Box 1 resting baseline: 52% (AD ~251). Backyard resting baseline: 59% (AD ~277).
 Watering triggers: Box 1 = 35%, Backyard = 40%.

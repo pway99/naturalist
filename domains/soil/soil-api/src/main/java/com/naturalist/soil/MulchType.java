@@ -15,7 +15,7 @@ package com.naturalist.soil;
  * type, resolves the habitat risk mapping, and updates the zone domain's
  * {@code SubZone.surfaceHabitatRisk} accordingly.
  * <p>
- * <b>Oak Vista mulch history:</b> The backyard garden north section was mulched with straw
+ * <b>garden mulch history:</b> The backyard garden north section was mulched with straw
  * (STRAW) at ~2 inches depth prior to the April 7, 2026 TSWV/thrips outbreak. Post-outbreak
  * remediation thinned the straw to ~1 inch. A future MulchLayer event will capture any
  * transition to WOOL or another LOW/VERY_LOW habitat risk material.
@@ -25,7 +25,7 @@ public enum MulchType {
     /**
      * Cereal straw (wheat, rice, or oat straw).
      * <p>
-     * The most common mulch at Oak Vista. Provides good moisture retention and soil
+     * The most common mulch in the garden. Provides good moisture retention and soil
      * temperature moderation. At depth ≥2 inches, straw creates substantial inter-layer
      * void space that supports thrips overwintering and population establishment —
      * the primary ecological risk at this site.
@@ -39,7 +39,7 @@ public enum MulchType {
      * Pine needle mulch (fallen conifer needles).
      * <p>
      * Acidifying over time as needles decompose — beneficial in alkaline soils like
-     * Oak Vista (pH 7.2) as a mild pH buffer. Dense needle mat provides less void
+     * The garden (pH 7.2) as a mild pH buffer. Dense needle mat provides less void
      * space than straw, reducing thrips habitat. Moisture retention is moderate.
      * Thrips habitat risk: LOW.
      */
@@ -92,7 +92,7 @@ public enum MulchType {
     /**
      * Whether this mulch type has meaningful soil-acidifying properties over time.
      * <p>
-     * Relevant at Oak Vista (pH 7.2) where mild pH buffering toward 6.5–7.0 is
+     * Relevant in the garden (pH 7.2) where mild pH buffering toward 6.5–7.0 is
      * agronomically beneficial for micronutrient availability (Mn, Fe, Zn).
      *
      * @return {@code true} for pine needle mulch, which acidifies as needles decompose

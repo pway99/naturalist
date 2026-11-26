@@ -1,6 +1,6 @@
 # Naturalists
 
-The observers themselves — the people who work Oak Vista and to whom every field
+The observers themselves — the people who work the garden and to whom every field
 observation, photograph, and management decision is attributed. This is where
 identity, authentication, and attribution live.
 

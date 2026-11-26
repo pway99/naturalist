@@ -30,7 +30,7 @@ public record Angiosperms() implements Clade {
                     fertilisation yielding triploid endosperm, sieve-tube/companion-cell \
                     phloem, and (broadly) vessel elements. The APG IV backbone divides \
                     the crown into the ANA grade, magnoliids, monocots, and eudicots; \
-                    this node is the parent of the three subclades the Oak Vista \
+                    this node is the parent of the three subclades the \
                     catalog reaches — magnoliids, monocots, and eudicots. Its parent is \
                     Plantae in the collapsed kernel tree.""");
 

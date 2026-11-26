@@ -34,7 +34,7 @@ import org.apache.commons.lang3.StringUtils;
  * In-memory {@link Catalog} assembled from a list of {@link CatalogContribution}s
  * (search direction) and a list of {@link EntityReferences} providers
  * (inverse direction). Suitable for catalog scales where the full token
- * index fits comfortably in heap (the Oak Vista deployment); Lucene-backed
+ * index fits comfortably in heap (the garden's deployment); Lucene-backed
  * or other persistent adapters would ship as sibling modules implementing
  * {@link Catalog} directly.
  *

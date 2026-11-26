@@ -36,7 +36,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 @SpringBootTest
 class NaturalistLoginWebMvcTest {
 
-    private static final String EMAIL = "gerald.durrell@oakvista.example";
+    private static final String EMAIL = "gerald.durrell@naturalist.example";
     private static final String PASSWORD = "durrell-secret";
 
     @Autowired
@@ -115,7 +115,7 @@ class NaturalistLoginWebMvcTest {
     @Test
     void unknownUsername_redirectsToError() throws Exception {
         // no account in the catalog has this email
-        mockMvc.perform(formLogin("/login").user("no-such-naturalist@oakvista.example").password("x"))
+        mockMvc.perform(formLogin("/login").user("no-such-naturalist@naturalist.example").password("x"))
                 .andExpect(status().is3xxRedirection())
                 .andExpect(result ->
                         assertThat(result.getResponse().getRedirectedUrl()).contains("/login?error"));

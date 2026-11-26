@@ -5,18 +5,18 @@ package com.naturalist.insects;
  * <p>
  * An insect may belong to multiple guilds simultaneously — a hoverfly is both
  * a predatory larva (PREDATOR) and an adult pollinator (POLLINATOR). The guild
- * set on {@link InsectSpeciesInfo} captures all roles the species exhibits at Oak Vista.
+ * set on {@link InsectSpeciesInfo} captures all roles the species exhibits in the garden.
  * <p>
- * <b>Guild definitions in the Oak Vista context:</b>
+ * <b>Guild definitions in the garden's context:</b>
  * <ul>
  *   <li>{@link #PARASITOID} — lays eggs in or on a host insect; larva consumes host.
  *       Tachinid flies and braconid wasps are the primary guild members documented
- *       in the April 2026 Oak Vista ecological assessment.</li>
+ *       in the April 2026 garden ecological assessment.</li>
  *   <li>{@link #PREDATOR} — directly consumes pest insects at adult or larval stage.
  *       Ladybug adults and larvae, hoverfly larvae.</li>
  *   <li>{@link #APEX_PREDATOR} — generalist night hunter consuming a wide spectrum
  *       of prey including other beneficials; net positive at population scale.
- *       Ground beetles (Carabidae) documented as confirmed Oak Vista residents.</li>
+ *       Ground beetles (Carabidae) documented as confirmed garden residents.</li>
  *   <li>{@link #POLLINATOR} — transfers pollen; critical for tomato fruit set.
  *       Native bees (Halictus, Andrena, Xylocopa) and some flies and butterflies.</li>
  *   <li>{@link #DECOMPOSER} — breaks down organic matter; supports soil food web

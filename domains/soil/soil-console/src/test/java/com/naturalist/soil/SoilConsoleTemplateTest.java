@@ -207,7 +207,7 @@ class SoilConsoleTemplateTest {
         assertThat(html).doesNotContain("meq/100g");
     }
 
-    /** Synthetic — a structural fixture, not Oak Vista chemistry. */
+    /** Synthetic — a structural fixture, not garden chemistry. */
     private static SoilProfile shortPanelProfile() {
         LabAnalysisId id = LabAnalysisId.create();
         NutrientPanel panel = new NutrientPanel(

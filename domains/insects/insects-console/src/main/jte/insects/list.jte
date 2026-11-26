@@ -22,7 +22,7 @@
     @if(nameError)
         <p class="error">That is not the name of an insect in the catalog; nothing was saved.</p>
     @endif
-    <p>Insect species documented at Oak Vista.</p>
+    <p>Insect species documented in the garden.</p>
 
     <div class="entity-grid">
         @for(var card : cards.content())

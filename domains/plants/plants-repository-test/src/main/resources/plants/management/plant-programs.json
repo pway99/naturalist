@@ -9,7 +9,7 @@
       "secondary": "An absolute pesticide-exclusion zone around our Aristolochia californica trellis. Pipevine Swallowtail (Battus philenor hirsuta) larvae sequester aristolochic acids from the host foliage; any insecticide — including organic options like Bt, spinosad, pyrethrin, or insecticidal soap — eliminates the breeding cohort.",
       "university": "Constraint-bearing program protecting the sole obligate larval host of Battus philenor hirsuta on site. The exclusion is non-negotiable and overrides all integrated pest management routines for adjacent plantings while larvae or eggs are present (typically March through October at our latitude)."
     },
-    "constraint": "NEVER spray any pesticide, organic or conventional, on or near this plant while larvae or eggs are present. Bt, spinosad, pyrethrin, and insecticidal soap are all prohibited. The Pipevine Swallowtail breeding population at Oak Vista depends entirely on this plant.",
+    "constraint": "NEVER spray any pesticide, organic or conventional, on or near this plant while larvae or eggs are present. Bt, spinosad, pyrethrin, and insecticidal soap are all prohibited. The Pipevine Swallowtail breeding population in the garden depends entirely on this plant.",
     "notes": "Established on back fence trellis. Adults appear March; larval cohorts persist through October. Eggs are rust-orange spheres laid in clusters on the underside of young leaves and on new stems."
   },
   {
@@ -46,7 +46,7 @@
       "preschool": "Tomato fruit can get a black bottom if it gets thirsty. We water carefully so that doesn't happen.",
       "elementary": "Blossom end rot is when the bottom of a tomato turns black because the plant couldn't get enough calcium. Steady watering and mulch keep the calcium flowing.",
       "secondary": "BER is a physiological disorder caused by localised calcium deficiency at the developing fruit. We manage transpiration steadiness through deep mulching, even soil moisture, and a foliar chelated calcium application schedule during fruit set.",
-      "university": "Calcium-transport management for indeterminate tomato in the Oak Vista substrate (coir-bound, low soluble Ca per FGL CH 2671853). Foliar TPS CalMag OAC bypasses the root-to-xylem pathway during heat-induced stomatal closure. Application is timed to fruit-set onset and repeated weekly through peak heat."
+      "university": "Calcium-transport management for indeterminate tomato in the garden's substrate (coir-bound, low soluble Ca per FGL CH 2671853). Foliar TPS CalMag OAC bypasses the root-to-xylem pathway during heat-induced stomatal closure. Application is timed to fruit-set onset and repeated weekly through peak heat."
     },
     "constraint": null,
     "notes": "Deep mulch transplant. Maintain even soil moisture; avoid drying cycles. Apply foliar TPS CalMag OAC weekly from first fruit set through peak summer heat. Bumblebee buzz pollination audible in early morning."
@@ -71,10 +71,10 @@
     "description": {
       "preschool": "We let our grass grow tall so the tiny grass-bugs and butterflies can hide and grow up in it.",
       "elementary": "We never cut the lawn shorter than four inches. Long grass keeps skipper butterfly babies safe and helps the grass eat the leafhopper bugs that hurt the tomatoes.",
-      "secondary": "Minimum four-inch cutting height per Oak Vista IPM. Lower mowing degrades leafhopper suppression and destroys skipper larval shelters. Clippings are returned as mulch — never bagged.",
+      "secondary": "Minimum four-inch cutting height per the garden IPM. Lower mowing degrades leafhopper suppression and destroys skipper larval shelters. Clippings are returned as mulch — never bagged.",
       "university": "Constraint-bearing turf management for Festuca arundinacea: 4–6 inch cutting height, deep infrequent irrigation to maintain a deep root profile, and clipping return for nutrient cycling. The low-mow protocol preserves leafhopper-suppression function and skipper (Hesperiidae) larval habitat in folded-blade shelters."
     },
-    "constraint": "Maintain at minimum 4-inch cutting height per Oak Vista IPM protocol. Lower mowing height degrades leafhopper suppression function and destroys skipper larval habitat. Do not scalp or bag clippings — return them as mulch.",
+    "constraint": "Maintain at minimum 4-inch cutting height per the garden IPM protocol. Lower mowing height degrades leafhopper suppression function and destroys skipper larval habitat. Do not scalp or bag clippings — return them as mulch.",
     "notes": "Main lawn area. Mow at 4–6 inches minimum. Deep-water infrequently rather than shallow-water frequently. Skipper larvae (small, green, in folded grass blade shelters) are residents — do not disturb."
   },
   {

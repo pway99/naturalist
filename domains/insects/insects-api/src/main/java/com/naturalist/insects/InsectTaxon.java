@@ -6,7 +6,7 @@ import com.naturalist.ddd.ReadModel;
 import com.naturalist.insects.InsectEntityCollections.ImageCollection;
 
 /**
- * An insect taxon at Oak Vista — its stored rank record (order, family, genus or species,
+ * An insect taxon in the garden — its stored rank record (order, family, genus or species,
  * depending on identification confidence) composed with the photographs attached at that
  * rank, as one read-side model.
  *

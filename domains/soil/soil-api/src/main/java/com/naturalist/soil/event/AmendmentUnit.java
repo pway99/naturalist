@@ -3,7 +3,7 @@ package com.naturalist.soil.event;
 /**
  * The unit of measure for a soil amendment application quantity.
  * <p>
- * Amendment quantities at Oak Vista are recorded as applied to a specific spatial target
+ * Amendment quantities in the garden are recorded as applied to a specific spatial target
  * (zone or sub-zone) — not as a rate per unit area. The application layer converts
  * to per-area rates using the target's {@code areaSqft} when needed for nutrient budget
  * calculations.

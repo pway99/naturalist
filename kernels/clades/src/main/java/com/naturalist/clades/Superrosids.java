@@ -26,7 +26,7 @@ public record Superrosids() implements Clade {
                     sister to the superasterids within the core eudicots (Pentapetalae). \
                     Retained as an explicit node because it, with superasterids, frames \
                     the core-eudicot bifurcation that a naturalist needs to read a \
-                    eudicot's placement; in the Oak Vista catalog it is a pass-through \
+                    eudicot's placement; in the catalog it is a pass-through \
                     parent above rosids. Intermediate grades (core eudicots, \
                     Pentapetalae) are collapsed unless a later catalog needs them. Its \
                     parent is Eudicots.""");

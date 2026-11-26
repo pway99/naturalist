@@ -14,7 +14,7 @@ import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
 /**
  * Exercises the assembled read path: {@link PlantedZoneQuery} → {@code PlantedZoneFactory} →
- * {@code PlantingQuery} → its repository mock, over the real 2026 Oak Vista beds.
+ * {@code PlantingQuery} → its repository mock, over the real 2026 garden beds.
  */
 class PlantedZoneFactoryTest {
 

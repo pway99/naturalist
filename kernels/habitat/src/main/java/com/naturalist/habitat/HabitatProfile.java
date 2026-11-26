@@ -17,7 +17,7 @@ import java.util.function.Consumer;
  * <p>
  * <b>Design intent:</b> this is a description of habitat character, not a named habitat
  * entity. "Riparian edge, mesic, partial sun, herbaceous and ground surface" is a profile;
- * "Oak Vista North Creek Bank" is a Zone (a named, located place in the zones domain).
+ * "The garden North Creek Bank" is a Zone (a named, located place in the zones domain).
  * The distinction matters: a profile travels with a catalogued organism as a description
  * of where it lives in general; a Zone is a specific, identifiable place on a specific
  * property.

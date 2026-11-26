@@ -138,7 +138,7 @@
             <input type="hidden" name="areaLon" value="">
             <p id="area-line" class="area-line" aria-live="polite" hidden>Area: <span id="area-text"></span> <button type="button" id="area-clear">Clear</button></p>
             <div class="form-group">
-                <input type="text" name="location" placeholder="Location (e.g. Oak Vista, Chico, CA)">
+                <input type="text" name="location" placeholder="Location (e.g. Sacramento Valley, CA)">
             </div>
             <div class="form-group">
                 <textarea name="notes" rows="2" placeholder="Field notes (optional)"></textarea>

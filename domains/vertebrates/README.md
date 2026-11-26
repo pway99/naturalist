@@ -1,6 +1,6 @@
 # Vertebrates
 
-Will catalog the vertebrates of Oak Vista — birds, reptiles, amphibians, and
+Will catalog the vertebrates of the garden — birds, reptiles, amphibians, and
 mammals — alongside the other organism domains.
 
 A planned organism domain. It follows the shared organism-domain blueprint that

@@ -1,6 +1,6 @@
 # ChemicalScience Ubiquitous Language
 
-## Oak Vista Garden Management System
+## The garden Garden Management System
 
 ## Addendum to UBIQUITOUS_LANGUAGE.md
 
@@ -12,7 +12,7 @@
 
 An atomic building block with defined symbol, atomic weight, and ionic form.
 Elements are the constituent parts of compounds.
-Examples in Oak Vista context: Ca, Mg, K, N, S, P, Cl, O, H, C.
+Examples in garden context: Ca, Mg, K, N, S, P, Cl, O, H, C.
 
 ### Compound
 
@@ -58,14 +58,14 @@ Gypsum: neutral. Critical for predicting soil pH effects.
 
 A documented chemical transformation between compounds.
 Has reactants, products, conditions (temperature, pH, biological catalyst),
-and significance to the Oak Vista management context.
+and significance to the garden's management context.
 Reactions are catalog entries — defined in reactions.json.
 
 ### Cation Exchange
 
 The displacement of one cation from a soil exchange site by another.
 Governed by selectivity series and mass action law.
-In Oak Vista context: Ca2+ displacing K+ and Na+ from coco coir sites.
+In garden context: Ca2+ displacing K+ and Na+ from coco coir sites.
 Modeled as a Reaction with specific conditions and equilibrium constants.
 
 ### Bioavailability Profile
@@ -88,7 +88,7 @@ than Rot-Stop calcium chloride.
 For compounds that act as vapor-phase treatments (formic acid, thymol).
 Describes the relationship between temperature and vapor production rate.
 Critical for Varroa treatment efficacy and safety.
-Formic acid: dangerously high vapor pressure above 85°F in Chico summers.
+Formic acid: dangerously high vapor pressure above 85°F in the Sacramento Valley summers.
 Thymol: insufficient volatilization below 59°F; effective 59-105°F.
 
 ### Safety Profile
@@ -123,7 +123,7 @@ Neem oil: LOW (mild irritant).
 
 ---
 
-## Compound Catalog — Oak Vista Instances
+## Compound Catalog — The garden Instances
 
 These are the specific compounds discovered during this project.
 Defined in JSON files — not in Java code.

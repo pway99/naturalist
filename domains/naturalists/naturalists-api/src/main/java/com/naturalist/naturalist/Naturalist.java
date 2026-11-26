@@ -9,12 +9,12 @@ import org.jspecify.annotations.Nullable;
 import java.util.function.Consumer;
 
 /**
- * A person who participates in the life of Oak Vista — as visitor, caretaker,
+ * A person who participates in the life of the garden — as visitor, caretaker,
  * student, keeper, or teacher.
  * <p>
  * The name is inspired by Gerald Durrell, who spent his life building institutions
  * where people of every background could connect with the natural world. Every
- * person who enters Oak Vista is, in some sense, a naturalist in the making.
+ * person who enters the garden is, in some sense, a naturalist in the making.
  * <p>
  * The {@link EcologicalStage} field captures where this person currently sits in
  * the Durrell learning progression. The application layer uses it to select the

@@ -1,6 +1,6 @@
 # Molluscs
 
-Will catalog the molluscs of Oak Vista — the garden's snails and slugs —
+Will catalog the molluscs of the garden — the garden's snails and slugs —
 alongside the other organism domains.
 
 A planned organism domain. It follows the shared organism-domain blueprint that

@@ -16,7 +16,7 @@ package com.naturalist.zone.subzone;
  * abundant debris for pupation. Compacted or smooth materials (bare soil, burlap collar)
  * provide minimal habitat and reduce the population reservoir between seasons.
  * <p>
- * <b>Oak Vista significance:</b> The April 7, 2026 TSWV outbreak in the backyard garden
+ * <b>garden significance:</b> The April 7, 2026 TSWV outbreak in the backyard garden
  * north section was associated with straw mulch (HIGH habitat risk). Post-outbreak
  * management thinned the north section straw from ~2 inches to ~1 inch. The transition
  * from HIGH to MODERATE risk is recorded by updating the SubZone's

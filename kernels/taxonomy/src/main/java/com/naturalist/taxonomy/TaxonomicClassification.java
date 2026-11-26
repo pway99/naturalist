@@ -9,7 +9,7 @@ import java.util.function.Consumer;
 /**
  * The Linnaean taxonomic placement of a catalogued organism, from order down to species.
  * <p>
- * Oak Vista catalog identifications range from species-level precision
+ * the catalog identifications range from species-level precision
  * (e.g. <i>Hippodamia convergens</i>, <i>Vanessa cardui</i>) to family-level
  * (e.g. Tachinidae, Carabidae) where field identification cannot distinguish species.
  * The {@code genus} and {@code species} fields are nullable to accommodate family-level

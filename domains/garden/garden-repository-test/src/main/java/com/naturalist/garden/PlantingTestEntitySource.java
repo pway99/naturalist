@@ -4,7 +4,7 @@ import com.naturalist.data.NaturalistDatabase;
 import com.naturalist.data.TestEntitySource;
 
 /**
- * Test data source for {@link Planting} — what actually went into the Oak Vista beds in 2026,
+ * Test data source for {@link Planting} — what actually went into the garden's beds in 2026,
  * cross-checked against the cultivars the plants catalog carries and the zones soil samples.
  * <p>
  * The 2026 tomatoes are four plantings across two beds, three of them sharing the back yard, which

@@ -14,7 +14,7 @@ import java.util.List;
 import java.util.Optional;
 
 /**
- * Read-only viewer for what is growing at Oak Vista: the planted zones, and what went into each.
+ * Read-only viewer for what is growing in the garden: the planted zones, and what went into each.
  * <p>
  * Routes follow the model rather than a friendlier synonym. A URL is an addressable contract, not
  * page copy — {@code /garden/planted-zones/backyard/backyard-south} stays true when the heading

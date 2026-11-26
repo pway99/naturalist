@@ -94,7 +94,7 @@ Replace the contents of `domains/naturalists/naturalists-repository-test/src/mai
     "familyName": "Way",
     "role": "CARETAKER",
     "stage": "NATURALIST",
-    "notes": "Principal caretaker and systems architect of Oak Vista. B.S. Environmental Science / Chemistry minor. 20+ years software engineering. Confirmed Pipevine Swallowtail eggs on Aristolochia californica April 2026. Manages Saskatraz honey bee colony and all soil amendment programmes."
+    "notes": "Principal caretaker and systems architect of the garden. B.S. Environmental Science / Chemistry minor. 20+ years software engineering. Confirmed Pipevine Swallowtail eggs on Aristolochia californica April 2026. Manages Saskatraz honey bee colony and all soil amendment programmes."
   },
   {
     "name": "delia-durrell",
@@ -102,7 +102,7 @@ Replace the contents of `domains/naturalists/naturalists-repository-test/src/mai
     "familyName": "Durrell",
     "role": "TEACHER",
     "stage": "PRACTITIONER",
-    "notes": "Leads school ecology visits at Oak Vista."
+    "notes": "Leads school ecology visits in the garden."
   },
   {
     "name": "flora-mendez",
@@ -1443,7 +1443,7 @@ Create `domains/naturalists/CLAUDE.md`:
 ```markdown
 # Naturalists domain
 
-A `Naturalist` (`NamedEntity<NaturalistName>`) is a person at Oak Vista — an
+A `Naturalist` (`NamedEntity<NaturalistName>`) is a person in the garden — an
 ecological actor (role, ecological stage), **not** an account. Authentication
 credentials live in a **separate** record, `NaturalistCredential`
 (`NamedEntity<NaturalistName>`, keyed 1:1 by the same slug), so the ecological

@@ -70,7 +70,7 @@ class InsectsCatalogWebMvcTest {
                 .andExpect(status().isOk())
                 .andExpect(content().contentTypeCompatibleWith("text/html"))
                 .andExpect(content().string(containsString("Insect Species")))
-                .andExpect(content().string(containsString("species documented at Oak Vista")));
+                .andExpect(content().string(containsString("species documented in the garden")));
     }
 
     @Test

@@ -25,7 +25,7 @@ public record Rosids() implements Clade {
                     (eurosids II) subclades. Broadly characterised by ellagic acid, by \
                     mycorrhizal and rhizobial/actinorhizal nitrogen-fixing symbioses \
                     concentrated in the fabid "nitrogen-fixing clade," and by a \
-                    frequent woody habit. The Oak Vista catalog reaches both daughter \
+                    frequent woody habit. The catalog reaches both daughter \
                     clades; rosids is their shared parent. Its parent is Superrosids.""");
 
     @Override

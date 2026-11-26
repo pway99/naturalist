@@ -15,7 +15,7 @@ import java.util.function.Consumer;
  * pathogen with a {@code resolvedDate}. This preserves the full timeline of pressure events.
  * <p>
  * First instance in the domain: April 7, 2026 — TSWV (SEVERE) and THRIPS (HIGH) pressure
- * recorded in the north section of the Oak Vista backyard garden row following confirmed
+ * recorded in the north section of the garden's backyard garden row following confirmed
  * outbreak diagnosis.
  */
 public record PestPressureRecord(
@@ -108,7 +108,7 @@ public record PestPressureRecord(
         TRACE, LOW, MODERATE, HIGH,
         /**
          * Complete loss of sub-zone — all plants symptomatic or removed.
-         * Applied to the north section of the Oak Vista backyard bed, April 7, 2026.
+         * Applied to the north section of the garden's backyard bed, April 7, 2026.
          */
         SEVERE
     }

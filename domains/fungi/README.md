@@ -1,6 +1,6 @@
 # Fungi
 
-Will catalog the fungi of Oak Vista — the decomposers and mycorrhizal partners
+Will catalog the fungi of the garden — the decomposers and mycorrhizal partners
 of the soil food web — alongside the other organism domains.
 
 A planned organism domain. It follows the shared organism-domain blueprint that

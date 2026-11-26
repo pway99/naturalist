@@ -33,7 +33,7 @@ import java.util.function.Consumer;
  * <b>Not to be confused with</b> {@link SoilPhysicalCharacteristics#saturationPct()}, which is the
  * physical water/paste saturation of the sample (a drainage indicator), a distinct measurement.
  * <p>
- * <b>Oak Vista reference — Box 1 (CH 2671853-001, sampled March 3, 2026):</b>
+ * <b>garden reference — Box 1 (CH 2671853-001, sampled March 3, 2026):</b>
  * Ca 74.6%, Mg 22.9%, K 2.09%, Na 0.408%, H &lt; 1.00%. The Ca-dominant, Mg-elevated balance
  * with negligible sodium and hydrogen is characteristic of the worm-casting/coco-coir blend
  * under gypsum rehabilitation.

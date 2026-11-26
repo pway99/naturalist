@@ -36,7 +36,7 @@ public record Lepidoptera() implements Clade {
                     Order Lepidoptera (Holometabola: Amphiesmenoptera, sister to \
                     Trichoptera) — earliest fossils from the Late Triassic \
                     (~200 Ma); major radiation tracks the rise of angiosperms in \
-                    the Cretaceous. Major superfamilies relevant to Oak Vista \
+                    the Cretaceous. Major superfamilies relevant to the garden \
                     include Papilionoidea (butterflies and skippers — Papilionidae, \
                     Nymphalidae, Pieridae, Lycaenidae, Hesperiidae), Noctuoidea \
                     (owlet moths), Geometroidea (geometer moths), and Bombycoidea \

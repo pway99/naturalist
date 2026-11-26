@@ -266,7 +266,7 @@ Prey is different:
 
 1. **Polymorphic targets.** Prey spans most of the biological kingdom — insects, arachnids, molluscs, worms,
    vertebrates. No single typed list covers it.
-2. **Context-dependent.** Observed prey at Oak Vista is not a stable species-level trait. It depends on what's
+2. **Context-dependent.** Observed prey in the garden is not a stable species-level trait. It depends on what's
    available, preference strength, seasonal variation.
 3. **Prey is a node, not a leaf.** When the DAG walks from a predator to its prey, the prey has its own outbound
    ecological relationships. "Prey" is an inbound edge to another branch of the graph, not a terminal reference.

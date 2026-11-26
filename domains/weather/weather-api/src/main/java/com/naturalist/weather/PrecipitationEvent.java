@@ -28,7 +28,7 @@ import java.util.function.Consumer;
  * delivered at intensity below 0.3 inches/hour constitutes a significant leaching
  * event for soluble soil ions — particularly nitrate (NO₃⁻), which is anionically
  * repelled from soil exchange sites and moves freely with soil water. The April 2026
- * rainfall event at Oak Vista (approximately 1.5 inches over 3 days) provided
+ * rainfall event in the garden (approximately 1.5 inches over 3 days) provided
  * natural leaching that meaningfully reduced the blood meal nitrogen excess and
  * potassium sulfate ionic load from April 6, 2026 amendment applications.
  * <p>
@@ -44,7 +44,7 @@ import java.util.function.Consumer;
  * an irrigation event, and drainage rate calculations would be attributed to the
  * wrong cause.
  * <p>
- * <b>Oak Vista precipitation record (April 2026):</b>
+ * <b>garden precipitation record (April 2026):</b>
  * <ul>
  *   <li>Easter weekend through April 9, 2026 — approximately 1.5 inches total.
  *       Estimated Box 1 delivery: ~45 gallons. Backyard delivery: ~93 gallons.

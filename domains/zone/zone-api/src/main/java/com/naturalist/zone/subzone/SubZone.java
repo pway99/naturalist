@@ -20,7 +20,7 @@ import java.util.function.Consumer;
  * {@link com.naturalist.zone.ZoneName}. Zone is the aggregate root.
  * <p>
  * <b>Origin of this concept:</b> SubZone emerged as a first-class domain object from a real
- * management event on April 7, 2026. A TSWV/thrips outbreak in the Oak Vista backyard garden
+ * management event on April 7, 2026. A TSWV/thrips outbreak in the garden's backyard garden
  * row required treating specific sections differently: infected plants pulled from the north
  * end, Nick's Italian Pear protected in the centre, and Amish Paste starts monitored in the
  * south. The Zone granularity was too coarse to capture this spatial differentiation.

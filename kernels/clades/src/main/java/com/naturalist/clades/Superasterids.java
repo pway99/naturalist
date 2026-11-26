@@ -25,7 +25,7 @@ public record Superasterids() implements Clade {
             """
                     Superasteridae — core-eudicot clade comprising the asterids plus \
                     Caryophyllales, Santalales, Berberidopsidales, and Gunnerales, \
-                    sister to the superrosids within Pentapetalae. In the Oak Vista \
+                    sister to the superrosids within Pentapetalae. In the \
                     catalog superasterids is the placement for Caryophyllales \
                     (Dianthus) — the "neither rosid nor asterid" case that makes this \
                     node pedagogically load-bearing. Its parent is Eudicots.""");

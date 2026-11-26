@@ -51,7 +51,7 @@ where I think it is wrong I say so plainly, including where that undoes Phase 1.
 
 **Yes. It fuses two aggregates with different identities into one record.**
 
-`Insect` is documented as "everything known about an insect at Oak Vista, at
+`Insect` is documented as "everything known about an insect in the garden, at
 whatever identification depth has been reached" (`Insect.java:13-15`). That
 sentence hides a conflation of two distinct concepts:
 

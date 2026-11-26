@@ -4,10 +4,10 @@
   "genus": "Chrysoperla",
   "species": "Chrysoperla sp.",
   "observation": {
-    "location": "Chico, California",
+    "location": "Sacramento Valley, CA",
     "habitat": "Residential garden — beneficial insect habitat",
     "found_on": "White wall surface at night",
-    "garden_context": "Oak Vista apiary and integrated beneficial insect habitat"
+    "garden_context": "Garden apiary and integrated beneficial insect habitat"
   },
   "identification_features": [
     "Brilliant lime green body",
@@ -76,11 +76,11 @@
   "ecological_significance": {
     "indicator_value": "Presence indicates diverse flowering plant community providing adult nectar resources",
     "food_web_position": "Secondary predator — controls aphid populations that would otherwise explode on fruit trees and vegetables",
-    "chico_context": "Warm Central Valley climate supports multiple generations per season — continuous biological control through summer"
+    "local_context": "Warm Central Valley climate supports multiple generations per season — continuous biological control through summer"
   },
   "census_record": {
     "observation_number": 17,
-    "date_context": "Spring 2026 — Chico beneficial insect census",
+    "date_context": "Spring 2026 — Sacramento Valley beneficial insect census",
     "total_species_at_time_of_observation": 17,
     "functional_guilds_represented": [
       "Parasitoids",

@@ -9,7 +9,7 @@ import java.util.function.Consumer;
 
 /**
  * A documented chemical reaction with its reactants, products,
- * conditions, and significance to the Oak Vista management context.
+ * conditions, and significance to the garden's management context.
  * <p>
  * Reaction instances are loaded from reactions.json at startup.
  * This class defines the schema — the JSON defines specific reactions.

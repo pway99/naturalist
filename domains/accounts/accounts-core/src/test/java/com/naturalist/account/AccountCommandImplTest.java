@@ -108,7 +108,7 @@ class AccountCommandImplTest {
 
     @Test
     void register_rejectsDuplicateEmail() {
-        assertThatThrownBy(() -> command().register("gerald.durrell@oakvista.example", "hash"))
+        assertThatThrownBy(() -> command().register("gerald.durrell@naturalist.example", "hash"))
                 .isInstanceOf(DuplicateEmailException.class);
     }
 
@@ -280,7 +280,7 @@ class AccountCommandImplTest {
 
     @Test
     void register_duplicateEmail_isObservedAsEmailUnregisteredViolation() {
-        assertThatThrownBy(() -> command().register("gerald.durrell@oakvista.example", "hash"))
+        assertThatThrownBy(() -> command().register("gerald.durrell@naturalist.example", "hash"))
                 .isInstanceOf(DuplicateEmailException.class);
 
         assertThat(violations("register.emailUnregistered")).isEqualTo(1);

@@ -17,5 +17,5 @@ Priority order. Not loaded into conversation context — reference explicitly wh
    status computation.
 7. **NitrogenStatus** — current excess diagnosis. Must account for biological amplification factor from Zone. Critical:
    April 6, 2026 blood meal over-application.
-8. **OakVistaZoneFixtures** — populate ZoneRepository with real property zones (substrate types, sun exposure, aspect
+8. **GardenZoneFixtures** — populate ZoneRepository with real property zones (substrate types, sun exposure, aspect
    per zone).

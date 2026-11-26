@@ -23,7 +23,7 @@ public record Campanulids() implements Clade {
             """
                     Campanulidae (campanulids / euasterids II) — core-asterid clade \
                     comprising Aquifoliales, Escalloniales, Asterales, Bruniales, \
-                    Paracryphiales, Dipsacales, and Apiales. In the Oak Vista catalog \
+                    Paracryphiales, Dipsacales, and Apiales. In the catalog \
                     campanulids places Apiales — Anethum, dill. Its parent is \
                     Asterids.""");
 
