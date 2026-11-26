@@ -12,7 +12,7 @@ import org.apache.commons.lang3.StringUtils;
  * <p>Deliberately <em>only</em> {@link HttpServletRequest#getRemoteAddr()}. The app never
  * reads {@code CF-Connecting-IP}, {@code X-Forwarded-For} or {@code Forwarded} itself — a
  * header any client can send is not an identity. Behind the Cloudflare Tunnel connector the fix
- * is the container's, not this class's: {@code server.forward-headers-strategy: native} with
+ * is the container's, not this class's: {@code server.request.header.forwarded.strategy: web-server} with
  * {@code server.tomcat.remoteip.remote-ip-header: CF-Connecting-IP} lets Tomcat's
  * {@code RemoteIpValve} rewrite {@code getRemoteAddr()}, and only for a peer matching
  * {@code internal-proxies} (ADR-027 D4). Never the {@code framework} strategy, which trusts

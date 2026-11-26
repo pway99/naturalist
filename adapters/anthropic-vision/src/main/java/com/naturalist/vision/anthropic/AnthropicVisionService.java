@@ -121,10 +121,7 @@ public class AnthropicVisionService implements VisionService {
                 .build();
 
         // 6. Seed the conversation with the user's image message and issue turn 1.
-        MessageParam userMessage = MessageParam.builder()
-                .role(MessageParam.Role.USER)
-                .contentOfBlockParams(List.of(imageBlock, textBlock))
-                .build();
+        MessageParam userMessage = MessageParam.ofUserOfContentBlockParams(List.of(imageBlock, textBlock));
 
         return issueRequest(List.of(userMessage), tool, systemBlock);
     }
@@ -194,18 +191,14 @@ public class AnthropicVisionService implements VisionService {
             // Only the tool_use block is replayed (no sibling text): forced toolChoice
             // always yields a lone tool_use block, so nothing is lost -- revisit if
             // toolChoice ever becomes non-forced.
-            MessageParam assistantMessage = MessageParam.builder()
-                    .role(MessageParam.Role.ASSISTANT)
-                    .contentOfBlockParams(List.of(ContentBlockParam.ofToolUse(block.toParam())))
-                    .build();
+            MessageParam assistantMessage = MessageParam.ofAssistantOfContentBlockParams(
+                    List.of(ContentBlockParam.ofToolUse(block.toParam())));
             ToolResultBlockParam toolResultBlock = ToolResultBlockParam.builder()
                     .toolUseId(block.id())
                     .content(toolResultJson)
                     .build();
-            MessageParam userMessage = MessageParam.builder()
-                    .role(MessageParam.Role.USER)
-                    .contentOfBlockParams(List.of(ContentBlockParam.ofToolResult(toolResultBlock)))
-                    .build();
+            MessageParam userMessage = MessageParam.ofUserOfContentBlockParams(
+                    List.of(ContentBlockParam.ofToolResult(toolResultBlock)));
 
             ArrayList<MessageParam> extended = new ArrayList<MessageParam>(messages);
             extended.add(assistantMessage);

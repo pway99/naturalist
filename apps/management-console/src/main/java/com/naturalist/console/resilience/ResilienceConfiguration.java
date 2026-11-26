@@ -85,7 +85,7 @@ import java.util.List;
  *
  * <p>What "client" means is a deployment decision, not a header the app reads:
  * {@code HttpServletRequest.getRemoteAddr()} is the TCP peer unless Spring Boot's
- * {@code server.forward-headers-strategy} is set for a trusted proxy. See
+ * {@code server.request.header.forwarded.strategy} is set for a trusted proxy. See
  * {@code apps/CLAUDE.md}, "Client identity behind a proxy".
  *
  * <h2>Status — the marker is not load-bearing</h2>

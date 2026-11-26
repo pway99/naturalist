@@ -2,3 +2,6 @@
 # Matches <java.version>25</java.version> in pom.xml, the Temurin 25 CI runner and the
 # eclipse-temurin:25.0.5.1_2-jre-noble runtime image in the Dockerfile
 java=25.0.5.1+2-tem
+# Matches the maven:3.9.16-eclipse-temurin-25-noble build image in the Dockerfile. Dependabot
+# leaves that image alone (.github/dependabot.yml), so move both by hand, together.
+maven=3.9.16
