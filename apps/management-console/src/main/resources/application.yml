@@ -64,6 +64,13 @@ management:
     web:
       exposure:
         include: health,prometheus
+  # Free and total bytes (disk_free_bytes, disk_total_bytes, tagged by path) of each file system
+  # listed, for the storage alerts in deploy/prometheus/alerts.yml. compose.yaml adds the
+  # database volume.
+  metrics:
+    system:
+      diskspace:
+        paths: ${naturalist.images.root}
 
 # The packaged jar renders the templates the build compiled into it. spring-boot:run turns
 # development mode on from the POM, so templates recompile from source as they are edited.

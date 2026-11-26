@@ -117,3 +117,49 @@ groups:
           severity: ticket
         annotations:
           summary: Many challenge tokens are failing, so bots may be reaching the origin.
+
+  # A full disk stops everything: photos, the database, logs and Prometheus share the host disk. The
+  # app reports free and total bytes for the image store and the database volume (application.yml,
+  # compose.yaml); on one disk both paths fire together. Thresholds are starting guesses.
+  - name: naturalist-storage
+    rules:
+      - alert: DiskSpaceLow
+        expr: disk_free_bytes{job="naturalist"} / disk_total_bytes{job="naturalist"} < 0.20
+        for: 15m
+        labels:
+          severity: ticket
+        annotations:
+          summary: "Under 20% of the disk under {{ $labels.path }} is free."
+
+      # Three days ahead, from the last six hours' trend: time to act before DiskSpaceCritical.
+      - alert: DiskFillsWithinThreeDays
+        expr: predict_linear(disk_free_bytes{job="naturalist"}[6h], 3 * 24 * 3600) < 0
+        for: 1h
+        labels:
+          severity: ticket
+        annotations:
+          summary: "At its current rate, the disk under {{ $labels.path }} fills within three days."
+
+      - alert: DiskSpaceCritical
+        expr: disk_free_bytes{job="naturalist"} / disk_total_bytes{job="naturalist"} < 0.05
+        for: 5m
+        labels:
+          severity: page
+        annotations:
+          summary: "Under 5% of the disk under {{ $labels.path }} is free. Uploads and the database stop when it is full."
+
+      # A photo or tile the image store could not delete stays on disk, and nothing removes it later.
+      # Counted once, by the store, whoever asked for the delete: delete.removed (an I/O failure),
+      # delete.deleted (a timeout), and <method>.discarded (a half-written file left by a failed store).
+      - alert: PhotoDeleteFailed
+        expr: |
+          sum by (name) (increase(naturalist_invariant_check_total{kind="caught", name=~"FilesystemImageStore\\.(delete\\.(removed|deleted)|[a-z]+\\.discarded)"}[10m])) > 0
+          or
+          sum by (name) (
+            naturalist_invariant_check_total{kind="caught", name=~"FilesystemImageStore\\.(delete\\.(removed|deleted)|[a-z]+\\.discarded)"}
+            unless naturalist_invariant_check_total{kind="caught", name=~"FilesystemImageStore\\.(delete\\.(removed|deleted)|[a-z]+\\.discarded)"} offset 10m
+          )
+        labels:
+          severity: ticket
+        annotations:
+          summary: "A photo file could not be deleted ({{ $labels.name }}), so it stays on disk."

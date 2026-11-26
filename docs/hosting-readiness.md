@@ -111,4 +111,6 @@ Run these against the deployment while the address is still unannounced.
 - Client address trusted only from the local connector.
 - Metrics on a private port, read by Prometheus, with alerts through Alertmanager
   ([local stack runbook](runbooks/local-stack.md)).
+- Storage alerts: free space on the image store and database volumes (warn under 20% free or when
+  the trend fills the disk within three days, page under 5%), and a failed photo delete (launch 1.8).
 - A [security review](notes/2026-11-03-security-review.md) with no findings at its reporting bar, apart from the items above.
