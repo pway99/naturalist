@@ -21,4 +21,9 @@
     @else
         <a href="/admin/usage">Usage</a>
     @endif
+    @if(current.equals("accounts"))
+        <a href="/admin/accounts" aria-current="page">Accounts</a>
+    @else
+        <a href="/admin/accounts">Accounts</a>
+    @endif
 </nav>

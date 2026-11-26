@@ -20,7 +20,7 @@ work comes first; the paused engineering threads follow.
 |----|------|-----|------|---------|
 | 1  | ✅ 2026-11-25 **Launch decisions A–D and 2.3 host**: C small invited group first; A the cheap option now (confirm-page wording + purge accounts unverified after 24 h), real reset (launch 5.4) before opening up; B migration tool straight after launch; D image sharing separate; host DigitalOcean 4 GiB x86, US | Pat | S | Done |
 | 2  | **Launch 1.5: account recovery, cheap option** (closes security finding S1): new confirm-page wording, purge accounts never verified after 24 hours | Claude | S | Last open code item in launch phase 1, and the next item in the plan. Real password reset is launch 5.4, before opening up |
-| 3  | **Launch 1.9: admin accounts page** (`/admin/accounts`: list accounts; grant/revoke `VISION`; suspend/reinstate; suspend ends live sessions) | Claude | M | Pat asked 2026-11-25: no account change should need direct SQL on production. Commands exist; needs a paged `AccountQuery` list. Makes `request` workable for 2.6 |
+| 3  | ✅ 2026-11-25 **Launch 1.9: admin accounts page** (`/admin/accounts`: paged list; grant/revoke `VISION`; suspend/reinstate; suspend ends live sessions via `AccountSessions`) | Claude | M | Done on branch `claude/launch-1-9-admin-accounts-f68f09`, not merged. `request` is now workable for 2.6; 5.4 reuses `AccountSessions.endAll` |
 | 4  | ✅ **Java4Shell WI-2 + rest of WI-6** (on main 2026-11-25): runtime pinned to `eclipse-temurin:25.0.5.1_2-jre-noble` (Adoptium's named CVE-2026-114938 fix), WI-1 flag removed, actions pinned by SHA, `dependabot.yml` (docker, docker-compose, github-actions, maven), plus `.github/workflows/image.yml`, which builds both images on every PR that touches them. The weekly `--pull` rebuild is deferred to the production redeploy job | Claude | S | Done; deploy the pinned image when the DigitalOcean VM exists (launch 3.1) |
 | 5  | **Launch 1.8: storage-capacity alerts** (image-store + database volume free space, failed photo deletes) | Claude | S–M | Pat asked 2026-11-16; a full disk stops everything |
 | 6  | **Seed data review**: launch 1.2 seed field observations, the "Oak Vista" name (~180 files), Java4Shell WI-4 throwaway seed passwords | Pat | S–M | Public pages show this content |
@@ -35,7 +35,7 @@ work comes first; the paused engineering threads follow.
 
 | Effort | State | Where | Left |
 |--------|-------|-------|------|
-| Public launch ([plan](plans/2026-11-05-public-launch-work-plan.md), [checklist](hosting-readiness.md)) | In progress | main | Phase 0 ✅. Phase 1: 1.1, 1.3, 1.4, 1.6, 1.7 ✅; **1.2** (Pat), **1.5** (cheap option, S), **1.8**, **1.9** (admin accounts page) open. Phase 2: 2.3 ✅ (DigitalOcean). Phases 3–4 not started. Pat also owes a `backyardnaturalist.app` address in `secrets/alert-email` on the host |
+| Public launch ([plan](plans/2026-11-05-public-launch-work-plan.md), [checklist](hosting-readiness.md)) | In progress | main | Phase 0 ✅. Phase 1: 1.1, 1.3, 1.4, 1.6, 1.7 ✅; **1.2** (Pat), **1.5** (cheap option, S), **1.8** open; 1.9 ✅ (admin accounts page, on its branch). Phase 2: 2.3 ✅ (DigitalOcean). Phases 3–4 not started. Pat also owes a `backyardnaturalist.app` address in `secrets/alert-email` on the host |
 | Java4Shell hardening ([plan](plans/2026-11-19-java4shell-hardening-plan.md)) | In progress | WI-1 `f8d9de23` | WI-1 ✅, then retired by WI-2. WI-5 ✅ (`62f05c18` SECURITY.md; private reporting, Dependabot alerts, CodeQL on). WI-2 ✅ (pinned Temurin 25.0.5.1+2, the confirmed fix; WI-1 flag retired; `image.yml` builds images on PRs; scheduled rebuild deferred to production). WI-6 ✅ (read-only token `9e27d97f`; actions pinned by SHA; Dependabot config). WI-7 ✅ ("main safety net" ruleset). **WI-3, WI-4, WI-8 open.** Deploy the pinned image to the DigitalOcean VM once it exists |
 | Cloudflare edge ([ADR-027](adr/ADR-027-cloudflare-edge-and-abuse-protection.md)) | Code done | PRs 1–7 on main | Real-widget login check and deployment (launch 4.1, 4.2) |
 | Secrets + model spend ([ADR-028](adr/ADR-028-secrets-and-model-spend-protection.md)) | Code done | main | Operational only: step 0 vendor workspaces/limits/keys (launch 2.1), step 7 rotation rehearsal (4.8), step 8 deploy config + forged-address check + refusal alert rule (4.3). Turnstile secret is on `SecretProvider` ✅ |
@@ -49,7 +49,7 @@ work comes first; the paused engineering threads follow.
 **Launch:** 2.1 spend limit (proposed $60/month), whether dev gets its own limit, and identify in
 Cloudflare rule E1 (ADR-027 recommends no); 2.4 email provider; 2.5 heartbeat service; 2.6 who gets
 identification at launch, reopened by decision C (`self-serve` makes "invited" only unannounced;
-`request` needs hand grants until the admin page, launch 1.9); a metrics backend. Decisions A–D and the 2.3 host were
+`request` grants are made at `/admin/accounts`, launch 1.9); a metrics backend. Decisions A–D and the 2.3 host were
 settled 2026-11-25.
 
 **Named values / observability:**

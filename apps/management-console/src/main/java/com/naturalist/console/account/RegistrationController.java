@@ -4,6 +4,7 @@ import com.naturalist.account.AccountCommand;
 import com.naturalist.account.DuplicateEmailException;
 import com.naturalist.account.InvalidTokenException;
 import com.naturalist.challenge.ChallengeVerdict;
+import com.naturalist.console.auth.AccountSessions;
 import com.naturalist.console.auth.ClientKey;
 import com.naturalist.console.challenge.ChallengeGate;
 import com.naturalist.console.email.EmailProperties;
@@ -66,6 +67,7 @@ class RegistrationController {
     private final EmailProperties emailProperties;
     private final UserDetailsService userDetailsService;
     private final AccountCommand accountCommand;
+    private final AccountSessions accountSessions;
     private final SecurityContextRepository securityContextRepository =
             new HttpSessionSecurityContextRepository();
 
@@ -74,13 +76,15 @@ class RegistrationController {
                            EmailSender emailSender,
                            EmailProperties emailProperties,
                            UserDetailsService userDetailsService,
-                           AccountCommand accountCommand) {
+                           AccountCommand accountCommand,
+                           AccountSessions accountSessions) {
         this.registration = registration;
         this.challenge = challenge;
         this.emailSender = emailSender;
         this.emailProperties = emailProperties;
         this.userDetailsService = userDetailsService;
         this.accountCommand = accountCommand;
+        this.accountSessions = accountSessions;
     }
 
     @GetMapping("/register")
@@ -235,6 +239,7 @@ class RegistrationController {
         if (rotateSession) {
             request.getSession();          // ensure one exists (CSRF usually made it already)
             request.changeSessionId();     // new id → closes the session-fixation window
+            accountSessions.register(request, principal);   // so a suspend can end this session too
         }
         securityContextRepository.saveContext(context, request, response);
     }
