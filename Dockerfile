@@ -2,7 +2,7 @@
 #   docker build --target app -t naturalist-app .
 #   docker build --target db-init -t naturalist-db-init .
 
-FROM maven:3.9.16-eclipse-temurin-25-noble AS build
+FROM maven:3.9-eclipse-temurin-26-noble AS build
 WORKDIR /src
 COPY . .
 RUN --mount=type=cache,target=/root/.m2 \
@@ -16,7 +16,7 @@ RUN --mount=type=cache,target=/root/.m2 \
 # https://adoptium.net/news/2026/11/temurin-november-2026-cspu-java4shell
 
 # Creates the schema and loads the public catalog. See DeploymentDbInitializer.
-FROM eclipse-temurin:25.0.5.1_2-jre-noble AS db-init
+FROM eclipse-temurin:26.0.2.1_1-jre-noble AS db-init
 RUN useradd --system --uid 10001 --create-home naturalist \
     && mkdir -p /data/images && chown -R naturalist /data
 COPY --from=build /out/db-init.jar /opt/naturalist/db-init.jar
@@ -24,7 +24,7 @@ USER naturalist
 ENTRYPOINT ["sh", "-c", "exec java $JAVA_OPTS -cp /opt/naturalist/db-init.jar com.naturalist.seeder.DeploymentDbInitializer"]
 
 # The packaged web application. Listed last so a plain `docker build .` produces it.
-FROM eclipse-temurin:25.0.5.1_2-jre-noble AS app
+FROM eclipse-temurin:26.0.2.1_1-jre-noble AS app
 RUN useradd --system --uid 10001 --create-home naturalist \
     && mkdir -p /data/images && chown -R naturalist /data
 COPY --from=build /out/app.jar /opt/naturalist/app.jar
