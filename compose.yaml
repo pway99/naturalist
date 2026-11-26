@@ -35,14 +35,11 @@ services:
       context: .
       target: db-init
     environment:
-      # -XX:-UseBASE64Intrinsics mitigates CVE-2026-114938 (Java4Shell). Remove it once the
-      # runtime is pinned to a confirmed-fixed Temurin build (WI-2).
       JAVA_OPTS: >-
         -Dnaturalist.db.url=jdbc:postgresql://db:5432/naturalist
         -Dnaturalist.db.username=naturalist
         -Dnaturalist.secrets.directory=/run/secrets
         -Dnaturalist.images.root=/data/images
-        -XX:-UseBASE64Intrinsics
     secrets:
       - database-credential
     volumes:
@@ -58,9 +55,6 @@ services:
       target: app
     restart: unless-stopped
     environment:
-      # Mitigates CVE-2026-114938 (Java4Shell). Remove once the runtime is pinned to a
-      # confirmed-fixed Temurin build (WI-2).
-      JAVA_OPTS: -XX:-UseBASE64Intrinsics
       SPRING_CONFIG_IMPORT: configtree:/run/secrets/app/
       SPRING_DATASOURCE_URL: jdbc:postgresql://db:5432/naturalist
       SPRING_DATASOURCE_USERNAME: naturalist
