@@ -76,14 +76,15 @@ settled 2026-11-25.
 
 ## Worktrees and branches
 
-Cleaned up 2026-11-25: four merged worktrees and seven merged branches removed. The last one,
-`observe-every-throw-8d0d18` (PR #3), is merged too and can be removed with its branch
-`claude/observe-every-throw-8d0d18`. Recreate a worktree when named values resumes.
+No worktrees: only the main checkout. Cleaned up 2026-11-25: four merged worktrees and seven merged
+branches removed, then the `observe-every-throw-8d0d18` worktree (reused by the Java4Shell WI-2
+session) and its branch `claude/java4shell-wi2-pinning-fa05da`, both fully on `main`. Recreate a
+worktree when named values resumes.
 
-Still to delete (Pat; both fully on `main`):
+Still to delete (Pat; all fully on `main`):
+- Local `claude/observe-every-throw-8d0d18`: the PR #3 branch.
 - Local `backup/main-before-rebase-2026-11-15`: pre-rebase copies of the photo-sizes commits, each patch-equivalent to one on main.
-- Local and remote `fix/serve-and-cleanup-observability`: `3e314273` is on main.
-- The empty `.claude/worktrees/notes-length-18afa0` folder.
+- The `.claude/worktrees/notes-length-18afa0` folder, which holds only an `.idea` folder.
 
 ## Later (designed or noted, not scheduled)
 
