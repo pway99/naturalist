@@ -6,7 +6,7 @@ Forks and open questions live in the [parking lot](notes/parking-lot.md). Launch
 [hosting readiness checklist](hosting-readiness.md). [`plans/README.md`](plans/README.md) indexes plan files.
 
 Last updated: 2026-11-25, rebuilt from a roll-call of every session active since 2026-11-01 and checked
-against git. `main` = `origin/main` = `62f05c18`. Everything shipped before 2026-11-12 is in the
+against git. `main` = `origin/main` = `d548ead0`. Everything shipped before 2026-11-12 is in the
 [2026-11-12 snapshot](plans/archive/work-tracker-2026-11-12-snapshot.md).
 
 ---
@@ -22,6 +22,7 @@ work comes first; the paused engineering threads follow.
 | 2  | ✅ 2026-11-25 **Launch 1.5: account recovery, cheap option** (closes security finding S1): confirm-page wording; hourly purge of registrations never verified once their 24 h link expired (tokens, account, naturalist); member writes now need a verified email (`VERIFIED` authority) | Claude | S | Merged to main 2026-11-25 (`26eca2b0`). Real password reset is launch 5.4, before opening up |
 | 3  | ✅ 2026-11-25 **Launch 1.9: admin accounts page** (`/admin/accounts`: paged list; grant/revoke `VISION`; suspend/reinstate; suspend ends live sessions via `AccountSessions`) | Claude | M | Merged to main 2026-11-25 (`9cf8992c`). `request` is now workable for 2.6; 5.4 reuses `AccountSessions.endAll` |
 | 4  | ✅ **Java4Shell WI-2 + rest of WI-6** (on main 2026-11-25): runtime pinned to `eclipse-temurin:25.0.5.1_2-jre-noble` (Adoptium's named CVE-2026-114938 fix), WI-1 flag removed, actions pinned by SHA, `dependabot.yml` (docker, docker-compose, github-actions, maven), plus `.github/workflows/image.yml`, which builds both images on every PR that touches them. The weekly `--pull` rebuild is deferred to the production redeploy job | Claude | S | Done; deploy the pinned image when the DigitalOcean VM exists (launch 3.1) |
+| 4a | ✅ 2026-11-25 **Dependabot's first run triaged**: #6 actions and #7 compose images merged; #5 (Temurin 26) closed, and the config now ignores Temurin majors and the maven build image; PR #12 supersedes #8, #10, #11 (Spring Boot 4.2.0 with every Boot-managed property re-pinned and two deprecated `server.*` keys renamed; anthropic-java 3.12.0 with the v3 builder migration; MyBatis 3.6.0, CDK 2.14.1, ArchUnit 1.5.1). `.sdkmanrc` pins Maven 3.9.16 | Claude | S | Merged to main (`39e87de8`). #9 build plugins waits, see the small backlog |
 | 5  | **Launch 1.8: storage-capacity alerts** (image-store + database volume free space, failed photo deletes) | Claude | S–M | Pat asked 2026-11-16; a full disk stops everything |
 | 6  | **Seed data review**: launch 1.2 seed field observations, the "Oak Vista" name (~180 files), Java4Shell WI-4 throwaway seed passwords | Pat | S–M | Public pages show this content |
 | 7  | **Java4Shell WI-3: egress allowlist proxy** + ADR | Claude | M | Limits damage from any future runtime RCE; before public traffic |
@@ -58,6 +59,7 @@ settled 2026-11-25.
 - Whether the standards gain a named-value-edge rule.
 - The deferred `InsectsController.addImage` diff.
 - Existing-code rows in `InsectIdentificationCommandImpl`: J2, M4, M8, M11.
+- Existing-code rows in both Anthropic adapters (from the PR #12 review): the missing-`tool_use` throws and `messages().create` failures go uncounted (J1/J3), `buildTool` / `serializeInput` catches wrap without `noticeError` (J3), constructors use `Objects.requireNonNull` (M5).
 
 **Small calls:**
 - Is a core module's test-scope dependency on another domain's `-test-context` within "core depends only on apis"?
@@ -73,12 +75,15 @@ settled 2026-11-25.
 - Dynamic test contexts: the reachability check doesn't inherit class-level `@Transactional`; cache parsed JSON test catalogs per JVM (the dominant core-test cost).
 - Traffic snapshot job: a failed run only writes a FAILED line to `~/dev/naturalist-traffic/snapshot.log`.
 - Kaname engine issues #1 and #2 (kaname-evaluators), waiting on the engine team.
+- Dependabot #9 (10 build plugins): blocked because `rewrite-recipe-bom` 3.38.0 imports `org.openrewrite:rewrite-bom:8.91.0`, still 404 on Maven Central (newest 8.90.4). Once it is published, comment `@dependabot recreate` on #9. The other nine bumps were built locally on 2026-11-25 and pass.
+- The Anthropic adapters' tests check construction only; nothing pins the request shape, and the v3 `Authorization: Bearer` header has not met the live API (launch phase 4 does).
 
 ## Worktrees and branches
 
 No worktrees: only the main checkout. Cleaned up 2026-11-25: four merged worktrees and seven merged
 branches removed, then the `observe-every-throw-8d0d18` worktree (reused by the Java4Shell WI-2
-session) and its branch `claude/java4shell-wi2-pinning-fa05da`, both fully on `main`. Recreate a
+session) and its branch `claude/java4shell-wi2-pinning-fa05da`, both fully on `main`; later the same
+day the `dependabot-followups-954d84` worktree and its branch, after PR #12 merged. Recreate a
 worktree when named values resumes.
 
 Still to delete (Pat; all fully on `main`):
@@ -109,6 +114,7 @@ Still to delete (Pat; all fully on `main`):
 
 | Effort | Done | Commit(s) |
 |--------|------|-----------|
+| Dependabot first run: PR #12 (Boot 4.2.0 + Boot-managed re-pin, anthropic-java 3.12.0, MyBatis 3.6.0), #6, #7; #5/#8/#10/#11 closed | 2026-11-25 | `39e87de8` |
 | Java4Shell WI-2 + WI-6: Temurin 25.0.5.1+2 pinned (WI-1 flag retired), actions pinned by SHA, Dependabot, `image.yml` | 2026-11-25 | `72247a8f`..`5b3f77c5` |
 | Repo security settings: main ruleset, Dependabot alerts + fixes, CodeQL, private reporting, read-only CI token, SECURITY.md | 2026-11-23 | `9e27d97f`, `39877cb8`, `62f05c18` |
 | Code-hygiene gates: `NoVar`, explicit imports, `ObserverMethodName`, IntelliJ AutoFormat | 2026-11-22 | `fa164ca2`, `808f5f38`, `4ff04270` |
