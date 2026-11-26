@@ -28,7 +28,7 @@ import java.util.function.Consumer;
  *       names introduced in context.</li>
  *   <li><b>University (age 18+)</b> — precise scientific terminology. Taxonomic
  *       placement, physiological mechanisms, quantitative ecological role,
- *       Oak Vista management relevance.</li>
+ *       garden management relevance.</li>
  * </ul>
  * <p>
  * All four levels are always simultaneously true. The descriptions are additive,

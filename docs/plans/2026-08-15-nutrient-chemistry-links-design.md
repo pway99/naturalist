@@ -69,7 +69,7 @@ customer. Promote it to an entity the day a second lab's panel needs its own tab
 
 Existing entries carry the *agronomically relevant* ion rather than the textbook default —
 nitrogen is `NO3-`, sulfur is `SO4 2-`. These follow suit: iron as Fe²⁺ (the form roots take
-up), boron as undissociated boric acid, which is what dominates at Oak Vista's pH 7.2. Boron's
+up), boron as undissociated boric acid, which is what dominates at the garden's pH 7.2. Boron's
 charge of 0 is deliberate and correct: `isCation()` and `isAnion()` both answer false, and
 `Element.invariants()` constrains only `name` and `atomicWeight`, so 0 is a legal value rather
 than a hole in the data.

@@ -15,7 +15,7 @@
     @template.insects.ancestorIntros(intros = ancestorIntros)
 
     <h1>Insect Families</h1>
-    <p>Family-rank records in the Oak Vista catalog.</p>
+    <p>Family-rank records in the catalog.</p>
 
     <div class="entity-grid">
         @for(var card : cards.content())

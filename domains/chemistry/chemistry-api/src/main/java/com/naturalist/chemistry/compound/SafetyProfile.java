@@ -49,6 +49,6 @@ public record SafetyProfile(
         LOW,       // neem oil, insecticidal soap — mild irritant
         MODERATE,  // oxalic acid — irritant, harmful if ingested
         HIGH,      // formic acid — corrosive, dangerous vapor
-        EXTREME    // not currently in Oak Vista catalog
+        EXTREME    // not currently in the catalog
     }
 }

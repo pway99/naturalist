@@ -17,7 +17,7 @@ import java.util.function.Consumer;
  * is critical — different species infect different pest stages and require different
  * temperature conditions.
  * <p>
- * <b>Oak Vista nematode register (April 2026):</b>
+ * <b>garden nematode register (April 2026):</b>
  * <ul>
  *   <li><i>Steinernema carpocapsae</i> — primary application for Small Hive Beetle
  *       (SHB) larvae in the apiary. Applied as NemaSeek Hi after 7 PM to avoid

@@ -10,7 +10,7 @@ import java.math.RoundingMode;
  * <p>
  * Scale of 2 reflects weather station measurement precision. Values below 0.01 inches
  * are not agronomically significant for leaching or soil moisture calculations at the
- * Oak Vista property scale.
+ * Garden property scale.
  * <p>
  * Scale: 2 decimal places. Rounding: {@link RoundingMode#HALF_UP}.
  */

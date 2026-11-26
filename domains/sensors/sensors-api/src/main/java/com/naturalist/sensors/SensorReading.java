@@ -17,12 +17,12 @@ import java.util.function.Consumer;
  * <p>
  * {@code SensorReading} is a child entity within the {@link com.naturalist.soil.SoilProfile}
  * aggregate. It records both the raw hardware measurement and the firmware-derived
- * volumetric percentage. Because the Oak Vista worm casting / coco coir blend has
+ * volumetric percentage. Because the garden's worm casting / coco coir blend has
  * different dielectric properties than the mineral soil used for factory calibration,
  * the raw {@code adValue} is the preferred basis for custom calibration and
  * cross-bed trend analysis.
  * <p>
- * <b>Sensor hardware at Oak Vista (April 2026):</b>
+ * <b>Sensor hardware in the garden (April 2026):</b>
  * <ul>
  *   <li><b>WH51</b> — shallow probe, 4–6 inch depth, IP66. Factory calibration reads
  *       3–5% high in worm casting blend. Resting baselines: Box 1 ≈ 52% (AD ≈ 251),
@@ -37,7 +37,7 @@ import java.util.function.Consumer;
  * <p>
  * <b>AD value interpretation:</b> The AD (analog-to-digital) value is the raw
  * capacitance count before firmware conversion. It is unaffected by the factory
- * calibration algorithm and is stable across firmware versions. For the Oak Vista
+ * calibration algorithm and is stable across firmware versions. For the garden's
  * worm casting blend, a custom calibration curve correlating AD values against
  * gravimetric moisture samples will produce more accurate volumetric readings than
  * the factory percentage.
@@ -74,7 +74,7 @@ public record SensorReading(
      * <p>
      * Thiobacillus thiooxidans sulfur oxidation rate increases significantly above
      * 25°C (Q10 ≈ 2). Readings above this threshold contribute to the Thiobacillus
-     * Activity Score — the count of above-threshold intervals in a period. At Oak Vista
+     * Activity Score — the count of above-threshold intervals in a period. In the garden
      * the backyard bed recorded 7 consecutive above-threshold readings April 4–9, 2026
      * (peak 84.8°F April 6 at 13:00), confirming sulfur oxidation was active during
      * the critical post-amendment period.
@@ -134,7 +134,7 @@ public record SensorReading(
      * Whether this reading indicates a potentially problematic EC level.
      * <p>
      * EC above 2.0 dS/m indicates salt accumulation sufficient to cause osmotic
-     * stress in most vegetable crops. At Oak Vista, combined amendment applications
+     * stress in most vegetable crops. In the garden, combined amendment applications
      * (potassium sulfate, blood meal, gypsum) in April 2026 were projected to elevate
      * EC above the pre-amendment FGL baseline of 0.50–0.66 dS/m. The WH52 arrival
      * (~April 14) enables real-time monitoring of EC recovery toward baseline as

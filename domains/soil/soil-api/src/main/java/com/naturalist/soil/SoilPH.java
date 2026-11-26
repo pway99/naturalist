@@ -12,7 +12,7 @@ import java.math.RoundingMode;
  * decimal places. {@code 7.20} is distinct from {@code 7.2} in the FGL report format;
  * normalised storage preserves this precision without silent rounding.
  * <p>
- * Valid range is 0–14 (log scale). Oak Vista reference: Box 1 at pH 7.2 (OPTIMAL
+ * Valid range is 0–14 (log scale). Garden reference: Box 1 at pH 7.2 (OPTIMAL
  * for the mixed raised-bed substrate; no liming indicated).
  * <p>
  * Scale: 2 decimal places. Rounding: {@link RoundingMode#HALF_UP}.

@@ -1,6 +1,6 @@
 # Microbes
 
-Will catalog the beneficial soil microfauna of Oak Vista — beginning with the
+Will catalog the beneficial soil microfauna of the garden — beginning with the
 entomopathogenic nematodes applied for biological pest control, whose species
 identity, foraging strategy, and soil-temperature application window drive the
 pest-management recommendations.

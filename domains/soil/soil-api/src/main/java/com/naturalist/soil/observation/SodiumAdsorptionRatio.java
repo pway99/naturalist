@@ -13,7 +13,7 @@ import java.math.RoundingMode;
  * is the kind that disperses clay and destroys structure. A soil can carry a harmless total salt
  * load and still be sodic. FGL reports both, and the two belong side by side.
  * <p>
- * <b>Oak Vista reference (March 3, 2026):</b> Box 1 SAR 0.3, back yard 0.4 — far below the
+ * <b>garden reference (March 3, 2026):</b> Box 1 SAR 0.3, back yard 0.4 — far below the
  * conventional sodicity threshold of 13, and consistent with the negligible sodium base
  * saturation both samples show. Not a problem here; recorded because it is the measurement that
  * would show the problem arriving, particularly in the clay-sublayer back yard.

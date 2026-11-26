@@ -26,7 +26,7 @@ public record Asterids() implements Clade {
                     number to the corolla lobes, and iridoid chemistry. It comprises a \
                     basal grade (Cornales, Ericales) plus the core asterids, which \
                     split into the lamiids (euasterids I) and campanulids \
-                    (euasterids II). The Oak Vista catalog reaches asterids through \
+                    (euasterids II). The catalog reaches asterids through \
                     both core subclades; asterids is retained as their shared parent. \
                     Its parent is Superasterids.""");
 

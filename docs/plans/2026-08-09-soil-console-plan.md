@@ -4,7 +4,7 @@
 > or superpowers:executing-plans. Steps use checkbox (`- [ ]`) syntax.
 
 **Goal:** Surface the assembled `SoilProfile` in the management console — a read-only viewer to
-browse the Oak Vista profiles and see each dated analysis's nutrient panel + physical
+browse the garden's profiles and see each dated analysis's nutrient panel + physical
 characteristics, validating the Slice 1 model against a real Spring/JTE consumer.
 
 **Architecture:** Two new Maven modules under `domains/soil`: `soil-test-context` (a public
@@ -307,7 +307,7 @@ section, after `soil-api`):
 
 @template.layout.page(title = "Soil Profiles", content = @`
     <h1>Soil Profiles</h1>
-    <p>Managed soil units at Oak Vista, with their most recent lab analysis.</p>
+    <p>Managed soil units in the garden, with their most recent lab analysis.</p>
 
     <div class="entity-grid">
         @for(var profile : profiles)

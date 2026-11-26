@@ -39,7 +39,7 @@ class HeaderWebMvcTest {
     @Test
     void home_asNaturalist_showsNameAndLogout() throws Exception {
         NaturalistPrincipal principal = new NaturalistPrincipal(
-                NaturalistName.of("patrick-way"), "Patrick", "gerald.durrell@oakvista.example",
+                NaturalistName.of("patrick-way"), "Patrick", "gerald.durrell@naturalist.example",
                 "{bcrypt}x", false, true, true);
         UsernamePasswordAuthenticationToken auth = new UsernamePasswordAuthenticationToken(
                 principal, "n/a", principal.getAuthorities());

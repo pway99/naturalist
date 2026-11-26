@@ -9,9 +9,9 @@ import org.jspecify.annotations.Nullable;
 import java.util.function.Consumer;
 
 /**
- * A catalogued annelid worm species (phylum Annelida) observed at Oak Vista.
+ * A catalogued annelid worm species (phylum Annelida) observed in the garden.
  * <p>
- * The Annelida documented at Oak Vista are primarily earthworms (order Haplotaxida,
+ * The Annelida documented in the garden are primarily earthworms (order Haplotaxida,
  * family Lumbricidae) — the ecological engineers of the soil food web. Earthworm
  * activity is a direct indicator of soil biological health and is closely linked to
  * organic matter content, moisture, and disturbance history (see TillageEvent in
@@ -38,7 +38,7 @@ public record WormSpecies(
     /**
      * Whether this species is a deep burrower (>10 cm), creating vertical macropores
      * that improve drainage — relevant to the slow-drainage issue documented in both
-     * Oak Vista beds following rototilling (April 2026).
+     * Garden beds following rototilling (April 2026).
      */
     public boolean isDeepBurrower() {
         return preferredDepthCm > 10;

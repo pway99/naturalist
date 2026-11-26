@@ -9,7 +9,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 /**
  * Kernel-level tests for {@link DescriptionRenderer} using synthetic
  * inputs only &mdash; no domain fixtures. Domain-flavored worked
- * examples (Oak Vista plants, etc.) live in the consuming domain's
+ * examples (garden plants, etc.) live in the consuming domain's
  * console module so they can use that domain's test entity sources.
  */
 class DescriptionRendererTest {

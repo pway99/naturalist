@@ -15,7 +15,7 @@ import java.util.stream.Stream;
 /**
  * Aggregate root of the Zones bounded context.
  * <p>
- * A Zone is a named physical space on the Oak Vista property with permanent geographic,
+ * A Zone is a named physical space on the garden's property with permanent geographic,
  * solar, and substrate characteristics. Zones exist independently of their occupants —
  * the plants, soil amendments, and pest treatments that operate within a Zone are managed
  * by other domain modules, which reference zones by {@link ZoneName} from the shared
@@ -32,7 +32,7 @@ import java.util.stream.Stream;
  * via {@link #withUpdatedSubZone(SubZone)}. This keeps the aggregate boundary intact and
  * all mutations explicit.
  * <p>
- * Oak Vista zones (as of April 2026):
+ * Garden zones (as of April 2026):
  * <ul>
  *   <li><b>Garden Box 1</b> — raised bed, 48 sqft, worm casting blend, WH51 sensor,
  *       south-facing, FULL_SUN. Nitrogen over-application active issue (blood meal, April 2026).</li>
@@ -130,7 +130,7 @@ public record Zone(
     // ── Solar and thermal delegates ──────────────────────────────────────────
 
     /**
-     * The summer thermal stress classification for this Zone in the Chico climate.
+     * The summer thermal stress classification for this Zone in the Sacramento Valley climate.
      *
      * @return the thermal risk level of this Zone's microclimate
      */

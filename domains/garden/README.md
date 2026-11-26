@@ -1,7 +1,7 @@
 # Garden
 
 The cultivated layer over the wild catalog. Where the organism domains record
-what *grows* at Oak Vista, garden records what was *planted* — the intent to
+what *grows* in the garden, garden records what was *planted* — the intent to
 grow something, somewhere, for a season.
 
 The distinguishing idea is intent. A salvia in the meadow is an observation; the

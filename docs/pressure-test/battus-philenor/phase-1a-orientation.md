@@ -53,7 +53,7 @@ wings and hemolymph (where it produces aposematic blue iridescence), and
 maternally transferred to brick-red egg clusters. Every stage of the life
 cycle is chemically defended. The compound is a Group 1 IARC carcinogen
 and a documented mammalian nephrotoxin; the host plant carries an absolute
-pesticide-exclusion management constraint at Oak Vista.
+pesticide-exclusion management constraint in the garden.
 
 The story crosses three domains: chemistry (the compound), plants (the
 producer and the bridge), insects (the sequesterer). It is the first
@@ -134,7 +134,7 @@ Carries `taxonomy : TaxonomicClassification`, `description : Description`,
 `Set<PlantRole> roles`, `lifeForm : PlantLifeForm`, `nativeBioregions :
 Set<Bioregion>`, `commonNames : Set<CommonName>`. Boolean predicates include
 `isKeystoneHost()` (true for California Pipevine). The swallowtail story
-exercises this through the plant `california-pipevine`. Chico is in
+exercises this through the plant `california-pipevine`. Sacramento Valley is in
 `sacramento-valley` and `coast-ranges` bioregions; California Pipevine is
 recorded native to both.
 

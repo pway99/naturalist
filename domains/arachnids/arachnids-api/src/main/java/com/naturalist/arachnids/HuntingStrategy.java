@@ -3,7 +3,7 @@ package com.naturalist.arachnids;
 /**
  * The predatory hunting strategy employed by an arachnid species.
  * <p>
- * All garden arachnids documented at Oak Vista are beneficial predators.
+ * All garden arachnids documented in the garden are beneficial predators.
  * The hunting strategy governs microhabitat preference and the types of
  * pest species most effectively suppressed — a distinction that matters
  * for habitat management (leaving plant debris for ambush hunters, open
@@ -13,7 +13,7 @@ public enum HuntingStrategy {
 
     /**
      * Actively pursues prey across the substrate; requires open ground or
-     * vegetation surfaces. Wolf spiders (Lycosidae) are the primary Oak Vista
+     * vegetation surfaces. Wolf spiders (Lycosidae) are the primary garden
      * representatives — fast, wide-ranging, and effective against crawling pests.
      */
     ACTIVE_PURSUIT,

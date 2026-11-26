@@ -534,7 +534,7 @@ In `domains/insects/insects-repository-test/src/main/resources/insects/field-obs
 
 ```json
 [
-  { "id": "019e9000-0001-7000-8000-000000000001", "observedBy": "patrick-way",   "subjectRank": "SPECIES", "subject": "battus-philenor", "observedOn": "2026-04-20T09:00:00Z", "notes": "On the pipevine by the gate.", "location": "Oak Vista, Chico, CA", "confidence": null },
+  { "id": "019e9000-0001-7000-8000-000000000001", "observedBy": "patrick-way",   "subjectRank": "SPECIES", "subject": "battus-philenor", "observedOn": "2026-04-20T09:00:00Z", "notes": "On the pipevine by the gate.", "location": "Sacramento Valley, CA", "confidence": null },
   { "id": "019e9000-0002-7000-8000-000000000002", "observedBy": "patrick-way",   "subjectRank": "GENUS",   "subject": "empoasca",        "observedOn": "2026-04-22T14:30:00Z", "notes": null, "location": null, "confidence": null },
   { "id": "019e9000-0003-7000-8000-000000000003", "observedBy": "delia-durrell", "subjectRank": "SPECIES", "subject": "battus-philenor", "observedOn": "2026-05-02T11:00:00Z", "notes": "Shown to the school group.", "location": null, "confidence": null },
   { "id": "019e9000-0004-7000-8000-000000000004", "observedBy": "delia-durrell", "subjectRank": "GENUS",   "subject": "empoasca",        "observedOn": "2026-05-03T10:15:00Z", "notes": null, "location": null, "confidence": null }
@@ -612,7 +612,7 @@ return new FieldObservation(
         TestInsectsIdentifiers.InsectSpecies.BattusPhilenor.name,
         Instant.parse("2026-06-03T08:00:00Z"),
         "changed",
-        "Oak Vista, Chico, CA", null);
+        "Sacramento Valley, CA", null);
 ```
 
 - [ ] **Step 5: Ripple to `InsectsController`**
@@ -904,7 +904,7 @@ class InsectIdentificationServiceTest {
     void identify_parsesSpeciesFromToolResult() {
         var image = new Image(
                 new byte[]{1, 2, 3}, "image/jpeg",
-                new ImageMetadata("Chico, CA", null));
+                new ImageMetadata("Sacramento Valley, CA", null));
 
         var result = service.identify(image);
 
@@ -1473,7 +1473,7 @@ Replace the existing file-drop instruction + text-input form (lines ~113-129 in 
             <input type="file" name="image" accept="image/*" capture="environment" required>
         </div>
         <div class="form-group">
-            <input type="text" name="location" placeholder="Location (e.g. Oak Vista, Chico, CA)">
+            <input type="text" name="location" placeholder="Location (e.g. Sacramento Valley, CA)">
         </div>
         <div class="form-group">
             <textarea name="notes" rows="2" placeholder="Field notes (optional)"></textarea>

@@ -12,7 +12,7 @@
     @template.plants.nav(breadcrumb = breadcrumb, cladeTrail = cladeTrail)
     <h1>Plant Orders</h1>
     <p>
-        Order-rank records in the Oak Vista catalog — the top of the plant chain. A flower
+        Order-rank records in the catalog — the top of the plant chain. A flower
         recognised as Lamiales, without a resolved family, has a permanent home here.
         <a href="/plants/species">Browse all species &rarr;</a>
     </p>

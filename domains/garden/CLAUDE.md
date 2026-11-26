@@ -64,7 +64,7 @@ from the plantings in that bed over that period. It would be a grouping with not
 carry until harvest and yield exist. Decided 2026-08-14.
 
 **Cultivar** — *owned by plants, not garden.* `plants.cultivar.Cultivar` already carries the
-Oak Vista varieties with their breeding status, fruit type and seed-saving policy. Garden
+Garden varieties with their breeding status, fruit type and seed-saving policy. Garden
 references `CultivarName` on a planting and models no cultivar of its own.
 
 **CropProfile** — *not built.* Requirements keyed by `(source, crop, revision)`, because
@@ -163,7 +163,7 @@ Three properties the fixtures exist to exercise:
 - **A planting can name a plant with no variety.** The radish was sown broadcast from a
   mixed packet — the species is known and the cultivar never was, which is the common case
   the nullability exists for.
-- **`lettuce` is a crop type with no planting.** Oak Vista soil-tests for it before it goes
+- **`lettuce` is a crop type with no planting.** The garden soil-tests for it before it goes
   in — the August 2026 FGL panel is a lettuce panel for a crop still to be planted. Which is
   why an analysis *records* the crop type it was interpreted for rather than deriving it
   from what is growing.

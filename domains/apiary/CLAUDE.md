@@ -29,7 +29,7 @@ Fields: queen status, egg presence, brood pattern, mite count, honey stores, pes
 Fields: pollen intake level, forager traffic, temperament.
 April 8 2026 observed: IMPRESSIVE pollen intake, colony establishing strongly.
 
-## Varroa Treatment Windows (Chico-specific domain facts)
+## Varroa Treatment Windows (valley-specific domain facts)
 
 These are hard constraints encoded as domain rules — not configurable:
 
@@ -41,7 +41,7 @@ These are hard constraints encoded as domain rules — not configurable:
 
 Formic acid contraindication threshold is defined in Climate module as `ClimateThreshold`.
 Peak temperature April 6 2026: 84.8°F — just below formic acid limit.
-Validates Apiguard (thymol) as correct Varroa treatment for Chico summers.
+Validates Apiguard (thymol) as correct Varroa treatment for the Sacramento Valley summers.
 
 ## Insect Module Boundary
 

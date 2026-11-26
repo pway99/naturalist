@@ -21,7 +21,7 @@ import java.util.function.Consumer;
  * Historical mulch records, if needed for audit, would be maintained as a list of past
  * layers; the current design captures only the present state.
  * <p>
- * <b>Oak Vista mulch state (April 7, 2026 post-outbreak):</b>
+ * <b>garden mulch state (April 7, 2026 post-outbreak):</b>
  * <ul>
  *   <li>Backyard north: STRAW, thinned to ~1 inch (from ~2 inches) as thrips habitat
  *       reduction measure.</li>

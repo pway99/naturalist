@@ -22,8 +22,8 @@ import java.util.function.Consumer;
  * <em>type</em> deliberately: FGL prints one "TOMATO SOIL ANALYSIS" panel covering every variety
  * in the bed, so a bed holding San Marzano, Nick's Italian Pear and Elephant Heart has one
  * analysis, not three. The individual varieties are plantings, and garden owns those. Immutable,
- * append-only — a lab report is a historical fact. Current lab: Fruit Growers Laboratory (FGL),
- * Chico CA; sample IDs {@code CH XXXXXXX-NNN}.
+ * append-only — a lab report is a historical fact. Current lab: Fruit Growers Laboratory (FGL);
+ * sample IDs {@code CH XXXXXXX-NNN}.
  * <p>
  * <b>Sampling provenance.</b> {@code sampleDepth} is the depth the lab reports, and
  * {@code samplingProtocol} is how the material was drawn. Both are nullable, and both are null on

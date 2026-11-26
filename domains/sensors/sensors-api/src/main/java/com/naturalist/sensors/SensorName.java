@@ -10,7 +10,7 @@ import com.naturalist.ddd.EntityName;
  * soil domain sensors. Per ADR-021, cross-entity references use {@code SensorName};
  * the numeric persistence id is adapter-internal.
  * <p>
- * <b>Oak Vista sensor slugs (April 2026):</b>
+ * <b>garden sensor slugs (April 2026):</b>
  * <ul>
  *   <li>{@code "box1-shallow"} — WH51 probe, Box 1, ~5 inch depth</li>
  *   <li>{@code "backyard-shallow"} — WH51 probe, backyard garden, ~5 inch depth</li>

@@ -27,7 +27,7 @@ public record Monocots() implements Clade {
                     Synapomorphies include a single cotyledon, retained monosulcate \
                     pollen, sympodial growth, an atactostele, and loss of the bifacial \
                     vascular cambium (hence no conventional secondary woody growth). \
-                    The Oak Vista catalog reaches this lineage through its subclade \
+                    The catalog reaches this lineage through its subclade \
                     commelinids; monocots is retained as the parent node on that walk. \
                     Its parent is Angiosperms.""");
 

@@ -11,16 +11,16 @@ import java.util.Set;
 import java.util.function.Consumer;
 
 /**
- * A plant species established or cultivated at Oak Vista.
+ * A plant species established or cultivated in the garden.
  * <p>
- * The Oak Vista plant catalog covers three categories: permanent structural
+ * The garden's plant catalog covers three categories: permanent structural
  * plantings (California Pipevine, scented geranium hedge, fruit trees);
  * cover crop and habitat species (clover carpet, alyssum, dill, borage);
  * and food crops (tomatoes, Passiflora edulis). Each plant carries the full
  * Durrell four-level {@link Description}, making the catalog a living educational
  * resource as well as a management reference.
  * <p>
- * Ecological and horticultural function — what the plant <em>does</em> at Oak Vista —
+ * Ecological and horticultural function — what the plant <em>does</em> in the garden —
  * lives on {@link PlantEcologicalRole}, keyed by {@link PlantRankName} so a genus-rank
  * taxon can carry it too. {@link GrowthHabit} (structure) and {@link LifeCycle}
  * (duration) stay here: they are morphological traits of the taxon, not site-specific

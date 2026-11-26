@@ -75,7 +75,7 @@ WI-5 to WI-8 are repository and host hygiene, independent of Java4Shell. WI-5 an
   Require pull requests and a passing `ci` check before merge; block force-pushes and deletion. This is the backstop for agent-driven sessions.
 - [ ] **WI-8: Lock down the host and review personal detail (manual).**
 
-  The host is a DigitalOcean Droplet (launch 2.3, decided 2026-11-25). DigitalOcean cloud firewall: drop all inbound except SSH, ideally from known IPs only. SSH key-only, no password or root login. Enable unattended security upgrades. Separately, decide whether the Chico, apiary and "Oak Vista" references in domain docs and seed data are acceptable public detail, and keep future seed data and skill files at that level.
+  The host is a DigitalOcean Droplet (launch 2.3, decided 2026-11-25). DigitalOcean cloud firewall: drop all inbound except SSH, ideally from known IPs only. SSH key-only, no password or root login. Enable unattended security upgrades. Separately, decide whether the Sacramento Valley, apiary and "The garden" references in domain docs and seed data are acceptable public detail, and keep future seed data and skill files at that level.
 
 ## Rejected alternatives
 

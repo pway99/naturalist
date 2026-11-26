@@ -15,7 +15,7 @@ justify the architecture.
 ## Why this exists (eventual use case)
 
 Pat regularly identifies insects, plants, and (eventually) other
-organisms from photos taken at Oak Vista. The current path is:
+organisms from photos taken in the garden. The current path is:
 
 1. Take a photo.
 2. Identify by hand (taxonomy lookup, common-name search, photo

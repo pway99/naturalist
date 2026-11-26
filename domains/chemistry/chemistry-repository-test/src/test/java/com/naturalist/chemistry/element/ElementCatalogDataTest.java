@@ -67,7 +67,7 @@ class ElementCatalogDataTest {
 
     @Test
     void boronIsNeitherCationNorAnion() {
-        // Boron is taken up as undissociated boric acid at Oak Vista's pH 7.2, so
+        // Boron is taken up as undissociated boric acid at the garden's pH 7.2, so
         // its charge is 0 — an honest value, not a missing one.
         Element boron = source().entityStream()
                 .filter(e -> e.name().value().equals("boron"))

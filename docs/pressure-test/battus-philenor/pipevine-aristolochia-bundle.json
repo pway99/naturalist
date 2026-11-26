@@ -33,14 +33,14 @@
         "description": {
           "preschool": "The Pipevine Swallowtail is a beautiful dark butterfly with blue and green shining wings. Its caterpillars only eat one special plant — the California Pipevine. We found their eggs on our Pipevine plant in April! We must never spray anything on the Pipevine because it would hurt these special butterflies.",
           "elementary": "The Pipevine Swallowtail is one of the most beautiful butterflies in California. It has dark wings that shine blue and green in the light. The caterpillars can only survive by eating California Pipevine leaves — no other plant will do. We found Pipevine Swallowtail eggs on our Pipevine plant in April 2026, which is very exciting! Because the caterpillars eat Pipevine, they store a poison that makes them and the adult butterflies taste terrible to birds, protecting them. We must never spray any pesticides on the Pipevine or nearby plants during butterfly season.",
-          "secondary": "Battus philenor (Pipevine Swallowtail) is a Batesian-Müllerian chemical defence complex species with deep host-plant specialisation. Females are obligately ovipositing on Aristolochia species (Pipevine, birthwort) — California populations primarily use Aristolochia californica (California Pipevine). Caterpillars sequester aristolochic acids from their host plant, rendering themselves and adult butterflies chemically unpalatable (aposematic). Adults exhibit iridescent blue hindwing colouration that serves as a warning signal reinforced by multiple unrelated species mimicking the pattern (Battus mimicry complex including Papilio troilus and Limenitis arthemis). Eggs confirmed at Oak Vista April 2026 on Aristolochia californica — this is a keystone ecological record. CRITICAL management constraint: zero pesticide application to Aristolochia or adjacent vegetation while eggs, larvae, or adults are present.",
-          "university": "Battus philenor (Linnaeus, 1771) — Lepidoptera: Papilionidae: Troidini. Confirmed breeding at Oak Vista, April 2026 — eggs observed on Aristolochia californica (California Pipevine). Ecological status: KEYSTONE SPECIES for California riparian and garden ecosystems. Host specificity: larval feeding restricted to Aristolochia spp. (Aristolochiaceae); females use volatile semiochemical (aristolochic acid derivatives) for host-plant selection. Chemical sequestration: aristolochic acids (particularly aristolochic acid I and II) are accumulated in larval and adult tissues; bitter taste and probable mutagenicity in avian digestive systems create aversive conditioning in bird predators. Mimicry complex: the Pipevine Swallowtail aposematic pattern is replicated by multiple palatable Papilionidae and Nymphalidae (Müllerian and Batesian mimics), amplifying predator avoidance learning. Conservation management: Aristolochia californica must be maintained as a permanent garden element without any pesticide application; the plant is the non-negotiable prerequisite for breeding presence. Nick's Italian Pear heirloom conservation ethic extends to this species — both are irreplaceable Oak Vista genetic heritage."
+          "secondary": "Battus philenor (Pipevine Swallowtail) is a Batesian-Müllerian chemical defence complex species with deep host-plant specialisation. Females are obligately ovipositing on Aristolochia species (Pipevine, birthwort) — California populations primarily use Aristolochia californica (California Pipevine). Caterpillars sequester aristolochic acids from their host plant, rendering themselves and adult butterflies chemically unpalatable (aposematic). Adults exhibit iridescent blue hindwing colouration that serves as a warning signal reinforced by multiple unrelated species mimicking the pattern (Battus mimicry complex including Papilio troilus and Limenitis arthemis). Eggs confirmed in the garden in April 2026 on Aristolochia californica — this is a keystone ecological record. CRITICAL management constraint: zero pesticide application to Aristolochia or adjacent vegetation while eggs, larvae, or adults are present.",
+          "university": "Battus philenor (Linnaeus, 1771) — Lepidoptera: Papilionidae: Troidini. Confirmed breeding in the garden, April 2026 — eggs observed on Aristolochia californica (California Pipevine). Ecological status: KEYSTONE SPECIES for California riparian and garden ecosystems. Host specificity: larval feeding restricted to Aristolochia spp. (Aristolochiaceae); females use volatile semiochemical (aristolochic acid derivatives) for host-plant selection. Chemical sequestration: aristolochic acids (particularly aristolochic acid I and II) are accumulated in larval and adult tissues; bitter taste and probable mutagenicity in avian digestive systems create aversive conditioning in bird predators. Mimicry complex: the Pipevine Swallowtail aposematic pattern is replicated by multiple palatable Papilionidae and Nymphalidae (Müllerian and Batesian mimics), amplifying predator avoidance learning. Conservation management: Aristolochia californica must be maintained as a permanent garden element without any pesticide application; the plant is the non-negotiable prerequisite for breeding presence. Nick's Italian Pear heirloom conservation ethic extends to this species — both are irreplaceable garden genetic heritage."
         },
         "guilds": [
           "KEYSTONE"
         ],
         "beneficial": true,
-        "sightingNotes": "CRITICAL — eggs confirmed on Aristolochia californica (California Pipevine) at Oak Vista, April 2026. Never apply pesticides to Pipevine plant or within 3 meters of it during the growing season. This is an irreversible ecological commitment. Breeding confirmed.",
+        "sightingNotes": "CRITICAL — eggs confirmed on Aristolochia californica (California Pipevine) in the garden, April 2026. Never apply pesticides to Pipevine plant or within 3 meters of it during the growing season. This is an irreversible ecological commitment. Breeding confirmed.",
         "identificationFeatures": {
           "features": [
             "Large butterfly with tailed hindwings",
@@ -62,7 +62,7 @@
                 "cohortLabel": null
               }
             ],
-            "notes": "Egg-laying tracks Aristolochia californica tender shoot availability. Oviposition ceases when the host stops producing young growth in June or July. Eggs confirmed at Oak Vista April 2026 on new Pipevine growth."
+            "notes": "Egg-laying tracks Aristolochia californica tender shoot availability. Oviposition ceases when the host stops producing young growth in June or July. Eggs confirmed in the garden in April 2026 on new Pipevine growth."
           },
           "habitat": {
             "profile": {
@@ -79,7 +79,7 @@
             },
             "substrate": "Young tender shoot tips of Aristolochia californica — egg clusters of up to 20 are deposited on new growth where emerging larvae will find the most palatable leaves.",
             "microclimate": "Partial-sun microsites along the Pipevine trellis; the plant climbs into dappled light and eggs concentrate where new growth extends into warmed but not heat-stressed tissue.",
-            "spatialNotes": "Oak Vista: on the Aristolochia californica planting. Egg clusters April 2026 were on the southeast-facing trellis growth."
+            "spatialNotes": "The garden: on the Aristolochia californica planting. Egg clusters April 2026 were on the southeast-facing trellis growth."
           },
           "chemistryRole": {
             "role": "MATERNAL_TRANSFER",
@@ -89,7 +89,7 @@
             "preschool": "The butterfly lays shiny red eggs in little bunches on the Pipevine plant. The red color warns animals not to eat them.",
             "elementary": "Female Pipevine Swallowtails lay bright brick-red egg clusters on the young tips of California Pipevine. The mother passes her plant-based poison into the eggs, so even before hatching they are protected. The red color tells birds and lizards to leave them alone.",
             "secondary": "Battus philenor females oviposit clusters of 5–20 bright brick-red eggs exclusively on young tender shoots of Aristolochia species (Aristolochiaceae). Maternal provisioning transfers sequestered aristolochic acids into the egg chorion, producing a chemically defended propagule stage. The conspicuous red coloration is aposematic — advertising unpalatability before the larva has acquired its own toxin load.",
-            "university": "Oviposition is obligate on Aristolochia spp. (Aristolochiaceae); at Oak Vista on A. californica confirmed April 2026. Clutch size typically 5–20 per oviposition bout, deposited on young, chemically richest shoot tips. The brick-red chorion carries maternally transferred aristolochic acid derivatives, producing an aposematic chemically defended egg stage. Host selection is mediated by volatile aristolochic acid derivatives acting as ovipositional stimulants; this semiochemical dependence is why host-switching is evolutionarily constrained."
+            "university": "Oviposition is obligate on Aristolochia spp. (Aristolochiaceae); in the garden on A. californica confirmed April 2026. Clutch size typically 5–20 per oviposition bout, deposited on young, chemically richest shoot tips. The brick-red chorion carries maternally transferred aristolochic acid derivatives, producing an aposematic chemically defended egg stage. Host selection is mediated by volatile aristolochic acid derivatives acting as ovipositional stimulants; this semiochemical dependence is why host-switching is evolutionarily constrained."
           },
           "colorProgression": "Bright brick-red at laying; darkens and loses sheen toward hatching, finally showing the dark larva visible through the chorion.",
           "layingPattern": "Clusters of 5–20 eggs on young Aristolochia shoot tips. One female may deposit several clusters across an afternoon of host searching.",
@@ -124,7 +124,7 @@
             },
             "substrate": "Aristolochia californica foliage; early instars skeletonize young leaves, later instars consume entire leaves and migrate down the trellis as foliage is stripped.",
             "microclimate": "Larvae tolerate the full temperature range the host plant tolerates; they cluster in early instars then disperse as they grow.",
-            "spatialNotes": "Oak Vista: on the Aristolochia californica planting. Larvae progress down the trellis as they consume foliage."
+            "spatialNotes": "The garden: on the Aristolochia californica planting. Larvae progress down the trellis as they consume foliage."
           },
           "chemistryRole": {
             "role": "ACQUISITION",
@@ -134,7 +134,7 @@
             "preschool": "The caterpillars are dark with soft red spikes. They only eat the Pipevine plant. Never spray anything on the Pipevine!",
             "elementary": "Pipevine caterpillars are dark-bodied with fleshy red filaments — bright colors that warn birds. They can only eat the California Pipevine plant, and they take the plant's natural poison into their own bodies so they become protected too. They eat a lot and grow fast.",
             "secondary": "Battus philenor larvae are aposematically colored — dark-bodied with fleshy reddish-orange filaments (scoli) — warning predators of their chemical unpalatability. They feed exclusively on Aristolochia species, sequestering aristolochic acids from host leaf tissue into their own hemolymph. Early instars feed gregariously; later instars disperse. Development proceeds through five instars over four to six weeks at Central Valley temperatures.",
-            "university": "Lepidoptera: Papilionidae: Troidini. Five larval instars. Obligate monophagy on Aristolochia (most commonly A. californica in this range); host selection cued by aristolochic acid derivatives. Sequestration mechanism accumulates aristolochic acids I and II into hemolymph and integumentary tissue at concentrations producing emetic and aversive conditioning in naive avian predators. Larval warning coloration (black ground with reddish-orange fleshy tubercles) is both Müllerian signal shared with related Troidini and — at Oak Vista's range edge — an honest individual signal, as no California mimics have evolved. Larvae can defoliate individual Aristolochia plants; host abundance is a direct population-limiting factor."
+            "university": "Lepidoptera: Papilionidae: Troidini. Five larval instars. Obligate monophagy on Aristolochia (most commonly A. californica in this range); host selection cued by aristolochic acid derivatives. Sequestration mechanism accumulates aristolochic acids I and II into hemolymph and integumentary tissue at concentrations producing emetic and aversive conditioning in naive avian predators. Larval warning coloration (black ground with reddish-orange fleshy tubercles) is both Müllerian signal shared with related Troidini and — at the garden's range edge — an honest individual signal, as no California mimics have evolved. Larvae can defoliate individual Aristolochia plants; host abundance is a direct population-limiting factor."
           },
           "feedingStrategy": "PHYTOPHAGOUS",
           "hostPlants": [
@@ -180,7 +180,7 @@
             },
             "substrate": "Stems, trellis structure, nearby shrubs or garden structures. Larvae leave the host plant before pupation; attachment by cremaster and silk girdle to woody or semi-woody substrate.",
             "microclimate": "Sheltered, dappled locations — pupae must survive either a few weeks of summer heat or the full range from summer heat through winter chill into spring warming.",
-            "spatialNotes": "Oak Vista: expect pupae on Pipevine trellis, adjacent shrubs, and garden structures within a few meters of the host plant."
+            "spatialNotes": "The garden: expect pupae on Pipevine trellis, adjacent shrubs, and garden structures within a few meters of the host plant."
           },
           "chemistryRole": {
             "role": "RETENTION",
@@ -234,7 +234,7 @@
             },
             "substrate": "Nectar plants across the garden; Aristolochia californica for oviposition return visits.",
             "microclimate": "Warm, sunny conditions; active flight from mid-morning through late afternoon in peak heat.",
-            "spatialNotes": "Oak Vista: adults range across the full garden between nectar sources and the Pipevine trellis; strong, conspicuous fliers along riparian corridors."
+            "spatialNotes": "The garden: adults range across the full garden between nectar sources and the Pipevine trellis; strong, conspicuous fliers along riparian corridors."
           },
           "chemistryRole": {
             "role": "EXPRESSION",
@@ -244,7 +244,7 @@
             "preschool": "The butterfly is big and dark and shiny blue-green. It drinks from flowers and visits the Pipevine plant to lay eggs.",
             "elementary": "Pipevine Swallowtail adults are beautiful dark butterflies with iridescent blue and green hindwings. The shining colors are a warning to birds that they taste terrible. Adults drink nectar from many flowers and the females lay eggs on the California Pipevine. They fly from late winter all the way through autumn.",
             "secondary": "Battus philenor adults are large dark swallowtails with iridescent blue to blue-green hindwing scaling, forming the aposematic signal of the species's chemical defense. They are the model species in a mimicry complex that includes Papilio troilus (Spicebush Swallowtail), female Papilio polyxenes (Black Swallowtail), Limenitis arthemis astyanax (Red-spotted Purple), and dark-morph female Papilio glaucus — though in California the species occurs without local mimics. Adults nectar widely; females return to Aristolochia californica for oviposition.",
-            "university": "Adult wingspan 70–100 mm; marked sexual dimorphism with males showing more extensive iridescent blue hindwing coloration. Adults are strong fliers and range widely along riparian corridors. Aristolochic acid expression in wing scales, hemolymph, and integumentary tissues — predator naive-conditioning trials demonstrate strong aversive learning on first encounter. Mimicry complex: California populations present the model phenotype without local mimics, consistent with molecular evidence of recent (late Quaternary) colonization. Adult lifespan typically 2–4 weeks; overwintering-emerged spring brood can live longer given cooler thermal regime. Nectar reliance is broad but Yellow Star Thistle bridges the mid-summer floral gap at Oak Vista."
+            "university": "Adult wingspan 70–100 mm; marked sexual dimorphism with males showing more extensive iridescent blue hindwing coloration. Adults are strong fliers and range widely along riparian corridors. Aristolochic acid expression in wing scales, hemolymph, and integumentary tissues — predator naive-conditioning trials demonstrate strong aversive learning on first encounter. Mimicry complex: California populations present the model phenotype without local mimics, consistent with molecular evidence of recent (late Quaternary) colonization. Adult lifespan typically 2–4 weeks; overwintering-emerged spring brood can live longer given cooler thermal regime. Nectar reliance is broad but Yellow Star Thistle bridges the mid-summer floral gap in the garden."
           },
           "feedingHabit": "NECTAR",
           "nectarSources": [
@@ -293,10 +293,10 @@
             "yellow-star-thistle"
           ],
           "relationshipToOtherBeneficials": null,
-          "naturalEnemies": "Chemical defence largely exempts this species from vertebrate predation across all life stages; no significant natural enemies documented at Oak Vista."
+          "naturalEnemies": "Chemical defence largely exempts this species from vertebrate predation across all life stages; no significant natural enemies documented in the garden."
         },
         "beneficialProfile": {
-          "significance": "Keystone riparian butterfly of California's foothill canyons and Central Valley floor. Obligate on California Pipevine (Aristolochia californica) — the breeding population at Oak Vista confirmed in April 2026 is tied permanently to the garden's Pipevine planting. Loss of the host plant ends the local population; there is no alternative host and no relocation option.",
+          "significance": "Keystone riparian butterfly of California's foothill canyons and Central Valley floor. Obligate on California Pipevine (Aristolochia californica) — the breeding population in the garden confirmed in April 2026 is tied permanently to the garden's Pipevine planting. Loss of the host plant ends the local population; there is no alternative host and no relocation option.",
           "pestManagementValue": null,
           "ipmNotes": "Never apply pesticides to Aristolochia californica or within 3 metres of it at any season. The larvae are obligate on this host; any pesticide exposure to the host eliminates the local population. This is not an IPM-adjustable constraint — it is an ecological commitment made when the host plant was established."
         },
@@ -319,7 +319,7 @@
               "cohortLabel": null
             }
           ],
-          "notes": "Egg-laying tracks Aristolochia californica tender shoot availability. Oviposition ceases when the host stops producing young growth in June or July. Eggs confirmed at Oak Vista April 2026 on new Pipevine growth."
+          "notes": "Egg-laying tracks Aristolochia californica tender shoot availability. Oviposition ceases when the host stops producing young growth in June or July. Eggs confirmed in the garden in April 2026 on new Pipevine growth."
         },
         "habitat": {
           "profile": {
@@ -336,7 +336,7 @@
           },
           "substrate": "Young tender shoot tips of Aristolochia californica — egg clusters of up to 20 are deposited on new growth where emerging larvae will find the most palatable leaves.",
           "microclimate": "Partial-sun microsites along the Pipevine trellis; the plant climbs into dappled light and eggs concentrate where new growth extends into warmed but not heat-stressed tissue.",
-          "spatialNotes": "Oak Vista: on the Aristolochia californica planting. Egg clusters April 2026 were on the southeast-facing trellis growth."
+          "spatialNotes": "The garden: on the Aristolochia californica planting. Egg clusters April 2026 were on the southeast-facing trellis growth."
         },
         "chemistryRole": {
           "role": "MATERNAL_TRANSFER",
@@ -346,7 +346,7 @@
           "preschool": "The butterfly lays shiny red eggs in little bunches on the Pipevine plant. The red color warns animals not to eat them.",
           "elementary": "Female Pipevine Swallowtails lay bright brick-red egg clusters on the young tips of California Pipevine. The mother passes her plant-based poison into the eggs, so even before hatching they are protected. The red color tells birds and lizards to leave them alone.",
           "secondary": "Battus philenor females oviposit clusters of 5–20 bright brick-red eggs exclusively on young tender shoots of Aristolochia species (Aristolochiaceae). Maternal provisioning transfers sequestered aristolochic acids into the egg chorion, producing a chemically defended propagule stage. The conspicuous red coloration is aposematic — advertising unpalatability before the larva has acquired its own toxin load.",
-          "university": "Oviposition is obligate on Aristolochia spp. (Aristolochiaceae); at Oak Vista on A. californica confirmed April 2026. Clutch size typically 5–20 per oviposition bout, deposited on young, chemically richest shoot tips. The brick-red chorion carries maternally transferred aristolochic acid derivatives, producing an aposematic chemically defended egg stage. Host selection is mediated by volatile aristolochic acid derivatives acting as ovipositional stimulants; this semiochemical dependence is why host-switching is evolutionarily constrained."
+          "university": "Oviposition is obligate on Aristolochia spp. (Aristolochiaceae); in the garden on A. californica confirmed April 2026. Clutch size typically 5–20 per oviposition bout, deposited on young, chemically richest shoot tips. The brick-red chorion carries maternally transferred aristolochic acid derivatives, producing an aposematic chemically defended egg stage. Host selection is mediated by volatile aristolochic acid derivatives acting as ovipositional stimulants; this semiochemical dependence is why host-switching is evolutionarily constrained."
         },
         "colorProgression": "Bright brick-red at laying; darkens and loses sheen toward hatching, finally showing the dark larva visible through the chorion.",
         "layingPattern": "Clusters of 5–20 eggs on young Aristolochia shoot tips. One female may deposit several clusters across an afternoon of host searching.",
@@ -381,7 +381,7 @@
           },
           "substrate": "Aristolochia californica foliage; early instars skeletonize young leaves, later instars consume entire leaves and migrate down the trellis as foliage is stripped.",
           "microclimate": "Larvae tolerate the full temperature range the host plant tolerates; they cluster in early instars then disperse as they grow.",
-          "spatialNotes": "Oak Vista: on the Aristolochia californica planting. Larvae progress down the trellis as they consume foliage."
+          "spatialNotes": "The garden: on the Aristolochia californica planting. Larvae progress down the trellis as they consume foliage."
         },
         "chemistryRole": {
           "role": "ACQUISITION",
@@ -391,7 +391,7 @@
           "preschool": "The caterpillars are dark with soft red spikes. They only eat the Pipevine plant. Never spray anything on the Pipevine!",
           "elementary": "Pipevine caterpillars are dark-bodied with fleshy red filaments — bright colors that warn birds. They can only eat the California Pipevine plant, and they take the plant's natural poison into their own bodies so they become protected too. They eat a lot and grow fast.",
           "secondary": "Battus philenor larvae are aposematically colored — dark-bodied with fleshy reddish-orange filaments (scoli) — warning predators of their chemical unpalatability. They feed exclusively on Aristolochia species, sequestering aristolochic acids from host leaf tissue into their own hemolymph. Early instars feed gregariously; later instars disperse. Development proceeds through five instars over four to six weeks at Central Valley temperatures.",
-          "university": "Lepidoptera: Papilionidae: Troidini. Five larval instars. Obligate monophagy on Aristolochia (most commonly A. californica in this range); host selection cued by aristolochic acid derivatives. Sequestration mechanism accumulates aristolochic acids I and II into hemolymph and integumentary tissue at concentrations producing emetic and aversive conditioning in naive avian predators. Larval warning coloration (black ground with reddish-orange fleshy tubercles) is both Müllerian signal shared with related Troidini and — at Oak Vista's range edge — an honest individual signal, as no California mimics have evolved. Larvae can defoliate individual Aristolochia plants; host abundance is a direct population-limiting factor."
+          "university": "Lepidoptera: Papilionidae: Troidini. Five larval instars. Obligate monophagy on Aristolochia (most commonly A. californica in this range); host selection cued by aristolochic acid derivatives. Sequestration mechanism accumulates aristolochic acids I and II into hemolymph and integumentary tissue at concentrations producing emetic and aversive conditioning in naive avian predators. Larval warning coloration (black ground with reddish-orange fleshy tubercles) is both Müllerian signal shared with related Troidini and — at the garden's range edge — an honest individual signal, as no California mimics have evolved. Larvae can defoliate individual Aristolochia plants; host abundance is a direct population-limiting factor."
         },
         "feedingStrategy": "PHYTOPHAGOUS",
         "hostPlants": [
@@ -437,7 +437,7 @@
           },
           "substrate": "Stems, trellis structure, nearby shrubs or garden structures. Larvae leave the host plant before pupation; attachment by cremaster and silk girdle to woody or semi-woody substrate.",
           "microclimate": "Sheltered, dappled locations — pupae must survive either a few weeks of summer heat or the full range from summer heat through winter chill into spring warming.",
-          "spatialNotes": "Oak Vista: expect pupae on Pipevine trellis, adjacent shrubs, and garden structures within a few meters of the host plant."
+          "spatialNotes": "The garden: expect pupae on Pipevine trellis, adjacent shrubs, and garden structures within a few meters of the host plant."
         },
         "chemistryRole": {
           "role": "RETENTION",
@@ -491,7 +491,7 @@
           },
           "substrate": "Nectar plants across the garden; Aristolochia californica for oviposition return visits.",
           "microclimate": "Warm, sunny conditions; active flight from mid-morning through late afternoon in peak heat.",
-          "spatialNotes": "Oak Vista: adults range across the full garden between nectar sources and the Pipevine trellis; strong, conspicuous fliers along riparian corridors."
+          "spatialNotes": "The garden: adults range across the full garden between nectar sources and the Pipevine trellis; strong, conspicuous fliers along riparian corridors."
         },
         "chemistryRole": {
           "role": "EXPRESSION",
@@ -501,7 +501,7 @@
           "preschool": "The butterfly is big and dark and shiny blue-green. It drinks from flowers and visits the Pipevine plant to lay eggs.",
           "elementary": "Pipevine Swallowtail adults are beautiful dark butterflies with iridescent blue and green hindwings. The shining colors are a warning to birds that they taste terrible. Adults drink nectar from many flowers and the females lay eggs on the California Pipevine. They fly from late winter all the way through autumn.",
           "secondary": "Battus philenor adults are large dark swallowtails with iridescent blue to blue-green hindwing scaling, forming the aposematic signal of the species's chemical defense. They are the model species in a mimicry complex that includes Papilio troilus (Spicebush Swallowtail), female Papilio polyxenes (Black Swallowtail), Limenitis arthemis astyanax (Red-spotted Purple), and dark-morph female Papilio glaucus — though in California the species occurs without local mimics. Adults nectar widely; females return to Aristolochia californica for oviposition.",
-          "university": "Adult wingspan 70–100 mm; marked sexual dimorphism with males showing more extensive iridescent blue hindwing coloration. Adults are strong fliers and range widely along riparian corridors. Aristolochic acid expression in wing scales, hemolymph, and integumentary tissues — predator naive-conditioning trials demonstrate strong aversive learning on first encounter. Mimicry complex: California populations present the model phenotype without local mimics, consistent with molecular evidence of recent (late Quaternary) colonization. Adult lifespan typically 2–4 weeks; overwintering-emerged spring brood can live longer given cooler thermal regime. Nectar reliance is broad but Yellow Star Thistle bridges the mid-summer floral gap at Oak Vista."
+          "university": "Adult wingspan 70–100 mm; marked sexual dimorphism with males showing more extensive iridescent blue hindwing coloration. Adults are strong fliers and range widely along riparian corridors. Aristolochic acid expression in wing scales, hemolymph, and integumentary tissues — predator naive-conditioning trials demonstrate strong aversive learning on first encounter. Mimicry complex: California populations present the model phenotype without local mimics, consistent with molecular evidence of recent (late Quaternary) colonization. Adult lifespan typically 2–4 weeks; overwintering-emerged spring brood can live longer given cooler thermal regime. Nectar reliance is broad but Yellow Star Thistle bridges the mid-summer floral gap in the garden."
         },
         "feedingHabit": "NECTAR",
         "nectarSources": [
@@ -530,9 +530,9 @@
         },
         "description": {
           "preschool": "California Pipevine is a climbing vine with heart-shaped leaves and funny little curved flowers that look like bent pipes. It is the only plant that a very special butterfly called the Pipevine Swallowtail will lay her eggs on, so its caterpillars can only live here. We never spray anything near it.",
-          "elementary": "California Pipevine is a native vine that grows along our fence. Its strange pipe-shaped flowers are pollinated by tiny gnats that get briefly trapped inside and dusted with pollen before escaping. The Pipevine Swallowtail butterfly will only lay her eggs on this plant — the caterpillars eat the leaves and absorb toxins from them that make the adult butterflies poisonous to birds. Without this vine, there would be no Pipevine Swallowtails at Oak Vista.",
+          "elementary": "California Pipevine is a native vine that grows along our fence. Its strange pipe-shaped flowers are pollinated by tiny gnats that get briefly trapped inside and dusted with pollen before escaping. The Pipevine Swallowtail butterfly will only lay her eggs on this plant — the caterpillars eat the leaves and absorb toxins from them that make the adult butterflies poisonous to birds. Without this vine, there would be no Pipevine Swallowtails in the garden.",
           "secondary": "Aristolochia californica is a deciduous vine native to the Coast Ranges and Sacramento foothills. Its zygomorphic flowers emit a carrion-like scent that attracts small Diptera, which become temporarily trapped in the floral tube, contact the anthers or stigma, and exit through the wilting corolla — a deceptive pollination mechanism common in the family.\n\nPipevine Swallowtail (Battus philenor) is an obligate specialist on Aristolochia; larvae sequester aristolochic acids that render both caterpillars and adults unpalatable to vertebrate predators.\n\nThis chemical defence is mimicked by several co-occurring butterfly species (Spicebush Swallowtail, Black Swallowtail). CRITICAL management constraint: no pesticide application of any kind within the flight range of this plant while larvae or eggs are present.",
-          "university": "Aristolochia californica (Torr.) — the sole California endemic in a pantropical genus of ~500 species. Produces aristolochic acids (AAs), nitrophenanthrene carboxylic acids that are potent nephrotoxins and carcinogens but function as larval sequestration targets for Battus philenor (Papilionidae: Troidinae). The obligate trophic specialisation is absolute — no other Aristolochia species sustains stable Pacific Coast Pipevine Swallowtail populations. At Oak Vista, the vine is established on the back fence trellis; the population supports first-flight adults from March and a continuous larval cohort through October. Management constraint is non-negotiable: aristolochic acid sequestration requires intact larval feeding; any pesticide exposure (including Bt, spinosad, pyrethrin, or insecticidal soap) directed at the plant or surrounding foliage during the larval window constitutes an irreversible ecological intervention that eliminates the breeding cohort."
+          "university": "Aristolochia californica (Torr.) — the sole California endemic in a pantropical genus of ~500 species. Produces aristolochic acids (AAs), nitrophenanthrene carboxylic acids that are potent nephrotoxins and carcinogens but function as larval sequestration targets for Battus philenor (Papilionidae: Troidinae). The obligate trophic specialisation is absolute — no other Aristolochia species sustains stable Pacific Coast Pipevine Swallowtail populations. In the garden, the vine is established on the back fence trellis; the population supports first-flight adults from March and a continuous larval cohort through October. Management constraint is non-negotiable: aristolochic acid sequestration requires intact larval feeding; any pesticide exposure (including Bt, spinosad, pyrethrin, or insecticidal soap) directed at the plant or surrounding foliage during the larval window constitutes an irreversible ecological intervention that eliminates the breeding cohort."
         },
         "roles": [
           "KEYSTONE_HOST",

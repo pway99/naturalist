@@ -7,7 +7,7 @@
 
 @template.layout.page(title = "Garden", content = @`
     <h1>Garden</h1>
-    <p>What is growing at Oak Vista, zone by zone. A zone appears here once something has been
+    <p>What is growing in the garden, zone by zone. A zone appears here once something has been
         planted in it — garden keeps no catalog of places, only of plantings.</p>
 
     <div class="entity-grid">

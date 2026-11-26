@@ -61,7 +61,7 @@ factory. The *module* is `identifiers`; the *package* mirrors the home domain.
 
 | Type                   | Identity                  | Branch                    | DDD role                      |
 |------------------------|---------------------------|---------------------------|-------------------------------|
-| `Naturalist`           | `NaturalistName`          | `NamedEntity` (slug)      | Ecological actor at Oak Vista |
+| `Naturalist`           | `NaturalistName`          | `NamedEntity` (slug)      | Ecological actor in the garden |
 | `NaturalistCredential` | `NaturalistName`          | `NamedEntity` (slug, 1:1) | Authentication credential     |
 | `ProtectiveEquipment`  | `ProtectiveEquipmentName` | `NamedEntity` (slug)      | PPE catalog entry             |
 
@@ -87,7 +87,7 @@ public record Naturalist(
 ) implements NamedEntity<NaturalistName>
 ```
 
-A person who participates in the life of Oak Vista. The name is inspired
+A person who participates in the life of the garden. The name is inspired
 by Gerald Durrell. Identity by slug (`NaturalistName`, max 64 chars).
 
 Invariants: `entityName(name)`, `notNull(givenName)`, `notNull(role)`,
@@ -155,7 +155,7 @@ Compounds reference PPE requirements indirectly via
 `SafetyProfile.requiresProtectiveEquipment` (a boolean flag on the
 chemistry domain); the specific equipment catalog lives here.
 
-Examples from Oak Vista: `chemical-resistant-gloves`, `eye-protection`,
+Examples from the garden: `chemical-resistant-gloves`, `eye-protection`,
 `n95-respirator-for-vaporization-method`, `respirator-recommended`,
 `gloves`.
 

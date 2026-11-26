@@ -4,7 +4,7 @@ package com.naturalist.habitat;
  * The broad ecological zone or structural habitat type in which an organism is found.
  * <p>
  * {@code HabitatZone} classifies habitat at the landscape scale — the character of the
- * place rather than its precise location. A single property like Oak Vista may contain
+ * place rather than its precise location. A single property like the garden may contain
  * several zones simultaneously: a cultivated vegetable bed, a woodland edge where the
  * garden meets a neighbour's oak, a compost heap that functions as a decomposition
  * microhabitat, and bare soil along paths. Many species occupy more than one zone,
@@ -18,7 +18,7 @@ public enum HabitatZone {
     /**
      * Open, unshaded grassland dominated by forbs, grasses, and wildflowers.
      * Supports pollinators, ground-nesting bees, and open-country predators.
-     * At Oak Vista: any unmown patch allowed to naturalise.
+     * In the garden: any unmown patch allowed to naturalise.
      */
     MEADOW,
 
@@ -32,7 +32,7 @@ public enum HabitatZone {
     /**
      * Vegetable beds, annual borders, orchards, and other actively managed plantings.
      * High disturbance, nutrient-rich, structurally variable through the season.
-     * The primary zone for most edible-garden beneficials at Oak Vista.
+     * The primary zone for most edible-garden beneficials in the garden.
      */
     CULTIVATED,
 

@@ -5,7 +5,7 @@ import java.util.List;
 /**
  * PlantSpecies-domain paragraph cues fed to {@link com.naturalist.fieldnotes.render.DescriptionRenderer}.
  * Phrases that mark the start of a new structural paragraph in botanical
- * prose at Oak Vista &mdash; bloom-period notes, management constraints,
+ * prose in the garden &mdash; bloom-period notes, management constraints,
  * symbiosis observations.
  *
  * <p>The kernel renderer is vocabulary-agnostic; this list is the plants
@@ -15,7 +15,7 @@ import java.util.List;
 public final class PlantsParagraphCues {
 
     public static final List<String> CUES = List.of(
-            "At Oak Vista",
+            "In the garden",
             "CRITICAL ",
             "Management constraint",
             "Practical significance",

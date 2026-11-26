@@ -44,7 +44,7 @@ public final class TestGardenIdentifiers {
         public static final CultivarName sungoldCherry = CultivarName.of("sungold-cherry");
     }
 
-    /** The two beds Oak Vista both plants and soil-samples. */
+    /** The two beds garden both plants and soil-samples. */
     public static final class Zones {
 
         private Zones() {

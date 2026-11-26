@@ -56,7 +56,7 @@ ctor).
 **In scope**
 - **Model:** extend `NutrientPanel` to a faithful measured snapshot + add `CationBaseSaturation`
   (§A). Add a `soilProfileName` FK to `LabAnalysisInfo` (§ aggregate assembly).
-- **Fixtures:** `TestSoilIdentifiers`; a `SoilProfileInfoTestEntitySource` (4 real Oak Vista
+- **Fixtures:** `TestSoilIdentifiers`; a `SoilProfileInfoTestEntitySource` (4 real garden
   profiles) and a `LabAnalysisInfoTestEntitySource` (the 2 real March analyses); JSON catalogs.
 - **Persistence:** `SoilProfileInfoRepository` + `LabAnalysisInfoRepository` (each: interface,
   mock, behavioral contract, mock test).

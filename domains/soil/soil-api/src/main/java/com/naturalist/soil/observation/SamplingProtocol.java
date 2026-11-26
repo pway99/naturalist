@@ -25,7 +25,7 @@ public record SamplingProtocol(
         CompositingMethod compositingMethod
 ) implements ValueObject {
 
-    /** The implement used to draw each subsample. Extend as Oak Vista's kit changes. */
+    /** The implement used to draw each subsample. Extend as the garden's kit changes. */
     public enum SamplingTool {
         SOIL_PROBE,
         AUGER,

@@ -41,7 +41,7 @@ foreign key added to a wrong rank is far more expensive to undo than to get righ
 **Fixtures are reshaped to fit the model; a model is never bent to fit a fixture.** When a
 new constraint rejects existing data, the finding is about the data. Expect JSON to fail on
 first contact with a structure it predates, and fix the JSON. The one exception is the
-standing rule that real Oak Vista measurements are evidence: if a *value* is right and the
+standing rule that real garden measurements are evidence: if a *value* is right and the
 model rejects it, that is a domain-model error worth stopping for. A missing parent record
 is not that; it is a gap to author.
 
@@ -553,11 +553,11 @@ Each entry must include:
 - Enum values serialize by constant name (`"VINE"`, `"KEYSTONE_HOST"`,
   `"OPEN_POLLINATED"`).
 - Cross-domain references are slug strings, never numeric IDs.
-- Catalogs are real Oak Vista data — failing tests indicate a domain model
+- Catalogs are real garden data — failing tests indicate a domain model
   error or a real-world change, not bad fixtures.
 
 ## Pointers
 
 - Domain-shared conventions: [`../CLAUDE.md`](../CLAUDE.md)
-- Narrative / ecological context, Oak Vista lineup, BER, heritage program,
+- Narrative / ecological context, garden lineup, BER, heritage program,
   open design questions: [`docs/briefings/plants-domain.md`](../../docs/briefings/plants-domain.md)

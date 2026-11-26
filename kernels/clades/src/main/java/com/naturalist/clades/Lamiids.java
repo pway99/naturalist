@@ -23,7 +23,7 @@ public record Lamiids() implements Clade {
                     Lamiidae (lamiids / euasterids I) — core-asterid clade comprising \
                     Lamiales, Solanales, Boraginales, Gentianales, Garryales, \
                     Vahliales, and Icacinales, broadly marked by opposite leaves, \
-                    decussate phyllotaxy, and frequent zygomorphy. In the Oak Vista \
+                    decussate phyllotaxy, and frequent zygomorphy. In the \
                     catalog lamiids places three orders: Solanales (Solanum \
                     lycopersicum), Lamiales (Thymus, Salvia), and Boraginales \
                     (Borago). Its parent is Asterids.""");

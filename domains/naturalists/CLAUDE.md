@@ -1,6 +1,6 @@
 # Naturalists domain
 
-A `Naturalist` (`NamedEntity<NaturalistName>`) is a person at Oak Vista — an
+A `Naturalist` (`NamedEntity<NaturalistName>`) is a person in the garden — an
 ecological actor (role, ecological stage), **not** an account. Authentication
 lives in the separate `accounts` domain: `Account` (keyed by the opaque
 `AccountName`, login by `email`) is linked to a `Naturalist` via the

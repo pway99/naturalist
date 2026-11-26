@@ -9,7 +9,7 @@ import java.util.function.Consumer;
 
 /**
  * Specialized profile for cation exchange reactions.
- * Particularly relevant to the Oak Vista coco coir rehabilitation program
+ * Particularly relevant to the garden's coco coir rehabilitation program
  * where Ca2+ from gypsum displacement displaces K+ and Na+ from exchange sites.
  * <p>
  * The selectivity series governs which cations displace which.

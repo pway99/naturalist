@@ -1,12 +1,12 @@
 package com.naturalist.plants;
 
 /**
- * The ecological and horticultural role a {@link PlantSpecies} plays at Oak Vista.
+ * The ecological and horticultural role a {@link PlantSpecies} plays in the garden.
  * <p>
  * A plant commonly fills multiple roles simultaneously — dill is both a
  * {@link #BENEFICIAL_INSECT_HABITAT} (nectar for tachinid flies and braconid wasps)
  * and an {@link #INSECT_LARVAL_HOST} (swallowtail caterpillars). The role set on
- * {@link PlantSpecies} captures all confirmed functions at Oak Vista.
+ * {@link PlantSpecies} captures all confirmed functions in the garden.
  * <p>
  * Roles govern which application module contexts a plant participates in:
  * a {@link #KEYSTONE_HOST} plant triggers zero-pesticide constraints in the
@@ -23,7 +23,7 @@ public enum PlantRole {
 
     /**
      * Provides nectar and/or pollen accessible to bees and other beneficial insects.
-     * The primary forage plants sustaining the Oak Vista pollinator community.
+     * The primary forage plants sustaining the garden's pollinator community.
      */
     POLLINATOR_SUPPORT,
 
@@ -37,7 +37,7 @@ public enum PlantRole {
 
     /**
      * Fixes atmospheric nitrogen via root nodule symbiosis with Rhizobium bacteria.
-     * Legumes (clovers) are the primary nitrogen fixers at Oak Vista, contributing
+     * Legumes (clovers) are the primary nitrogen fixers in the garden, contributing
      * measurable N to the soil food web without fertiliser input.
      */
     NITROGEN_FIXER,
@@ -45,7 +45,7 @@ public enum PlantRole {
     /**
      * Planted primarily to cover and protect the soil surface — reducing erosion,
      * suppressing weeds, retaining moisture, and building organic matter.
-     * Clover carpet, creeping thyme, and chickweed fill this role at Oak Vista.
+     * Clover carpet, creeping thyme, and chickweed fill this role in the garden.
      */
     COVER_CROP,
 
@@ -63,7 +63,7 @@ public enum PlantRole {
 
     /**
      * Larval food plant for butterfly or moth caterpillars that are not classified
-     * as keystone species at Oak Vista. Dill hosts swallowtail caterpillars; tall
+     * as keystone species in the garden. Dill hosts swallowtail caterpillars; tall
      * fescue hosts skipper larvae; wild violet hosts fritillary larvae.
      */
     INSECT_LARVAL_HOST,
@@ -78,7 +78,7 @@ public enum PlantRole {
 
     /**
      * Planted primarily for aesthetic contribution to the garden. Many ornamentals
-     * at Oak Vista also provide ecological services (Dianthus feeds pollinators)
+     * in the garden also provide ecological services (Dianthus feeds pollinators)
      * and will carry additional roles alongside ORNAMENTAL.
      */
     ORNAMENTAL

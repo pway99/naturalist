@@ -15,7 +15,7 @@
     @template.plants.nav(breadcrumb = breadcrumb, cladeTrail = cladeTrail)
     <h1>Plant Species</h1>
     <p>
-        Every species documented at Oak Vista.
+        Every species documented in the garden.
         <a href="/plants/families">Browse families &rarr;</a>
         &middot;
         <a href="/plants/phytochemistry">View phytochemistry &rarr;</a>

@@ -8,7 +8,7 @@ import java.util.List;
 import java.util.function.Function;
 
 /**
- * Test data source for {@link SoilPhysicalCharacteristics} — one row per Oak Vista analysis with
+ * Test data source for {@link SoilPhysicalCharacteristics} — one row per garden analysis with
  * the real March 2026 FGL physical/derived values. Backing catalog:
  * {@code soil/observation/soil-physical-characteristics.json}.
  */

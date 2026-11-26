@@ -11,7 +11,7 @@ import java.util.function.Consumer;
 
 /**
  * The root entity of the {@link SoilProfile} aggregate — the identity and spatial
- * association of a managed soil unit at Oak Vista.
+ * association of a managed soil unit in the garden.
  * <p>
  * A {@code SoilProfileInfo} anchors a soil profile to a specific spatial unit in the
  * zone domain. The anchoring is expressed as a {@link ZoneName} (always present) and
@@ -24,7 +24,7 @@ import java.util.function.Consumer;
  *       identified by {@code zoneName} — e.g. Garden Box 1, and the back yard bed.</li>
  *   <li>If {@code subZoneName} is set, the profile covers a specific SubZone within
  *       the Zone. Reserved for a sub-zone that is <em>separately sampled</em>; no
- *       Oak Vista profile is sub-zone scoped today. The front garden is five boxes in
+ *       garden profile is sub-zone scoped today. The front garden is five boxes in
  *       one zone and is the expected first user, once the fall 2026 samples establish
  *       which boxes differ enough to hold their own profile.</li>
  * </ul>
@@ -35,7 +35,7 @@ import java.util.function.Consumer;
  * holding three copies of the same chemistry; their {@code SubZone.soilProfileName} is null.
  * Split a profile out only when a sub-zone is sampled on its own.
  * <p>
- * <b>Oak Vista soil profiles:</b>
+ * <b>garden soil profiles:</b>
  * <ul>
  *   <li>{@code "box1"} — Garden Box 1, zone-level. Raised bed, worm casting blend, FGL
  *       analysed March 3, 2026 (CH 2671853-001). Biological amplification factor 1.8 for

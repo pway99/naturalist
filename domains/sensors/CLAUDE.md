@@ -119,7 +119,7 @@ April 6 (8 days post-rototill): faster → RECOVERING (trend: IMPROVING).
 ### Moisture Baseline
 
 Mean of stable readings (Δ < 0.5% per interval).
-Oak Vista: Box 1 = 52% (AD 251), Backyard = 59% (AD 277).
+The garden: Box 1 = 52% (AD 251), Backyard = 59% (AD 277).
 Worm casting/coco coir blend has different field capacity than mineral soil —
 factory WH51 calibration is not accurate; use AD values for custom calibration.
 
@@ -137,7 +137,7 @@ H₂SO₄ + CaCO₃ → CaSO₄ + H₂O + CO₂
 Thresholds defined in Climate module (`thresholds.json`) — analysis service evaluates
 data against them, does not define them. Separation of knowledge (Climate) from process (Sensors).
 
-Oak Vista April 2–10 2026:
+The garden April 2–10 2026:
 
 - thiobacillus-activation (77°F): 7 crossings
 - formic-acid-contraindication (85°F): 0 (peak 84.8°F)
@@ -146,7 +146,7 @@ Oak Vista April 2–10 2026:
 ### BER Risk Score
 
 Composite of moisture consistency + soil Ca status.
-High risk in Oak Vista: very low soluble Ca + coco coir binding + Chico heat.
+High risk in the garden: very low soluble Ca + coco coir binding + Sacramento Valley heat.
 
 ### Finding Generation (priority order)
 

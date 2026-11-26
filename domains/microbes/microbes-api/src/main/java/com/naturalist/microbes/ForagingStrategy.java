@@ -24,7 +24,7 @@ public enum ForagingStrategy {
      * Actively moves through the soil matrix in search of hosts.
      * Effective against sedentary soil-dwelling pests at depth (e.g. white grubs,
      * cutworms in the root zone). <i>Heterorhabditis bacteriophora</i> is the
-     * primary Oak Vista cruiser species — penetrates 20–30 cm when irrigated in.
+     * primary garden cruiser species — penetrates 20–30 cm when irrigated in.
      */
     CRUISER,
 

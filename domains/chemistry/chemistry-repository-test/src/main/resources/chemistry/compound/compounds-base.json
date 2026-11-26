@@ -27,7 +27,7 @@
       "gramsPerLiterAt20C": 2.4,
       "category": "SPARINGLY_SOLUBLE",
       "ecContributionFactor": 0.002,
-      "notes": "Slow sustained dissolution over weeks. Prilled form dissolves faster than powdered. Moist soil accelerates dissolution — Oak Vista April 1 application benefited from Easter rain."
+      "notes": "Slow sustained dissolution over weeks. Prilled form dissolves faster than powdered. Moist soil accelerates dissolution — The garden April 1 application benefited from Easter rain."
     },
     "bioavailability": {
       "primaryPathway": "ROOT_MASS_FLOW",
@@ -239,7 +239,7 @@
       "gramsPerLiterAt20C": 0.013,
       "category": "SPARINGLY_SOLUBLE",
       "ecContributionFactor": 0.0001,
-      "notes": "Very sparingly soluble. Dissolves slowly releasing Ca2+ and buffering pH. Elevated in Oak Vista soil — 1.7% Box 1, 2.9% backyard (post-hole subsoil). Optimum below 0.50%."
+      "notes": "Very sparingly soluble. Dissolves slowly releasing Ca2+ and buffering pH. Elevated in garden soil — 1.7% Box 1, 2.9% backyard (post-hole subsoil). Optimum below 0.50%."
     },
     "bioavailability": {
       "primaryPathway": "ROOT_MASS_FLOW",
@@ -297,7 +297,7 @@
       "berRelevance": "BER occurs when Ca2+ supply insufficient for calcium pectate formation during rapid fruit cell division",
       "mobilityInPlant": "IMMOBILE — cannot be redistributed from older tissue to new growth",
       "criticalWindow": "Blossom set through first 3 weeks of fruit development",
-      "chicoRisk": "High — summer heat accelerates cell division beyond Ca2+ supply rate"
+      "localRisk": "High — summer heat accelerates cell division beyond Ca2+ supply rate"
     }
   },
   {
@@ -332,7 +332,7 @@
       "gramsPerLiterAt20C": 999.0,
       "category": "MISCIBLE",
       "ecContributionFactor": 0.003,
-      "notes": "Fully miscible. 18-month shelf life. NPK 0-0-0 — zero phosphorus critical given Oak Vista phosphorus excess."
+      "notes": "Fully miscible. 18-month shelf life. NPK 0-0-0 — zero phosphorus critical given garden phosphorus excess."
     },
     "bioavailability": {
       "primaryPathway": "FOLIAR_BOTH",
@@ -394,7 +394,7 @@
       "optimalTempF": 65.0,
       "vaporPressureAt20C": 4.75,
       "efficacyNotes": "Below 50°F insufficient vapor for mite kill. 50-85°F effective range. Vapor pressure increases rapidly above 70°F.",
-      "safetyNotes": "Above 85°F dangerous vapor concentration in hive. Chico summer peak 105°F makes formic acid HIGH RISK June-September. Consider Apiguard (thymol) for August treatment."
+      "safetyNotes": "Above 85°F dangerous vapor concentration in hive. Sacramento Valley summer peak 105°F makes formic acid HIGH RISK June-September. Consider Apiguard (thymol) for August treatment."
     },
     "safety": {
       "hazardLevel": "HIGH",
@@ -404,7 +404,7 @@
       "requiresProtectiveEquipment": true,
       "hazardousToBeesWhenWet": true,
       "requiresEveningApplication": false,
-      "applicationConstraints": "Do not apply when ambient temperature exceeds 85°F. Corrosive — gloves and eye protection required. Verify California CDPR approval status with Dadant Chico before purchase."
+      "applicationConstraints": "Do not apply when ambient temperature exceeds 85°F. Corrosive — gloves and eye protection required. Verify California CDPR approval status with a local beekeeping supplier before purchase."
     },
     "properties": {}
   },
@@ -454,7 +454,7 @@
       "optimalTempF": 65.0,
       "vaporPressureAt20C": 0.001,
       "efficacyNotes": "Low vapor pressure — sublimation requires heating equipment. Effective across wide temperature range unlike formic acid.",
-      "safetyNotes": "Irritant — respiratory protection required for vaporization method. Safer temperature profile than formic acid for Chico summers."
+      "safetyNotes": "Irritant — respiratory protection required for vaporization method. Safer temperature profile than formic acid for the Sacramento Valley summers."
     },
     "safety": {
       "hazardLevel": "MODERATE",
@@ -464,7 +464,7 @@
       "requiresProtectiveEquipment": true,
       "hazardousToBeesWhenWet": false,
       "requiresEveningApplication": false,
-      "applicationConstraints": "Respiratory protection required for vaporization. Most effective during broodless period (winter or after artificial swarm). Verify California CDPR approval with Dadant Chico."
+      "applicationConstraints": "Respiratory protection required for vaporization. Most effective during broodless period (winter or after artificial swarm). Verify California CDPR approval with a local beekeeping supplier."
     },
     "properties": {}
   },
@@ -513,7 +513,7 @@
       "maxSafeTempF": 105.0,
       "optimalTempF": 80.0,
       "vaporPressureAt20C": 0.023,
-      "efficacyNotes": "Below 59°F insufficient volatilization — treatment fails. Most effective 65-95°F. Chico late August/early September is optimal application window.",
+      "efficacyNotes": "Below 59°F insufficient volatilization — treatment fails. Most effective 65-95°F. Sacramento Valley late August/early September is optimal application window.",
       "safetyNotes": "Natural compound — safer than formic acid. Bees tolerate well within temperature range. Some colony agitation possible at high concentrations."
     },
     "safety": {
