@@ -62,6 +62,9 @@ services:
       NATURALIST_VISION_PROVIDER: ${NATURALIST_VISION_PROVIDER:-none}
       NATURALIST_SECRETS_SOURCE: file
       NATURALIST_SECRETS_DIRECTORY: /run/secrets
+      # The file systems the storage alerts watch (deploy/prometheus/alerts.yml): photos and the
+      # database. Logs and Prometheus's data sit on the same host disk as these volumes.
+      MANAGEMENT_METRICS_SYSTEM_DISKSPACE_PATHS: /data/images,/data/database
     secrets:
       - source: database-credential
         target: app/spring.datasource.password
@@ -69,6 +72,9 @@ services:
         target: app/naturalist.admin.password
     volumes:
       - images:/data/images
+      # Mounted only so the app can report the database volume's free space. Read-only, and
+      # Postgres keeps the files in it readable by its own user alone.
+      - db-data:/data/database:ro
     healthcheck:
       test: ["CMD-SHELL", "bash -c 'exec 3<>/dev/tcp/localhost/8080'"]
       interval: 10s

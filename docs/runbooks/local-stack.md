@@ -75,10 +75,14 @@ Locally, alerts arrive in Mailpit. `ChallengeOff` always fires after about 5 min
 local stack runs the challenge in log-only mode, so that email shows the whole path works. To see a
 rate-limit alert, send about 15 failed logins within a minute.
 
+Free space is on `disk_free_bytes` and `disk_total_bytes`, one series per watched `path`
+(`/data/images`, and `/data/database`, the database volume mounted read-only into the app).
+On one disk both paths report the same numbers, so the storage alerts fire for both together.
+
 Test the rules after changing them:
 
 ```bash
-docker run --rm -v "$PWD/deploy/prometheus:/rules:ro" -w /rules --entrypoint promtool prom/prometheus:v3.13.5 test rules alerts.test.yml
+docker run --rm -v "$PWD/deploy/prometheus:/rules:ro" -w /rules --entrypoint promtool prom/prometheus:v3.16.0 test rules alerts.test.yml
 ```
 
 Prometheus keeps 30 days of data, up to 1 GB.
