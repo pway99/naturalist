@@ -449,8 +449,8 @@ public class PlantsController {
             return notInCatalog(response, model, genusName, "/plants/orders");
         }
         // an invalid "missing" is dropped, not refused: the genus page still answers
-        boolean missingUsable = missing != null && !methodObserver.arguments(c -> c
-                .entityName(missing, "missing"))
+        boolean missingUsable = !methodObserver.arguments(c -> c
+                .entityNameOrNull(missing, "missing"))
                 .observe(Level.INFO)
                 .isNotValid();
         Optional<Plant> plant = plantQuery.getByName(genusName);
@@ -458,11 +458,11 @@ public class PlantsController {
                 .isPresent(plant, "plant"))
                 .observe(Level.INFO)
                 .whenNotValid(() -> notInCatalog(response, model, genusName, "/plants/orders"))
-                .otherwise(() -> genusPage(genusName, plant.get(), missingUsable ? missing.value() : null, model,
+                .otherwise(() -> genusPage(genusName, plant.get(), missingUsable ? missing : null, model,
                         response));
     }
 
-    private String genusPage(PlantGenusName genusName, Plant plant, @Nullable String missing, Model model,
+    private String genusPage(PlantGenusName genusName, Plant plant, @Nullable PlantSpeciesName missing, Model model,
                              HttpServletResponse response) {
         if (observer.arguments("genusPage", c -> c
                 .readModel(plant, "plant")

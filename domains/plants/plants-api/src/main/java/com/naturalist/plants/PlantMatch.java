@@ -24,10 +24,23 @@ public record PlantMatch(PlantRankName asked, PlantRankName found, Plant plant) 
         return plant != null && found != null && plant.identifiedTo().filter(found::equals).isPresent();
     }
 
-    /** True when {@code found} is {@code asked} itself or a broader rank than it. */
-    boolean foundIsAskedOrAbove() {
-        return asked != null && found != null
-                && (found.equals(asked) || found.rank().compareTo(asked.rank()) < 0);
+    /**
+     * The genus a species slug names: the segment before its first '-', or the whole slug when
+     * it has none. The one place the binomial rule lives; the name returned may not be valid.
+     */
+    public static PlantGenusName genusqOf(PlantSpeciesName species) {
+        String slug = species.value();
+        int dash = slug.indexOf('-');
+        return PlantGenusName.of(dash < 0 ? slug : slug.substring(0, dash));
+    }
+
+    /** True when {@code found} is {@code asked} itself, or the genus {@code asked}'s binomial names. */
+    boolean foundIsAskedOrItsGenus() {
+        if (asked == null || found == null) {
+            return false;
+        }
+        return found.equals(asked)
+                || asked instanceof PlantSpeciesName species && found.equals(genusOf(species));
     }
 
     @Override
@@ -37,6 +50,6 @@ public record PlantMatch(PlantRankName asked, PlantRankName found, Plant plant) 
                 .identifier(found, "found")
                 .readModel(plant, "plant")
                 .isTrue(plantIsFound(), "plantIsFound")
-                .isTrue(foundIsAskedOrAbove(), "foundIsAskedOrAbove");
+                .isTrue(foundIsAskedOrItsGenus(), "foundIsAskedOrItsGenus");
     }
 }

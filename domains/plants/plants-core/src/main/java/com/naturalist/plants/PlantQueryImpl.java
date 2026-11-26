@@ -13,7 +13,7 @@ import java.util.Optional;
 @DomainService
 class PlantQueryImpl implements PlantQuery {
 
-    private final Observer observer = Observer.forClass(PlantQueryImpl.class);
+    private static final Observer observer = Observer.forClass(PlantQueryImpl.class);
 
     private final SpeciesQuery plantEntityQuery;
     private final OrderQuery plantOrderEntityQuery;
@@ -129,9 +129,7 @@ class PlantQueryImpl implements PlantQuery {
         if (!(name instanceof PlantSpeciesName)) {
             return Optional.empty();
         }
-        String slug = name.value();
-        int dash = slug.indexOf('-');
-        PlantGenusName genus = PlantGenusName.of(dash < 0 ? slug : slug.substring(0, dash));
+        PlantGenusName genus = PlantMatch.genusOf((PlantSpeciesName) name);
         if (observer.state("nearest", i -> i.entityName(genus, "genus")).observe(Level.INFO).isNotValid()) {
             return Optional.empty();
         }

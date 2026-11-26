@@ -66,7 +66,19 @@ class PlantMatchTest {
         InvariantObservation result = mo.observable(match, "match");
 
         assertThat(result.violationNamesRemovingPrefix(mo.observationPoint()))
-                .contains(".match.foundIsAskedOrAbove");
+                .contains(".match.foundIsAskedOrItsGenus");
+    }
+
+    @Test
+    void foundGenusOfAnotherSpeciesIsRefused() {
+        MethodObserver mo = observer.forMethod("foundGenusOfAnotherSpeciesIsRefused");
+        PlantMatch match = new PlantMatch(
+                PlantSpeciesName.of("quercus-alba"), PlantGenusName.of("thymus"), thymusPlant());
+
+        InvariantObservation result = mo.observable(match, "match");
+
+        assertThat(result.violationNamesRemovingPrefix(mo.observationPoint()))
+                .containsExactly(".match.foundIsAskedOrItsGenus");
     }
 
     private static Plant thymusPlant() {
