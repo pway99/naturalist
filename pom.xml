@@ -64,7 +64,7 @@
         <jackson-version>2.21.5</jackson-version>
 
         <!-- Web / templating -->
-        <jte.version>3.2.4</jte.version>
+        <jte.version>3.2.5</jte.version>
 
         <!-- Cross-cutting libraries -->
         <micrometer-version>1.17.1</micrometer-version>        <!-- Boot-managed -->
@@ -88,14 +88,14 @@
         <!-- Build tooling. openrewrite is pinned to recipe-bom 3.37.0, NOT the newer 3.38.0:
              that release imports org.openrewrite:rewrite-bom:8.91.0, which was never published
              to Maven Central (404), so 3.38.0 is unresolvable. Revisit when 3.39.x lands. -->
-        <rewrite-recipe-bom.version>3.37.0</rewrite-recipe-bom.version>
+        <rewrite-recipe-bom.version>3.38.0</rewrite-recipe-bom.version>
         <rewrite-maven-plugin.version>6.46.1</rewrite-maven-plugin.version>
-        <maven-compiler-plugin.version>3.15.0</maven-compiler-plugin.version>
-        <maven-surefire-plugin.version>3.5.6</maven-surefire-plugin.version>
-        <maven-failsafe-plugin.version>3.5.6</maven-failsafe-plugin.version>
-        <maven-resources-plugin.version>3.3.1</maven-resources-plugin.version>
-        <maven-assembly-plugin.version>3.7.1</maven-assembly-plugin.version>
-        <maven-jar-plugin.version>3.5.0</maven-jar-plugin.version>
+        <maven-compiler-plugin.version>3.16.0</maven-compiler-plugin.version>
+        <maven-surefire-plugin.version>3.6.1</maven-surefire-plugin.version>
+        <maven-failsafe-plugin.version>3.6.1</maven-failsafe-plugin.version>
+        <maven-resources-plugin.version>3.5.0</maven-resources-plugin.version>
+        <maven-assembly-plugin.version>3.8.0</maven-assembly-plugin.version>
+        <maven-jar-plugin.version>3.5.1</maven-jar-plugin.version>
         <!-- Image decoding: ImageIO plugins (WebP) for the photo store. -->
         <twelvemonkeys.version>3.15.3</twelvemonkeys.version>
     </properties>
