@@ -12,7 +12,7 @@ import java.util.Set;
 import java.util.function.Consumer;
 
 /**
- * What a plant taxon <em>does</em> at Oak Vista — the ecological and horticultural
+ * What a plant taxon <em>does</em> in the garden — the ecological and horticultural
  * functions it fills, recorded at whatever rank the observation supports.
  * <p>
  * {@code plantName} is a {@link PlantRankName}, so a role can attach to a family, a genus
@@ -48,7 +48,7 @@ public record PlantEcologicalRole(
 
     /**
      * Whether this taxon is a confirmed keystone host — an obligate larval food plant for
-     * a keystone insect species at Oak Vista. Keystone hosts carry zero-pesticide
+     * a keystone insect species in the garden. Keystone hosts carry zero-pesticide
      * constraints, surfaced through the taxon's {@link com.naturalist.plants.management.PlantProgram}s.
      */
     public boolean isKeystoneHost() {

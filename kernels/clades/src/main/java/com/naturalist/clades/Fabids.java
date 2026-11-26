@@ -26,7 +26,7 @@ public record Fabids() implements Clade {
                     Fabidae (fabids / eurosids I) — the rosid subclade bearing the \
                     nitrogen-fixing clade, comprising Fabales, Rosales, Cucurbitales, \
                     and Fagales together with the COM clade (Celastrales, Oxalidales, \
-                    Malpighiales). In the Oak Vista catalog fabids places three orders: \
+                    Malpighiales). In the catalog fabids places three orders: \
                     Rosales (Prunus, Pyrus, Ficus), Fabales (Trifolium), and \
                     Malpighiales (Passiflora edulis). Its parent is Rosids.""");
 

@@ -11,7 +11,7 @@ import java.math.RoundingMode;
  * <p>
  * Limestone represents the insoluble calcium carbonate reserve available for
  * Thiobacillus-mediated conversion to plant-available calcium sulfate (gypsum).
- * FGL reports limestone to one decimal place. Oak Vista reference values:
+ * FGL reports limestone to one decimal place. Garden reference values:
  * Box 1 = 1.7%, Backyard = 2.9% (both in the "Slight Problem" to "Moderate Problem"
  * range on FGL's scale).
  * <p>

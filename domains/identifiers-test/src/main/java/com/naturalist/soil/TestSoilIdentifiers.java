@@ -11,7 +11,7 @@ import java.util.UUID;
 
 /**
  * Single source of truth for soil {@code EntityName} / {@code EntityId} constants used in
- * repository and query contract tests. Mirrors the domain object graph: each Oak Vista
+ * repository and query contract tests. Mirrors the domain object graph: each garden
  * {@code SoilProfile} owns a {@code LabAnalysis}, which in turn owns its {@code NutrientReading}s
  * and one {@code SoilPhysicalCharacteristics} row. Ids match the fixture JSON exactly.
  */

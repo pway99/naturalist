@@ -21,9 +21,9 @@ records that bridge `PlantName` and chemistry's `CompoundName`. The split
 keeps Plant a clean cross-site reference while letting management and
 phytochemistry evolve independently.
 
-## Site context — Oak Vista (Chico, CA)
+## Site context — the garden (Sacramento Valley, CA)
 
-The fixture data and most of the running examples come from Oak Vista, a
+The fixture data and most of the running examples come from the garden, a
 Sacramento Valley site under summer heat (100–110°F peaks). Plant records fall
 into three categories there:
 
@@ -45,7 +45,7 @@ will not breed without it.
 
 The heritage sub-context exists for one reason: a 50+ year family selection of
 an Italian Pear paste tomato, maintained in coastal California, now beginning
-its Chico climate adaptation program. **Generation 1 of the Chico adaptation
+its Sacramento Valley climate adaptation program. **Generation 1 of the Sacramento Valley adaptation
 runs in the 2026 season.** Selection criteria: earliest ripening, highest
 production, best flavour under Sacramento Valley heat.
 
@@ -58,13 +58,13 @@ it crosses entities): a `SeedLineage` must reference a cultivar with
 `VarietyType.OPEN_POLLINATED`. F1 hybrids do not breed true and cannot anchor
 a lineage.
 
-## Cultivars (Oak Vista 2026)
+## Cultivars (garden 2026)
 
 The cultivar sub-context sits below species. The `Plant` record `"tomato"` is
 *Solanum lycopersicum* the species; the cultivars below it are the actual
 varieties in the ground:
 
-- `amish-paste` — UNKNOWN variety type (The Plant Barn, Chico). 12 plants,
+- `amish-paste` — UNKNOWN variety type (The Plant Barn, Sacramento Valley). 12 plants,
   evaluating as primary sauce variety for the 90-quart annual target.
   `SeedSavingPolicy.CONDITIONAL` pending provenance verification from Baker Creek.
 - `italian-pear-nicks` — OPEN_POLLINATED, the heritage line.
@@ -103,11 +103,11 @@ flow driven by transpiration. Anything that interrupts that flow — water
 stress, low soil Ca, coir binding, heat-induced stomatal closure — produces
 BER on susceptible crops.
 
-Oak Vista BER risk is HIGH:
+The garden BER risk is HIGH:
 
 - Very low soluble Ca (FGL CH 2671853).
 - Coco coir in substrate binds Ca.
-- Chico summer heat drives stomatal closure during the critical fruit-fill window.
+- Sacramento Valley summer heat drives stomatal closure during the critical fruit-fill window.
 - Foliar chelated calcium (TPS CalMag OAC, organic-acid chelation) bypasses
   the root-to-xylem pathway when delivery is interrupted.
 

@@ -6,7 +6,7 @@ import java.util.UUID;
 
 /**
  * Surrogate identity for {@code com.naturalist.plants.PlantEcologicalRole} — the
- * cross-rank record carrying what a taxon <em>does</em> at Oak Vista.
+ * cross-rank record carrying what a taxon <em>does</em> in the garden.
  * <p>
  * A surrogate rather than a natural key because the record's identity is the
  * assignment, not the taxon: uniqueness lives on {@code plantName}, and the role set

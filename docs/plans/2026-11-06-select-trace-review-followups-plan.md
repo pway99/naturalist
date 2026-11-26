@@ -200,7 +200,7 @@ void identify_reuseTargetNotOffered_mintsNew() {
     var exchange = twoTurn(SAMPLE_RESULT_JSON, turn2);
 
     buildCommand((image, tool, prompt) -> exchange).identify(ImageUpload.of(JPEG),
-            new ImageMetadata("Chico, CA", null), NaturalistName.of("pat"), null);
+            new ImageMetadata("Sacramento Valley, CA", null), NaturalistName.of("pat"), null);
 
     assertThat(featureSource.entityStream().count()).isEqualTo(before + 3);
     assertThat(nte.getNamed(InsectFeatureAssignmentTestEntitySource.class).entityStream()

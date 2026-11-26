@@ -1,6 +1,6 @@
 # ChemicalScience Module — Claude Instructions
 
-## Oak Vista Garden Management System
+## The garden Garden Management System
 
 ---
 
@@ -110,7 +110,7 @@ ChemicalScience provides facts. Domain modules make decisions using those facts.
 - Potassium Sulfate (K2SO4) — potassium correction amendment
 - Elemental Sulfur (S) — sulfate source, pH modifier
 - Magnesium Sulfate (MgSO4) — Epsom salt, foliar/drench magnesium
-- Calcium Carbonate (CaCO3) — limestone, pH buffer in native Chico soil
+- Calcium Carbonate (CaCO3) — limestone, pH buffer in native Sacramento Valley soil
 - Calcium Pectate — cell wall structural compound (BER mechanism)
 - Organic Acid Chelate (generic) — TPS OAC chelation mechanism
 
@@ -136,13 +136,13 @@ Fields: symbol, name, atomicWeight, ionicForm, charge
 
 ### compounds.json
 
-All chemical compounds in the Oak Vista system.
+All chemical compounds in the garden's system.
 Fields: id, name, formula, molecularWeight, solubility,
 ph, constituentElements, compoundType, properties
 
 ### reactions.json
 
-Chemical reactions relevant to Oak Vista management.
+Chemical reactions relevant to garden management.
 Fields: id, name, reactants, products, conditions, significance
 
 ### safety-profiles.json
@@ -173,6 +173,6 @@ CompoundId is a strongly typed identifier from the Identifiers module.
 6. CompoundRegistry — in-memory store keyed by CompoundId
 7. CompoundCatalogLoader — JSON deserializer
 8. elements.json — atomic elements
-9. compounds.json — all Oak Vista compounds
+9. compounds.json — all garden compounds
 10. reactions.json — key reactions
 11. safety-profiles.json — thresholds and windows

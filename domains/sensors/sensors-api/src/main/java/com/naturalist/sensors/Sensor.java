@@ -20,7 +20,7 @@ import java.util.function.Consumer;
  * hardware model, and whether it has been relocated since installation.
  * <p>
  * <b>Calibration note:</b> The Ecowitt WH51 and WH51L sensors are factory-calibrated
- * for mineral soil. The Oak Vista worm casting / coco coir blend reads 3–5% high
+ * for mineral soil. The garden's worm casting / coco coir blend reads 3–5% high
  * relative to true volumetric moisture. The {@code customCalibrationMode} flag
  * indicates whether the sensor has been recalibrated in the Ecowitt app using
  * the zero-moisture and saturation AD reference points. Until custom calibration is
@@ -33,7 +33,7 @@ import java.util.function.Consumer;
  * Any time series analysis spanning a relocation date is flagged as potentially
  * non-comparable in the sensor analysis domain.
  * <p>
- * <b>Oak Vista installed sensors (April 2026):</b>
+ * <b>garden installed sensors (April 2026):</b>
  * <ul>
  *   <li>{@code "box1-shallow"} — WH51, Box 1, ~5 inch, installed April 6, 2026.
  *       Factory calibration. Baseline: 52% (AD 251).</li>
@@ -140,7 +140,7 @@ public record Sensor(
          * enabling measurement at depths up to 80 cm. IP68 probe, IP65 body.
          * Electronics body must be positioned ≥ 20 cm above soil surface to preserve
          * 915 MHz RF transmission. Shares sensor channels with WH51 in the gateway
-         * (max 8 combined across WH51 and WH51L). Pending installation at Oak Vista.
+         * (max 8 combined across WH51 and WH51L). Pending installation in the garden.
          */
         WH51L,
 
@@ -149,7 +149,7 @@ public record Sensor(
          * <p>
          * Provides electrical conductivity (dS/m) in addition to moisture (% and AD)
          * and soil temperature (°C). EC measurement enables real-time salt
-         * accumulation monitoring — critical at Oak Vista following combined
+         * accumulation monitoring — critical in the garden following combined
          * potassium sulfate, blood meal, and gypsum applications in April 2026.
          * Pending arrival approximately April 14, 2026. To be installed in the
          * backyard bed where amendment EC impact is highest.

@@ -132,7 +132,7 @@ neither should feel talked down to or lost:
 | `preschool`  | Wonder-first, 2–3 sentences            | Appearance, what it does in plain words, why it matters to "our garden"                                                       |
 | `elementary` | Mechanism, 3–5 sentences               | How it eats/hunts/helps, concrete numbers where available (aphids per day, etc.)                                              |
 | `secondary`  | Biological accuracy, 4–6 sentences     | Family taxonomy, scientific mechanism, host specificity, ecological role, correct terminology                                 |
-| `university` | Full scientific context, 5–8 sentences | Binomial + authority + year, morphological/behavioral detail, chemical ecology if relevant, Oak Vista management implications |
+| `university` | Full scientific context, 5–8 sentences | Binomial + authority + year, morphological/behavioral detail, chemical ecology if relevant, garden management implications |
 
 For `sightingNotes`: always include the observation date (today's date), location (Oak
 Vista), host plant if visible, individual count, and any photo-id caveats.

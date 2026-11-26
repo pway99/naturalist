@@ -1,6 +1,6 @@
 # Weather
 
-Will record the discrete atmospheric events over Oak Vista — precipitation
+Will record the discrete atmospheric events over the garden — precipitation
 first — kept distinct from climate (long-term threshold knowledge) and from
 irrigation (deliberate managed water application), so soil and sensor analyses
 can attribute a moisture change to the right cause.

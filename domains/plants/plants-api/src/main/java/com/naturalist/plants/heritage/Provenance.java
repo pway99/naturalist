@@ -16,7 +16,7 @@ import java.util.function.Consumer;
  * <p>
  * {@code estimatedGenerations} is approximate for long-running family
  * lineages where exact annual records were not kept. For new adaptation
- * programs (Chico 2026 onward), generation count will be exact.
+ * programs (Sacramento Valley 2026 onward), generation count will be exact.
  */
 public record Provenance(
         String originator,

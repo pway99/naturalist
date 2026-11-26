@@ -2,7 +2,7 @@
 
 **Your role.** You have rich ecological / entomological domain knowledge.
 This task uses that knowledge to produce structured life-stage data for
-species in the Oak Vista insect catalog — either populating stages on
+species in the garden's insect catalog — either populating stages on
 existing species whose four stage fields are still `null`, or producing
 stage entries when new species are added to the catalog.
 
@@ -100,7 +100,7 @@ field (`name.value()` on the existing `InsectSpeciesName`).
 - **Secondary (age 12–18).** Mechanism and process. Scientific names in
   context. Observable evidence.
 - **University (age 18+).** Precise scientific terminology, taxonomic
-  placement, physiological mechanisms, quantitative ecology, Oak Vista
+  placement, physiological mechanisms, quantitative ecology, garden
   management relevance.
 
 All four levels are simultaneously true — additive, not contradictory. The
@@ -319,7 +319,7 @@ This keeps the deliverable loadable today and flags the follow-on work.
   strictly nectar-typed.
 - `feedingHabit`: the dominant adult feeding mode. `NON_FEEDING` applies
   to adult mayflies and some moths with vestigial mouthparts.
-- `ecologicalRole`: one-line function at Oak Vista — "Pollinator; reproductive
+- `ecologicalRole`: one-line function in the garden — "Pollinator; reproductive
   stage", "Apex invertebrate predator", "Specialist parasitoid".
 - `lifespan`: narrative — "a few days", "approximately one month",
   "overwintering adults 6–8 months".
@@ -368,7 +368,7 @@ Skim `insect-species.json` for full context. Summary:
 | `tachinid-fly`         | Diptera     | Holo       | Family-level; endoparasitoid larva on lepidopteran hosts. Populate `parasitoidHosts` with general categories or leave empty and use narrative.                                                |
 | `braconid-wasp`        | Hymenoptera | Holo       | Aphidiinae + Microgastrinae. Larva parasitizes aphids (`parasitoidHosts: ["aphid"]` is NOT a real slug — flag as needing catalog entries; empty list is acceptable).                          |
 | `hoverfly`             | Diptera     | Holo       | Aphidophagous larva; nectar/pollen adult. Classic dual-guild species.                                                                                                                         |
-| `convergent-ladybug`   | Coleoptera  | Holo       | Hippodamia convergens. Breeds at Oak Vista April 2026. Full life cycle documented.                                                                                                            |
+| `convergent-ladybug`   | Coleoptera  | Holo       | Hippodamia convergens. Breeds in the garden in April 2026. Full life cycle documented.                                                                                                            |
 | `ground-beetle`        | Coleoptera  | Holo       | Family-level; larva predatory, soil-dwelling. Pupa in soil chamber.                                                                                                                           |
 | `crane-fly`            | Diptera     | Holo       | Tipulidae; larvae are saprophagous leatherjackets in soil. Adults non- or minimally-feeding.                                                                                                  |
 | `field-roach`          | Blattodea   | **Hemi**   | `larva: null`, `pupa: null`. Only `egg` and `adult`. Oothecal egg-carrying.                                                                                                                   |
@@ -376,11 +376,11 @@ Skim `insect-species.json` for full context. Summary:
 | `grey-mining-bee`      | Hymenoptera | Holo       | Andrena sp. Early-spring solitary bee.                                                                                                                                                        |
 | `valley-carpenter-bee` | Hymenoptera | Holo       | Xylocopa varipuncta. Nests in dead wood. Sexually dimorphic adults.                                                                                                                           |
 | `skipper-butterfly`    | Lepidoptera | Holo       | Hesperiidae family-level. Larval host: Poaceae.                                                                                                                                               |
-| `painted-lady`         | Lepidoptera | Holo       | Vanessa cardui. Migratory — Oak Vista adults are spring migrants, not residents. Adjust `phenology` accordingly.                                                                              |
+| `painted-lady`         | Lepidoptera | Holo       | Vanessa cardui. Migratory — Garden adults are spring migrants, not residents. Adjust `phenology` accordingly.                                                                              |
 | `green-lacewing`       | Neuroptera  | Holo       | Chrysoperla sp. Silk-stalked eggs (notable). Predatory aphid-lion larva.                                                                                                                      |
 | `pipevine-swallowtail` | Lepidoptera | Holo       | **Full treatment required.** Battus philenor. Keystone. Aristolochic acid chemistry across all four stages. Split diapause. Host-plant monophagy: `hostPlants: ["aristolochia-californica"]`. |
 | `potato-leafhopper`    | Hemiptera   | **Hemi**   | `larva: null`, `pupa: null`. Only `egg` and `adult`.                                                                                                                                          |
-| `orange-sulphur`       | Lepidoptera | Holo       | Colias eurytheme. Larval host: Fabaceae (crimson clover at Oak Vista → `trifolium-incarnatum`, alfalfa → `medicago-sativa`).                                                                  |
+| `orange-sulphur`       | Lepidoptera | Holo       | Colias eurytheme. Larval host: Fabaceae (crimson clover in the garden → `trifolium-incarnatum`, alfalfa → `medicago-sativa`).                                                                  |
 
 Count verify: 16 rows above. Cross-check against `insect-species.json`
 when you write the zip — if the catalog has diverged, follow the catalog.
@@ -397,13 +397,13 @@ when you write the zip — if the catalog has diverged, follow the catalog.
   entries (kebab-case binomial-derived). Do not invent `"alfalfa"` — use
   `"medicago-sativa"`. Do not invent `"aphid"` — leave the list empty
   and note the gap.
-- **Oak Vista specificity.** Where the species-level fields name
-  Oak-Vista-specific facts (dill border, crimson clover cover, April 2026
+- **garden specificity.** Where the species-level fields name
+  garden-specific facts (dill border, crimson clover cover, April 2026
   sightings, Aristolochia californica planting), echo that context in
   the stage's `habitat.spatialNotes` or `description.university`. Do not
   paste the species-level `sightingNotes` into stages.
 - **Real phenology.** Phenology windows must reflect California Central
-  Valley / Chico climate. `MonthDay` values should be plausible — e.g.
+  Valley climate. `MonthDay` values should be plausible — e.g.
   *Battus philenor* adult flight onset near `"--02-15"`, tail near
   `"--10-31"`, not generic "spring–autumn" bands.
 - **Invariants first.** If you cannot satisfy the non-null invariants on a

@@ -10,7 +10,7 @@ as value objects. Instances in `climate-zones.json`.
 event when crossed. Referenced by all domain modules — thresholds are domain facts defined
 here, not in the consuming module.
 
-Current Oak Vista thresholds:
+Current garden thresholds:
 | Name | Trigger | Domain significance |
 |-------------------------------|---------|----------------------------------------------|
 | thiobacillus-activation | 77°F | Sulfur oxidation rate increases (Q10 ~2)     |
@@ -24,16 +24,16 @@ humidity. Includes precipitation pattern and season character descriptions.
 
 **FrostCalendar** — ValueObject. Last spring frost date, first fall frost date,
 frost-free days, frost probability curve.
-Chico: ~March 15 last frost, ~November 20 first frost, 280 frost-free days.
+Sacramento Valley: ~March 15 last frost, ~November 20 first frost, 280 frost-free days.
 
 **GrowingSeasonProfile** — ValueObject. Frost-free days, annual chill hours, growing degree days,
 production windows.
-Chico: 280 frost-free days, ~800 chill hours, ~3200 GDD.
+Sacramento Valley: 280 frost-free days, ~800 chill hours, ~3200 GDD.
 
 **Chill Hours** — Hours of temperature below 45°F accumulated during winter dormancy.
 Required by deciduous fruit trees to break dormancy and fruit reliably.
-Oh Henry Peach: 650 hours required — reliably met in Chico.
-Shinseiki Asian Pear: 250–300 hours required — reliably met in Chico.
+Oh Henry Peach: 650 hours required — reliably met in the Sacramento Valley.
+Shinseiki Asian Pear: 250–300 hours required — reliably met in the Sacramento Valley.
 
 ## Design Rule
 

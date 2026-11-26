@@ -43,7 +43,7 @@ Use RawAdValue for cross-bed comparison and custom calibration.
 The stable resting moisture percentage a Zone's sensor returns to
 between watering events under ambient evapotranspiration conditions.
 Established empirically from pre-disturbance stable readings.
-Oak Vista baselines (April 2026):
+Garden baselines (April 2026):
 Box 1: 52% (AD ~250-253)
 Backyard: 59% (AD ~275-279)
 NOT a fixed value — baselines shift seasonally as temperature and
@@ -53,7 +53,7 @@ plant water demand change. Recalibrate monthly.
 
 The moisture percentage below which irrigation should be applied.
 Established from plant stress observations and agronomic knowledge.
-Oak Vista triggers: Box 1 below 35%, Backyard below 40%.
+Garden triggers: Box 1 below 35%, Backyard below 40%.
 Expressed as percentage not AD — more intuitive for operational decisions.
 
 ### WateringEvent
@@ -92,7 +92,7 @@ Fields: thresholdId, zoneId, occurredAt, measuredValue, direction.
 
 The count of readings at or above 77°F soil/air temperature
 within a defined period. Proxy for cumulative sulfur oxidation activity.
-Directly relevant to Oak Vista gypsum rehabilitation program —
+Directly relevant to garden gypsum rehabilitation program —
 higher score means more in-situ gypsum formation from elemental sulfur.
 
 ### BERRiskScore

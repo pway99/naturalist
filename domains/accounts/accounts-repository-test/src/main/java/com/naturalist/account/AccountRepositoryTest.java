@@ -97,7 +97,7 @@ interface AccountRepositoryTest extends EntityRepositoryTest<AccountName, Accoun
 
     @Test
     default void getByEmail_returnsAccountWithMatchingEmail() {
-        Optional<Account> result = repository().getByEmail("gerald.durrell@oakvista.example");
+        Optional<Account> result = repository().getByEmail("gerald.durrell@naturalist.example");
 
         assertThat(result).isPresent();
         assertThat(result.get().name()).isEqualTo(DURRELL);

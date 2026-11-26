@@ -26,12 +26,12 @@ species-level fields to the 15 bare entries. The stage-level data is at
 full richness regardless, drawn from domain knowledge — but there are
 consequences:
 
-- Stage `habitat.spatialNotes` can echo Oak-Vista-specific context for
+- Stage `habitat.spatialNotes` can echo garden-specific context for
   `pipevine-swallowtail` (Aristolochia trellis, April 2026 eggs,
   southeast-facing growth) because the species-level `sightingNotes`
   provides the detail. For the other 15 species, spatial notes are general
   ("mulched bed margins," "hedgerow leaf litter," etc.) rather than tied to
-  specific Oak Vista plantings — the catalog has no such detail to echo.
+  specific garden plantings — the catalog has no such detail to echo.
 - No `chemicalDefense.protectedStages` cross-check is applicable for the
   15 bare species because they have no `chemicalDefense` field. For
   `pipevine-swallowtail`, `protectedStages: [EGG, LARVA, PUPA, ADULT]`
@@ -226,7 +226,7 @@ Santa) are very likely to be absent and need catalog entries added.
 
 ### convergent-ladybug
 
-- **April 2026 breeding confirmed at Oak Vista** (per the task brief's
+- **April 2026 breeding confirmed in the garden** (per the task brief's
   per-species guidance). Egg and larva stage `spatialNotes` reference
   the April 2026 sighting. The species-level `sightingNotes` for
   `convergent-ladybug` in the current catalog is a plain generic

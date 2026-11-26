@@ -89,7 +89,7 @@ public boolean hasAfternoonShade()    { return sunExposure.hasAfternoonShade(); 
 
 These are behavior methods — not record components. Do not confuse with record accessors.
 
-## Pending: OakVistaZoneFixtures
+## Pending: GardenZoneFixtures
 
 Populate ZoneRepository with real property zones. Each zone needs:
 substrate type, sun exposure, aspect, area, summer thermal risk.

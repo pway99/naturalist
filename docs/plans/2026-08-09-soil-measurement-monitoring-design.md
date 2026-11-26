@@ -7,7 +7,7 @@ foundation now feeds. The soil→zone navigation spine is parked.
 
 ## Problem & driving use case
 
-Patrick is rehabilitating the Oak Vista soil over multiple years — regular gypsum additions to
+Patrick is rehabilitating the garden's soil over multiple years — regular gypsum additions to
 lift soluble calcium, displace K/Na from the coir, and precipitate excess phosphorus — and needs
 to **monitor a chosen set of measurements across periodic lab tests** to see the trajectory
 work: soluble Ca climbing toward optimum, sulfate rising, EC staying under 2.0, base saturation

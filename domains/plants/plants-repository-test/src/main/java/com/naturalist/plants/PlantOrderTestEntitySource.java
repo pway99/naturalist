@@ -4,7 +4,7 @@ import com.naturalist.data.NaturalistDatabase;
 import com.naturalist.data.TestEntitySource;
 
 /**
- * The 13 plant orders represented at Oak Vista — the top of the rank chain, so this source
+ * The 13 plant orders represented in the garden — the top of the rank chain, so this source
  * declares no foreign key of its own. Every other rank source points, directly or
  * transitively, at one of these records.
  */

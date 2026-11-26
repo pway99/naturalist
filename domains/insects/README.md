@@ -61,7 +61,7 @@ Follows the standard domain split described in the
 - **`insects-core`** — query and command adapters, the `InsectFactory` read-model
   assembler, and the `@DomainService` identification pipeline.
 - **`insects-repository-test`** — the in-memory adapter, the behavioral contract,
-  and the JSON seed catalog (real Oak Vista species).
+  and the JSON seed catalog (real garden species).
 - **`insects-repository-rdms`** — production persistence adapter (currently
   delegating to the in-memory mock; see the top-level README).
 - **`insects-console`** — JTE view fragments for the management console.

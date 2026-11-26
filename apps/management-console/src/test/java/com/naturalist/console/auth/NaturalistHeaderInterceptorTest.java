@@ -151,7 +151,7 @@ class NaturalistHeaderInterceptorTest {
 
     private static void setNaturalistAuthentication() {
         NaturalistPrincipal principal = new NaturalistPrincipal(
-                NaturalistName.of("patrick-way"), "Patrick", "gerald.durrell@oakvista.example",
+                NaturalistName.of("patrick-way"), "Patrick", "gerald.durrell@naturalist.example",
                 "{bcrypt}x", false, true, true);
         SecurityContextHolder.getContext().setAuthentication(
                 new UsernamePasswordAuthenticationToken(principal, "n/a", principal.getAuthorities()));

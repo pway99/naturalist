@@ -9,9 +9,9 @@ import org.jspecify.annotations.Nullable;
 import java.util.function.Consumer;
 
 /**
- * A catalogued arachnid species (class Arachnida) observed at Oak Vista.
+ * A catalogued arachnid species (class Arachnida) observed in the garden.
  * <p>
- * All arachnids in the Oak Vista catalog are beneficial predators. The
+ * All arachnids in the catalog are beneficial predators. The
  * {@link HuntingStrategy} captures the predatory mode, which governs microhabitat
  * preference and management implications (e.g. retaining ground cover for ambush
  * hunters, avoiding broad-spectrum pesticide treatments that decimate web builders).
@@ -20,7 +20,7 @@ import java.util.function.Consumer;
  * (Opiliones), and pseudoscorpions (Pseudoscorpiones). The order field on
  * {@link TaxonomicClassification} distinguishes these at the coarsest level.
  * <p>
- * Unlike insects, arachnids do not fill pollinator or decomposer roles at Oak Vista;
+ * Unlike insects, arachnids do not fill pollinator or decomposer roles in the garden;
  * their ecological service is invertebrate pest suppression. The
  * {@code huntingStrategy} provides more domain-meaningful differentiation than
  * a generic guild enum would for this class.

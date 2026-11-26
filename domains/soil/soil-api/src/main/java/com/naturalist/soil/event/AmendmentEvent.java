@@ -30,7 +30,7 @@ import java.util.function.Consumer;
  * soil-api carries no compile-time dependency on zone-api. Sub-zone granularity is required
  * for accurate per-area nutrient loading calculations.
  * <p>
- * <b>Oak Vista amendment events of note:</b>
+ * <b>garden amendment events of note:</b>
  * <ul>
  *   <li><b>Box 1 blood meal, April 2026</b> — Blood meal applied to Box 1 following the
  *       March 2026 FGL N-Nitrate VERY_LOW result. The application quantity exceeded

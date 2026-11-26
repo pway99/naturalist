@@ -93,7 +93,7 @@ class InsectsFamiliesTemplateTest {
                 anyFamily.name(),
                 java.time.Instant.parse("2026-07-16T01:54:24Z"),
                 null,
-                "Oak Vista, Chico, CA",
+                "Sacramento Valley, CA",
                 null,
                 identification);
         StringOutput output = new StringOutput();

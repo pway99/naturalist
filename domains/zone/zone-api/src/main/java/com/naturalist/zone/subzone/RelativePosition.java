@@ -8,7 +8,7 @@ package com.naturalist.zone.subzone;
  * and crop rotation planning without requiring precise coordinate geometry. It captures
  * the management-relevant question: <em>which part of this bed?</em>
  * <p>
- * At Oak Vista, the backyard garden bed runs approximately north–south (100 sqft total).
+ * In the garden, the backyard garden bed runs approximately north–south (100 sqft total).
  * The three sub-zones that emerged from the April 7, 2026 TSWV management event map
  * naturally to {@code NORTH_END}, {@code CENTER}, and {@code SOUTH_END}:
  * <ul>

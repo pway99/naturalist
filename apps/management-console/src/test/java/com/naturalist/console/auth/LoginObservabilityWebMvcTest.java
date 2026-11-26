@@ -79,7 +79,7 @@ class LoginObservabilityWebMvcTest {
     @Test
     void login_knownEmailWrongPassword_isObservedAsBadCredentialsOnly() throws Exception {
         mockMvc.perform(post("/login").with(csrf())
-                .param("username", "gerald.durrell@oakvista.example").param("password", "guess"))
+                .param("username", "gerald.durrell@naturalist.example").param("password", "guess"))
                 .andExpect(redirectedUrl("/login?error"));
 
         // The email exists (seeded), so this is password guessing, not enumeration.
@@ -89,13 +89,13 @@ class LoginObservabilityWebMvcTest {
 
     @Test
     void login_suspendedAccount_isObservedAsSuspendedAccountAttempt() throws Exception {
-        AccountName gerald = accountQuery.getByEmail("gerald.durrell@oakvista.example").orElseThrow().name();
+        AccountName gerald = accountQuery.getByEmail("gerald.durrell@naturalist.example").orElseThrow().name();
         accountCommand.suspend(gerald);
         try {
             // The lock check runs before the password check, so even a wrong password surfaces
             // the suspension — exactly the signal wanted: a banned account trying to get back in.
             mockMvc.perform(post("/login").with(csrf())
-                    .param("username", "gerald.durrell@oakvista.example").param("password", "guess"))
+                    .param("username", "gerald.durrell@naturalist.example").param("password", "guess"))
                     .andExpect(redirectedUrl("/login?error"));
 
             assertThat(violations("NaturalistUserDetailsService.loadUserByUsername.accountActive")).isEqualTo(1);

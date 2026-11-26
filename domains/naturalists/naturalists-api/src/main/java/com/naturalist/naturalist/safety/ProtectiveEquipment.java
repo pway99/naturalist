@@ -16,7 +16,7 @@ import java.util.function.Consumer;
  * the specific equipment catalogue lives here and is associated with the person,
  * not with the compound.
  * <p>
- * Examples from the Oak Vista catalog:
+ * Examples from the catalog:
  * <ul>
  *   <li>{@code chemical-resistant-gloves} — required for oxalic acid and formic acid handling</li>
  *   <li>{@code eye-protection} — required for any fumigant or acid application</li>

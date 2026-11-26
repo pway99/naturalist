@@ -1,7 +1,7 @@
 package com.naturalist.naturalist;
 
 /**
- * The primary relationship a {@link Naturalist} has with Oak Vista and its ecosystem.
+ * The primary relationship a {@link Naturalist} has with the garden and its ecosystem.
  * <p>
  * Role governs which application capabilities a naturalist can access and what
  * responsibilities are attributed to them in the domain model. A single person
@@ -11,7 +11,7 @@ package com.naturalist.naturalist;
 public enum NaturalistRole {
 
     /**
-     * Occasional observer — present at Oak Vista for a visit, participating in
+     * Occasional observer — present in the garden for a visit, participating in
      * garden walks, pollinator surveys, or ecological observation sessions.
      * Read-only access to all catalog knowledge; no amendment or management
      * responsibilities attributed.
@@ -26,7 +26,7 @@ public enum NaturalistRole {
     CARETAKER,
 
     /**
-     * Formal learner — enrolled in a structured educational programme using Oak Vista
+     * Formal learner — enrolled in a structured educational programme using the garden
      * as a living laboratory. Associated with lesson plans and ecological stage
      * progression tracking. Corresponds to Durrell's belief that nature is the
      * best classroom.
@@ -44,7 +44,7 @@ public enum NaturalistRole {
     /**
      * Leads others in ecological observation and interpretation — guides field
      * walks, facilitates Durrell-level descriptions for visitors and students.
-     * A teacher is also implicitly a CARETAKER or KEEPER in the Oak Vista context.
+     * A teacher is also implicitly a CARETAKER or KEEPER in the garden's context.
      */
     TEACHER
 }

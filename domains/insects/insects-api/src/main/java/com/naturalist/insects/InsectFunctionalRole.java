@@ -28,7 +28,7 @@ import java.util.function.Consumer;
  * two consumers are a pattern.
  * <p>
  * {@code guilds} is the structured assignment of which
- * {@link FunctionalGuild} roles the organism fills at Oak Vista —
+ * {@link FunctionalGuild} roles the organism fills in the garden —
  * pollinator, predator, food-web participant, etc. At least one
  * guild is required: a role record without any guild assignment has
  * no purpose, since the whole point of the entity is to carry the

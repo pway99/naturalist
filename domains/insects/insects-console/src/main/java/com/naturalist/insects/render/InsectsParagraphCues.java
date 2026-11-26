@@ -5,7 +5,7 @@ import java.util.List;
 /**
  * Insects-domain paragraph cues fed to {@link com.naturalist.fieldnotes.render.DescriptionRenderer}.
  * Phrases that mark the start of a new structural paragraph in
- * entomological prose at Oak Vista &mdash; life-stage sections, host /
+ * entomological prose in the garden &mdash; life-stage sections, host /
  * floral-access notes, management constraints, overwintering and
  * site-specific observations.
  *
@@ -17,7 +17,7 @@ import java.util.List;
 public final class InsectsParagraphCues {
 
     public static final List<String> CUES = List.of(
-            "At Oak Vista",
+            "In the garden",
             "Primary host guilds",
             "Adults are ",
             "Adult nectar-feeding",

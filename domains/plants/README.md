@@ -80,7 +80,7 @@ Follows the standard domain split described in the
 - [`docs/plants-ubl.md`](docs/plants-ubl.md) — the domain vocabulary and the
   cross-domain relationship map.
 - [`docs/briefings/plants-domain.md`](../../docs/briefings/plants-domain.md) —
-  narrative and ecological context: the Oak Vista lineup, the heritage program,
+  narrative and ecological context: the garden's lineup, the heritage program,
   and the plant ↔ compound bridge.
 - [`docs/plans/organism-domain-blueprint.md`](../../docs/plans/organism-domain-blueprint.md) —
   the shared organism-domain design this module inherits from insects.

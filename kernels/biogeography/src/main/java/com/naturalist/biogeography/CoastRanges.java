@@ -35,7 +35,7 @@ public record CoastRanges() implements Bioregion {
                     "constrained climatically by the summer marine layer and topographically by " +
                     "elevations below ~750 m. Notable endemic and characteristic taxa include " +
                     "Aristolochia californica (host of Battus philenor hirsuta — the same vine " +
-                    "established at Oak Vista), Sequoia sempervirens, Sequoiadendron-relict " +
+                    "established in the garden), Sequoia sempervirens, Sequoiadendron-relict " +
                     "associated mycorrhizal communities, and the California red-legged frog " +
                     "(Rana draytonii). The fog-driven hydrology is increasingly under threat " +
                     "from changes in the strength and frequency of coastal upwelling under " +

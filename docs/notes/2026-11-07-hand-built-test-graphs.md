@@ -237,7 +237,7 @@ Converted:
   Refusals are read back from the usage event log (`identification-refused` events).
 - `NaturalistLoginWebMvcTest`: the two `@MockitoBean`s (`AccountQuery`, `NaturalistQuery`) and Mockito are
   gone. The `@SpringBootTest` already runs the real queries over the `@MockDomainService` doubles. Each test
-  rewrites the fixture account `gerald.durrell@oakvista.example` (linked to the fixture naturalist
+  rewrites the fixture account `gerald.durrell@naturalist.example` (linked to the fixture naturalist
   `patrick-way`) with its own password hash, access and status in the shared database, and restores it
   afterwards.
 

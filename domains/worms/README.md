@@ -1,6 +1,6 @@
 # Worms
 
-Will catalog the annelid worms of Oak Vista — chiefly the earthworms that act
+Will catalog the annelid worms of the garden — chiefly the earthworms that act
 as ecological engineers of the soil, tracking burrowing depth and casting rate
 as indicators of soil biological health.
 

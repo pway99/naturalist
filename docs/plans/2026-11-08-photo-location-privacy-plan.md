@@ -394,11 +394,11 @@ private final VisionService capturing = (image, tool, prompt) -> { seenByVision.
 
 @Test void identify_sendsTheAreaSentence_andStrippedBytes_toVision()
     // upload = ImageUpload.of(ImageFixtures.jpeg(app0Jfif(), app1Exif(BE, 6, 45.52, -122.68)))
-    // identify(upload, new ImageMetadata("Chico, CA", null), pat, null, GridCell.of(1092, -2945))
-    // seenByVision.metadata().location() == "Chico, CA Photographed within 45.50–45.54°N, 122.71–122.67°W. Treat this as the observation's location: rule out species whose known range does not include it."
+    // identify(upload, new ImageMetadata("Sacramento Valley, CA", null), pat, null, GridCell.of(1092, -2945))
+    // seenByVision.metadata().location() == "Sacramento Valley, CA Photographed within 45.50–45.54°N, 122.71–122.67°W. Treat this as the observation's location: rule out species whose known range does not include it."
     // ImageUpload.of(seenByVision.bytes()).gps() isEmpty
 @Test void identify_persistsTheArea_andKeepsTypedLocationSeparate()
-    // observation.area() == GridCell.of(1092, -2945); observation.location() == "Chico, CA"
+    // observation.area() == GridCell.of(1092, -2945); observation.location() == "Sacramento Valley, CA"
 @Test void identify_claimedAreaWinsOverExif()
     // GPS JPEG at Portland + area (1000, -2000) → observation.area() == (1000, -2000)
 @Test void identify_nullArea_derivesTheCellFromExif()

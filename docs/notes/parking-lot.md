@@ -56,7 +56,7 @@ Short entries (~5 lines each) for forks discovered mid-work and decisions in fli
 **Raised:** Pre-Phase-1b (rolled forward from old `Q6`).
 **Where:** Sensor domain.
 **Blocking:** No.
-**Resolution path:** Factory calibration is for mineral soil; Oak Vista worm casting/coco coir blend reads 3–5% high. AD values usable for custom calibration curve. Deferred pending gravimetric correlation study.
+**Resolution path:** Factory calibration is for mineral soil; garden worm casting/coco coir blend reads 3–5% high. AD values usable for custom calibration curve. Deferred pending gravimetric correlation study.
 
 ---
 

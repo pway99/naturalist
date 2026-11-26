@@ -71,7 +71,7 @@ interface InsectObservationEntityRepositoryTest
                 TestInsectsIdentifiers.InsectSpecies.BattusPhilenor.name,
                 Instant.parse("2026-06-03T08:00:00Z"),
                 "changed",
-                "Oak Vista, Chico, CA",
+                "Sacramento Valley, CA",
                 GridCell.of(1092, -2945),
                 new Identification(0.77, "changed evidence",
                         List.of(new Identification.Candidate(

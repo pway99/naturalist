@@ -5,7 +5,7 @@ measurements, and the physical characteristics of each managed bed, anchored to
 the zone it sits in.
 
 Its fixtures are real: every value traces to a Fruit Growers Laboratory report
-(FGL CH 2671853, sampled March 2026) for the Oak Vista site near Chico,
+(FGL CH 2671853, sampled March 2026) for the garden's site near the Sacramento Valley,
 California. A failing test points at a domain-model error or a real-world change,
 not a made-up number.
 
@@ -80,4 +80,4 @@ Follows the standard domain split described in the
 - [`CLAUDE.md`](CLAUDE.md) — the domain vocabulary and FGL optimum ranges.
 - [`docs/briefings/soil-domain.md`](../../docs/briefings/soil-domain.md) — the
   authoritative type-by-type tour: package map, the measurement-vs-interpretation
-  rule, cross-domain references, and the Oak Vista fixture values.
+  rule, cross-domain references, and the garden's fixture values.

@@ -32,7 +32,7 @@ import java.util.function.Consumer;
  * <b>Leaching significance:</b> Precipitation with total accumulation ≥ 0.5 inches
  * delivered at intensity below 0.3 inches/hour constitutes a significant leaching
  * event for soluble soil ions — particularly nitrate (NO₃⁻), which moves freely with
- * soil water. The April 2026 rainfall event at Oak Vista (1.5 inches over 3 days)
+ * soil water. The April 2026 rainfall event in the garden (1.5 inches over 3 days)
  * provided natural leaching that meaningfully reduced the blood meal nitrogen excess
  * from the April 6, 2026 amendment applications.
  * <p>
@@ -73,7 +73,7 @@ public record PrecipitationEvent(
      * <p>
      * Requires both adequate total volume (≥ 0.5 inches) and low intensity
      * (≤ 0.3 inches/hour peak) so that water infiltrates the full profile rather
-     * than running off. The April 2026 Oak Vista event (1.5 inches over 3 days)
+     * than running off. The April 2026 garden event (1.5 inches over 3 days)
      * meets both criteria — estimated 30–50% root-zone nitrate reduction.
      *
      * @return {@code true} if this event meets the significant leaching criteria

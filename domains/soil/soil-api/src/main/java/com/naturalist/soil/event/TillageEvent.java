@@ -26,14 +26,14 @@ import java.util.function.Consumer;
  * as biological activity re-establishes soil structure. A {@code TillageEvent} provides
  * the context required to correctly interpret drainage recovery trajectories in sensor data.
  * <p>
- * <b>Oak Vista backyard rototill, April 2, 2026:</b> The backyard garden was rototilled
+ * <b>garden backyard rototill, April 2, 2026:</b> The backyard garden was rototilled
  * to 6 inches prior to transplanting. The WH51 sensor at 5-inch depth subsequently showed
  * drainage recovery times exceeding 12 hours across the April 2–10, 2026 observation window
  * — classified as RECOVERING to DISRUPTED. Without the {@code TillageEvent} record, these
  * slow drainage readings would be misinterpreted as a chronic soil problem rather than the
  * expected short-term post-tillage recovery.
  * <p>
- * <b>Expected recovery timeline:</b> At Oak Vista backyard (native clay amended, clay
+ * <b>Expected recovery timeline:</b> In the garden backyard (native clay amended, clay
  * sublayer), biological drainage recovery after rototilling to 6 inches is estimated at
  * 2–4 weeks to return to pre-tillage drainage rates, assuming no additional large irrigation
  * events. Recovery is slower than a pure raised bed (Box 1 worm casting blend) because the
@@ -63,7 +63,7 @@ public record TillageEvent(
      *   <li>BROADFORK at any depth: 3–7 days (minimal disruption)</li>
      *   <li>HAND_CULTIVATION at ≤3 inches: 5–10 days</li>
      *   <li>ROTOTILL at ≤4 inches: 10–14 days</li>
-     *   <li>ROTOTILL at 6 inches: 14–21 days (Oak Vista backyard baseline)</li>
+     *   <li>ROTOTILL at 6 inches: 14–21 days (garden backyard baseline)</li>
      * </ul>
      * Clay sublayer presence (backyard) extends these estimates by 30–50%.
      *
@@ -104,7 +104,7 @@ public record TillageEvent(
          * <p>
          * Horizontally shears and homogenises the tilled depth. Destroys fungal hyphae,
          * worm burrows, and macropore networks. Longest recovery period.
-         * Oak Vista backyard April 2, 2026 event used this implement.
+         * Garden backyard April 2, 2026 event used this implement.
          */
         ROTOTILL,
 

@@ -44,9 +44,9 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 @SpringBootTest
 class AdminAccountsControllerWebMvcTest {
 
-    private static final String DURRELL = "gerald.durrell@oakvista.example";
+    private static final String DURRELL = "gerald.durrell@naturalist.example";
     private static final String DURRELL_PASSWORD = "durrell-secret";
-    private static final String PENDING = "pending.visitor@oakvista.example";
+    private static final String PENDING = "pending.visitor@naturalist.example";
 
     @Autowired
     WebApplicationContext context;
@@ -115,7 +115,7 @@ class AdminAccountsControllerWebMvcTest {
                 .andExpect(content().contentTypeCompatibleWith("text/html"))
                 .andReturn().getResponse().getContentAsString();
 
-        assertThat(html).contains(DURRELL, PENDING, "young-naturalist@oakvista.example");
+        assertThat(html).contains(DURRELL, PENDING, "young-naturalist@naturalist.example");
         int pendingAt = html.indexOf(PENDING);
         String pendingRow = html.substring(pendingAt, html.indexOf("</tr>", pendingAt));
         assertThat(pendingRow)

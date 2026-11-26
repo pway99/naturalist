@@ -251,7 +251,7 @@ public record LabAnalysisInfo(
 Immutable, append-only — a lab report is a historical fact. `crop` is a
 `CropName` soft reference naming the *interpretation context* (which
 crop's optimum ranges apply); the rich crop-planting concept is a separate
-effort. Current lab: Fruit Growers Laboratory (FGL), Chico CA; sample IDs
+effort. Current lab: Fruit Growers Laboratory (FGL); sample IDs
 `CH XXXXXXX-NNN`.
 
 Invariants: `entityId(id)`, `entityName(soilProfileName)`,
@@ -671,7 +671,7 @@ fictitious `…-9999-…` UUIDs). Ids match the fixture JSON exactly.
 
 ---
 
-## 15. Site Context — Oak Vista (Chico, CA)
+## 15. Site Context — the garden (Sacramento Valley, CA)
 
 All fixture data is real, transcribed from FGL report **CH 2671853**,
 sampled **March 3, 2026**, interpreted for crop `tomato`.

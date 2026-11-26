@@ -23,7 +23,7 @@ public enum MoistureRegime {
     /**
      * Moderate, consistent soil moisture throughout most of the year.
      * The default condition of well-maintained garden beds receiving regular
-     * irrigation. Broadest species tolerance; the baseline for most Oak Vista zones.
+     * irrigation. Broadest species tolerance; the baseline for most garden zones.
      */
     MESIC,
 

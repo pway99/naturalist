@@ -21,7 +21,7 @@
       "minPh": null,
       "maxPh": null
     },
-    "significance": "Primary mechanism of Oak Vista soil rehabilitation. Dissolved Ca2+ enters soil solution and displaces K+ and Na+ from coco coir exchange sites via mass action. Prilled form dissolves over weeks providing sustained Ca2+ supply. Moist soil condition at April 1 application accelerated initial dissolution."
+    "significance": "Primary mechanism of garden soil rehabilitation. Dissolved Ca2+ enters soil solution and displaces K+ and Na+ from coco coir exchange sites via mass action. Prilled form dissolves over weeks providing sustained Ca2+ supply. Moist soil condition at April 1 application accelerated initial dissolution."
   },
   {
     "name": "calcium-displacing-potassium-from-coir-exchange-sites",
@@ -46,7 +46,7 @@
       "minPh": null,
       "maxPh": null
     },
-    "significance": "Core mechanism of the multi-year Oak Vista coir rehabilitation program. Coco coir preferentially binds divalent cations (Ca2+ > Mg2+ > K+ > Na+). Nine years of CalPhos without Ca displacement created Ca-deficient exchange sites. Gypsum floods soil solution with Ca2+, mass action drives K+ and Na+ displacement into leachable solution. Full rehabilitation projected 3-5 seasons."
+    "significance": "Core mechanism of the multi-year garden coir rehabilitation program. Coco coir preferentially binds divalent cations (Ca2+ > Mg2+ > K+ > Na+). Nine years of CalPhos without Ca displacement created Ca-deficient exchange sites. Gypsum floods soil solution with Ca2+, mass action drives K+ and Na+ displacement into leachable solution. Full rehabilitation projected 3-5 seasons."
   },
   {
     "name": "bacterial-sulfur-oxidation-to-sulfate",
@@ -70,7 +70,7 @@
       "minPh": 4.5,
       "maxPh": 8.5
     },
-    "significance": "Converts elemental sulfur applied to Oak Vista beds into plant-available sulfate. Rate accelerates significantly above 77°F Chico soil temperature — WH52 sensor temperature data will track conversion onset. In limestone-containing soil the produced H2SO4 reacts with CaCO3 producing in-situ gypsum rather than acidifying soil."
+    "significance": "Converts elemental sulfur applied to garden beds into plant-available sulfate. Rate accelerates significantly above 77°F Sacramento Valley soil temperature — WH52 sensor temperature data will track conversion onset. In limestone-containing soil the produced H2SO4 reacts with CaCO3 producing in-situ gypsum rather than acidifying soil."
   },
   {
     "name": "limestone-neutralization-of-sulfuric-acid",
@@ -95,7 +95,7 @@
       "minPh": null,
       "maxPh": 7.5
     },
-    "significance": "Accidental but beneficial in Oak Vista backyard bed (2.9% limestone). H2SO4 produced by sulfur oxidation is consumed by CaCO3 before it can lower pH. Products are CaSO4 (additional gypsum), H2O, and CO2 gas. Net effect: elemental sulfur + limestone = in-situ gypsum formation with zero pH change. Partially self-correcting system."
+    "significance": "Accidental but beneficial in garden backyard bed (2.9% limestone). H2SO4 produced by sulfur oxidation is consumed by CaCO3 before it can lower pH. Products are CaSO4 (additional gypsum), H2O, and CO2 gas. Net effect: elemental sulfur + limestone = in-situ gypsum formation with zero pH change. Partially self-correcting system."
   },
   {
     "name": "calcium-pectate-cell-wall-formation",
@@ -121,7 +121,7 @@
       "minPh": 5.5,
       "maxPh": 7.5
     },
-    "significance": "The biological target of the entire Oak Vista BER prevention program. Ca2+ must be present at developing fruit cells at the exact moment of cell wall formation. Calcium is immobile in plant tissue once deposited — cannot be redistributed. Interruption of Ca2+ supply during rapid fruit cell division produces permanent BER lesions. Chico summer heat accelerates cell division beyond Ca2+ supply rate without foliar supplementation."
+    "significance": "The biological target of the entire the garden BER prevention program. Ca2+ must be present at developing fruit cells at the exact moment of cell wall formation. Calcium is immobile in plant tissue once deposited — cannot be redistributed. Interruption of Ca2+ supply during rapid fruit cell division produces permanent BER lesions. Sacramento Valley summer heat accelerates cell division beyond Ca2+ supply rate without foliar supplementation."
   },
   {
     "name": "organic-acid-chelate-foliar-cuticular-absorption",
@@ -145,7 +145,7 @@
       "minPh": 5.0,
       "maxPh": 7.0
     },
-    "significance": "Mechanism advantage of TPS CalMag OAC over ionic CaCl2. Organic acid ligands allow Ca2+ to penetrate waxy leaf cuticle even when stomata are closed during Chico heat stress. Enables Ca delivery during peak afternoon temperatures when stomates close for water conservation. Alternating with Rot-Stop RTU provides complementary delivery pathways across the weekly BER prevention protocol."
+    "significance": "Mechanism advantage of TPS CalMag OAC over ionic CaCl2. Organic acid ligands allow Ca2+ to penetrate waxy leaf cuticle even when stomata are closed during Sacramento Valley heat stress. Enables Ca delivery during peak afternoon temperatures when stomates close for water conservation. Alternating with Rot-Stop RTU provides complementary delivery pathways across the weekly BER prevention protocol."
   },
   {
     "name": "thymol-volatilization-for-varroa-control",
@@ -167,7 +167,7 @@
       "minPh": null,
       "maxPh": null
     },
-    "significance": "Preferred Varroa treatment for Oak Vista given Chico summer temperatures. Formic acid dangerous above 85°F — excluded from Chico summer protocol. Thymol effective and safe up to 105°F making late August/September application viable. Remove honey super before treatment — thymol taints honey. Year 1 Oak Vista protocol: honey super pulled late July, Apiguard applied late August."
+    "significance": "Preferred Varroa treatment for the garden given Sacramento Valley summer temperatures. Formic acid dangerous above 85°F — excluded from the Sacramento Valley summer protocol. Thymol effective and safe up to 105°F making late August/September application viable. Remove honey super before treatment — thymol taints honey. Year 1 garden protocol: honey super pulled late July, Apiguard applied late August."
   },
   {
     "name": "formic-acid-vapor-varroa-fumigation",
@@ -189,6 +189,6 @@
       "minPh": null,
       "maxPh": null
     },
-    "significance": "CONTRAINDICATED for Oak Vista summer treatment. Chico peak temperatures 95-105°F June through September exceed the 85°F safe maximum for formic acid application. Dangerous vapor concentration at high temperatures causes colony stress and beekeeper injury. Reserved for spring and fall treatment windows only if California CDPR approval confirmed. Thymol (Apiguard) is the preferred summer alternative."
+    "significance": "CONTRAINDICATED for garden summer treatment. Sacramento Valley peak temperatures 95-105°F June through September exceed the 85°F safe maximum for formic acid application. Dangerous vapor concentration at high temperatures causes colony stress and beekeeper injury. Reserved for spring and fall treatment windows only if California CDPR approval confirmed. Thymol (Apiguard) is the preferred summer alternative."
   }
 ]

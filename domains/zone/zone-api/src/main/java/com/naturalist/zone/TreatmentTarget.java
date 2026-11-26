@@ -11,7 +11,7 @@ import java.util.Objects;
  * application layer. It lives in the Zones module because it is defined purely in terms of
  * zone identity — it carries no knowledge of treatments themselves.
  * <p>
- * This design emerged from the April 7, 2026 thrips/TSWV outbreak at Oak Vista, where neem oil
+ * This design emerged from the April 7, 2026 thrips/TSWV outbreak in the garden, where neem oil
  * and dish soap treatment was applied to specific sections of the backyard garden row rather than
  * the whole bed. The system needs to record <em>which section</em> was treated in order to
  * build an accurate pest pressure and treatment history at sub-zone granularity.

@@ -29,7 +29,7 @@ public enum VarietyType {
      * Second generation grown from saved F1 hybrid seed. Performance is
      * unpredictable — offspring segregate across parental trait combinations.
      * Useful for evaluation but not for seed saving. San Marzano saved-seed
-     * plants at Oak Vista 2026 are likely F2.
+     * plants in the garden in 2026 are likely F2.
      */
     HYBRID_F2,
 

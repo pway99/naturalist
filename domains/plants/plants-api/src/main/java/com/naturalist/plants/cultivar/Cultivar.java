@@ -32,14 +32,14 @@ import java.util.function.Consumer;
  * {@code PlantSpecies} catalog via {@link PlantSpeciesName} — no compile-time dependency
  * on any other domain module.
  * <p>
- * <b>Oak Vista 2026 cultivars:</b>
+ * <b>garden 2026 cultivars:</b>
  * <ul>
- *   <li>{@code "amish-paste"} — UNKNOWN variety type (The PlantSpecies Barn, Chico).
+ *   <li>{@code "amish-paste"} — UNKNOWN variety type (The PlantSpecies Barn, Sacramento Valley).
  *       12 plants, paste type. Evaluating as primary sauce variety for 90-quart
  *       annual target. Seed provenance unconfirmed.</li>
  *   <li>{@code "italian-pear-nicks"} — OPEN_POLLINATED heirloom, 50+ year
  *       family lineage. SAVE_ANNUALLY without exception.
- *       Founding generation of Chico adaptation program.</li>
+ *       Founding generation of the Sacramento Valley adaptation program.</li>
  *   <li>{@code "sungold-cherry"} — HYBRID_F1 commercial variety. 1 plant,
  *       cherry type, fresh eating. Do not save seed.</li>
  *   <li>{@code "san-marzano-f2"} — HYBRID_F2 from saved F1 seed. 3 remaining

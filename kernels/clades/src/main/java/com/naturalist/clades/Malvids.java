@@ -25,7 +25,7 @@ public record Malvids() implements Clade {
                     Geraniales, Myrtales, Crossosomatales, Picramniales, Sapindales, \
                     Huerteales, Malvales, and Brassicales. Chemically notable for \
                     glucosinolate biosynthesis in Brassicales and for diverse \
-                    terpenoid oils. The Oak Vista catalog places three orders here: \
+                    terpenoid oils. The catalog places three orders here: \
                     Geraniales (Pelargonium), Sapindales (Citrus), and Brassicales \
                     (Lobularia). Its parent is Rosids.""");
 

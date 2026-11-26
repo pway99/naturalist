@@ -104,7 +104,7 @@ class SoilProfileFactoryTest {
     /**
      * The Phase 1 case: a lab panel that does not carry all seventeen tomato-panel rows still
      * assembles. The analysis inserted here is synthetic — deliberately so. It is not an FGL
-     * report, it proves a structural property, and it must not be mistaken for real Oak Vista
+     * report, it proves a structural property, and it must not be mistaken for real garden
      * chemistry, so it carries an obviously fake lab and sample id and lives in this test rather
      * than in the JSON catalog.
      */

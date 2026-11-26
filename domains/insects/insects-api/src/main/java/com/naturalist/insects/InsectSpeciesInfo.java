@@ -18,7 +18,7 @@ import java.util.Set;
 import java.util.function.Consumer;
 
 /**
- * A catalogued insect species (class Insecta) observed or documented at Oak Vista.
+ * A catalogued insect species (class Insecta) observed or documented in the garden.
  * <p>
  * Each species carries a typed upward FK to its parent {@link InsectGenusInfo},
  * its own species epithet (e.g. {@code "philenor"}), and a four-level {@link Description}
@@ -33,7 +33,7 @@ import java.util.function.Consumer;
  * entity, queried by {@code insectQuery.functionalRoles().getByParentName(species.name())}.
  * See PL-11 for the migration rationale.
  * <p>
- * {@code sightingNotes} captures field observations specific to Oak Vista —
+ * {@code sightingNotes} captures field observations specific to the garden —
  * dates of first observation, confirmed breeding, microhabitat, or management
  * implications (e.g. "eggs confirmed on Pipevine April 2026 — never treat Pipevine").
  * <p>
@@ -65,7 +65,7 @@ import java.util.function.Consumer;
  * chemistry — <i>Battus philenor</i> (aristolochic acids from <i>Aristolochia
  * californica</i>), monarchs, pierids, and other aposematic taxa. Non-defended species
  * carry {@code null}. {@code voltinism} is populated when the species' number of
- * generations per year at Oak Vista is known — including the deliberately
+ * generations per year in the garden is known — including the deliberately
  * {@link Voltinism.VoltinismPattern#INDETERMINATE} case for species whose voltinism
  * varies within a site due to split diapause strategies.
  * <p>
@@ -177,7 +177,7 @@ public record InsectSpeciesInfo(
     }
 
     /**
-     * The number of generations a species completes per year at Oak Vista.
+     * The number of generations a species completes per year in the garden.
      * <p>
      * A structured value rather than an integer because voltinism is not always a
      * determinate count. <i>Battus philenor</i> produces both direct-developing and
@@ -228,7 +228,7 @@ public record InsectSpeciesInfo(
     }
 
     /**
-     * The habitat conditions an insect species requires to persist at Oak Vista.
+     * The habitat conditions an insect species requires to persist in the garden.
      * <p>
      * These are the insect's requirements — what it needs from the environment —
      * not a description of the habitat itself. The habitat as a place belongs to
@@ -278,7 +278,7 @@ public record InsectSpeciesInfo(
     }
 
     /**
-     * The ecological relationships connecting an insect species to the broader Oak Vista
+     * The ecological relationships connecting an insect species to the broader garden
      * garden community.
      * <p>
      * {@code supportingPlants} lists the plant species that provide nectar, pollen,
@@ -288,12 +288,12 @@ public record InsectSpeciesInfo(
      * future {@code PlantSpeciesName} slugs pending that alignment.
      * <p>
      * {@code relationshipToOtherBeneficials} describes how this species interacts with
-     * other beneficial insects at Oak Vista — competitive overlap, complementary
+     * other beneficial insects in the garden — competitive overlap, complementary
      * microhabitat partitioning, or prey sharing. Predicts management tensions or
      * synergies (e.g. lacewing larvae and ladybug larvae share aphid colonies but occupy
      * different microhabitats).
      * <p>
-     * {@code naturalEnemies} documents what preys on this species at Oak Vista —
+     * {@code naturalEnemies} documents what preys on this species in the garden —
      * relevant to understanding why beneficial populations fluctuate and what habitat
      * structures support population persistence despite predation pressure.
      */
@@ -319,7 +319,7 @@ public record InsectSpeciesInfo(
      * ecologically neutral species will carry {@code null} here.
      * <p>
      * {@code significance} is the primary field — a concise statement of why this
-     * species matters at Oak Vista, oriented toward the naturalist rather than the
+     * species matters in the garden, oriented toward the naturalist rather than the
      * pest manager.
      * <p>
      * {@code pestManagementValue} describes the IPM role: whether the species is
@@ -345,8 +345,8 @@ public record InsectSpeciesInfo(
     }
 
     /**
-     * The ecological significance of an insect species at the Oak Vista garden and
-     * broader Chico Central Valley scale.
+     * The ecological significance of an insect species at the garden's garden and
+     * broader Sacramento Valley scale.
      * <p>
      * All fields are nullable — significance is documented as it is understood, and
      * not every species will have all three axes characterised at catalog level.
@@ -358,11 +358,11 @@ public record InsectSpeciesInfo(
      *       to persist are reliable indicators that those conditions are met.
      *       Example: natural lacewing colonisation indicates a diverse flowering plant
      *       community providing adult nectar resources without augmentation.</li>
-     *   <li>{@code foodWebPosition} — where this species sits in the Oak Vista food web.
+     *   <li>{@code foodWebPosition} — where this species sits in the garden's food web.
      *       Primary consumer, secondary predator, apex invertebrate predator, basal prey.
      *       Describes the trophic cascade effects of population change.</li>
      *   <li>{@code regionalContext} — landscape-scale or biogeographic context specific
-     *       to Chico and the Central Valley: seasonal phenology, migration patterns,
+     *       to the Sacramento Valley and the Central Valley: seasonal phenology, migration patterns,
      *       voltinism under the warm Mediterranean climate, regional population dynamics.</li>
      * </ul>
      */

@@ -17,7 +17,7 @@ import java.util.function.Consumer;
  * <p>
  * Agnostic to specific reaction — values from reactions.json.
  * <p>
- * Examples from Oak Vista context:
+ * Examples from garden context:
  * - Sulfur oxidation: requires Thiobacillus bacteria (biological catalyst),
  * accelerates above 77°F, requires moist aerobic soil
  * - Gypsum dissolution: moisture required, temperature-moderate effect,

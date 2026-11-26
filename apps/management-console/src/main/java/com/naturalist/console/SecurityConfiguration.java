@@ -72,7 +72,7 @@ class SecurityConfiguration {
                                 .requestMatchers(HttpMethod.POST, ObservedAccessDeniedHandler.MEMBER_WRITES)
                                 .hasAuthority(NaturalistPrincipal.VERIFIED)
                                 // Anonymous browsing of the public catalog: the organism domains and the
-                                // field-guide library. Operational Oak Vista domains stay authenticated
+                                // field-guide library. Operational garden domains stay authenticated
                                 // (they fall through to anyRequest below).
                                 .requestMatchers(HttpMethod.GET,
                                         "/insects/**", "/plants/**",

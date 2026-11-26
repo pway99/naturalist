@@ -104,7 +104,7 @@ do not rename this component or deserialization will break.
 **VolatilizationProfile** — ValueObject owned by `Compound`. Nullable (`@Nullable`).
 Only present for fumigant compounds (formic acid, thymol).
 Temperature window for safe and effective application.
-Critical for Varroa treatment selection in Chico climate.
+Critical for Varroa treatment selection in the Sacramento Valley climate.
 
 **SafetyProfile** — ValueObject owned by `Compound`. Nullable (`@Nullable`).
 Only present for hazardous compounds. `HazardLevel`: NONE, LOW, MODERATE, HIGH, EXTREME.

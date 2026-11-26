@@ -5,7 +5,7 @@
 
 @template.layout.page(title = "Soil Profiles", content = @`
     <h1>Soil Profiles</h1>
-    <p>Managed soil units at Oak Vista, with their most recent lab analysis.</p>
+    <p>Managed soil units in the garden, with their most recent lab analysis.</p>
 
     <div class="entity-grid">
         @for(var profile : profiles)

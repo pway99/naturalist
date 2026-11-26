@@ -41,4 +41,4 @@ code.
 ## Learn more
 
 - [`CLAUDE.md`](CLAUDE.md) — the domain vocabulary, colony lifecycle, and the
-  Chico-specific treatment-window facts.
+  valley-specific treatment-window facts.

@@ -33,7 +33,7 @@ plant is identical; the intent is not, and the intent is what garden models.
 This is the part that resists explanation, so state it directly.
 
 The application is organised around Durrell's four levels — organism,
-behavior, setting, habitat. The Oak Vista property is a *cultivated* setting.
+behavior, setting, habitat. The garden's property is a *cultivated* setting.
 The insects observed there are observed on planted hosts; the pollinator
 meadow is sown; the tomato beds are amended, irrigated, and mulched. The
 cultivation is not incidental context around the observations — it is the
@@ -229,7 +229,7 @@ surface. Garden is read-only, like soil.
 
 ---
 
-## 8. Fixture data — real, from Oak Vista
+## 8. Fixture data — real, from the garden
 
 Ground the fixtures in actual plantings, as the soil module grounds its
 fixtures in FGL report CH 2671853.

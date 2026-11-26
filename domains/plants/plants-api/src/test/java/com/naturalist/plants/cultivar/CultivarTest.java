@@ -26,7 +26,7 @@ class CultivarTest {
                 FruitType.PASTE,
                 SeedSavingPolicy.SAVE_ANNUALLY,
                 "50+ year family lineage",
-                "founding generation of the Chico adaptation program");
+                "founding generation of the Sacramento Valley adaptation program");
 
         InvariantObservation result = mo.namedEntity(cultivar, "cultivar");
 

@@ -1,6 +1,6 @@
 # Arachnids
 
-Will catalog the arachnids of Oak Vista — spiders, predatory mites, harvestmen,
+Will catalog the arachnids of the garden — spiders, predatory mites, harvestmen,
 and pseudoscorpions — as beneficial garden predators, keyed by hunting strategy
 (active pursuit, ambush, web builder) rather than a generic guild.
 

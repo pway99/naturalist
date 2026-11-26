@@ -998,7 +998,7 @@ Catalog conventions:
 
 ---
 
-## 20. Site Context — Oak Vista (Chico, CA)
+## 20. Site Context — the garden (Sacramento Valley, CA)
 
 The April 2026 ecological assessment seeded the catalog. The catalog now
 spans orders, families, genera, and species. Representative species:
