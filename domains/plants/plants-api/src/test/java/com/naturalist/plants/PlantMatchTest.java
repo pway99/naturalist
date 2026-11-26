@@ -1,0 +1,135 @@
+package com.naturalist.plants;
+
+import com.naturalist.RandomValue;
+import com.naturalist.exception.InvariantViolationException;
+import com.naturalist.fieldnotes.CommonName;
+import com.naturalist.fieldnotes.Description;
+import com.naturalist.observability.InvariantObservation;
+import com.naturalist.observability.MethodObserver;
+import com.naturalist.observability.Observer;
+import com.naturalist.plants.PlantEntityCollections.ImageCollection;
+import com.naturalist.plants.PlantTaxonView.FamilyView;
+import com.naturalist.plants.PlantTaxonView.GenusView;
+import com.naturalist.plants.PlantTaxonView.OrderView;
+import com.naturalist.taxonomy.TaxonomicFamily;
+import com.naturalist.taxonomy.TaxonomicGenus;
+import com.naturalist.taxonomy.TaxonomicOrder;
+import org.junit.jupiter.api.Test;
+
+import java.util.Set;
+
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.catchThrowable;
+
+class PlantMatchTest {
+
+    private static final Observer observer = Observer.forClass(PlantMatchTest.class);
+
+    @Test
+    void genusFallbackIsConsistent() {
+        MethodObserver mo = observer.forMethod("genusFallbackIsConsistent");
+        PlantMatch match = new PlantMatch(
+                PlantSpeciesName.of("thymus-vulgaris"), PlantGenusName.of("thymus"), thymusPlant());
+
+        InvariantObservation result = mo.observable(match, "match");
+
+        assertThat(result.violationNamesRemovingPrefix(mo.observationPoint())).isEmpty();
+    }
+
+    @Test
+    void exactMatchIsConsistent() {
+        MethodObserver mo = observer.forMethod("exactMatchIsConsistent");
+        PlantMatch match = new PlantMatch(PlantGenusName.of("thymus"), PlantGenusName.of("thymus"), thymusPlant());
+
+        InvariantObservation result = mo.observable(match, "match");
+
+        assertThat(result.violationNamesRemovingPrefix(mo.observationPoint())).isEmpty();
+        assertThat(match.exact()).isTrue();
+    }
+
+    @Test
+    void plantNotCarryingFoundIsRefused() {
+        MethodObserver mo = observer.forMethod("plantNotCarryingFoundIsRefused");
+        PlantMatch match = new PlantMatch(
+                PlantGenusName.of("salvia"), PlantGenusName.of("salvia"), thymusPlant());
+
+        InvariantObservation result = mo.observable(match, "match");
+
+        assertThat(result.violationNamesRemovingPrefix(mo.observationPoint()))
+                .containsExactly(".match.plantIsFound");
+    }
+
+    @Test
+    void foundBelowAskedIsRefused() {
+        MethodObserver mo = observer.forMethod("foundBelowAskedIsRefused");
+        PlantMatch match = new PlantMatch(
+                PlantGenusName.of("thymus"), PlantSpeciesName.of("thymus-vulgaris"), thymusPlant());
+
+        InvariantObservation result = mo.observable(match, "match");
+
+        assertThat(result.violationNamesRemovingPrefix(mo.observationPoint()))
+                .contains(".match.foundIsAskedOrItsGenus");
+    }
+
+    @Test
+    void foundGenusOfAnotherSpeciesIsRefused() {
+        MethodObserver mo = observer.forMethod("foundGenusOfAnotherSpeciesIsRefused");
+        PlantMatch match = new PlantMatch(
+                PlantSpeciesName.of("quercus-alba"), PlantGenusName.of("thymus"), thymusPlant());
+
+        InvariantObservation result = mo.observable(match, "match");
+
+        assertThat(result.violationNamesRemovingPrefix(mo.observationPoint()))
+                .containsExactly(".match.foundIsAskedOrItsGenus");
+    }
+
+
+    @Test
+    void genusOf_isTheSlugsFirstSegment_orTheWholeSlug() {
+        assertThat(PlantMatch.genusOf(PlantSpeciesName.of("thymus-vulgaris"))).isEqualTo(PlantGenusName.of("thymus"));
+        assertThat(PlantMatch.genusOf(PlantSpeciesName.of("thymus"))).isEqualTo(PlantGenusName.of("thymus"));
+    }
+
+    @Test
+    void genusOf_nullOrInvalidSpecies_isRefused() {
+        assertThat(catchThrowable(() -> PlantMatch.genusOf(null))).isInstanceOf(InvariantViolationException.class);
+        assertThat(catchThrowable(() -> PlantMatch.genusOf(PlantSpeciesName.of("Not_A_Slug"))))
+                .isInstanceOf(InvariantViolationException.class);
+    }
+
+    @Test
+    void invalidAsked_isViolated_notThrown() {
+        MethodObserver mo = observer.forMethod("invalidAsked_isViolated_notThrown");
+        PlantMatch match = new PlantMatch(PlantSpeciesName.of("Not_A_Slug"), PlantGenusName.of("thymus"), thymusPlant());
+
+        InvariantObservation result = mo.observable(match, "match");
+
+        assertThat(result.violationNamesRemovingPrefix(mo.observationPoint())).contains(".match.foundIsAskedOrItsGenus");
+    }
+
+    private static Plant thymusPlant() {
+        PlantGenus genus = new PlantGenus(
+                PlantGenusName.of("thymus"),
+                PlantFamilyName.of("lamiaceae"),
+                TaxonomicFamily.of("Lamiaceae"),
+                TaxonomicGenus.of("Thymus"),
+                new Description(RandomValue.string(), RandomValue.string(), RandomValue.string(), RandomValue.string()),
+                Set.of(CommonName.of("thyme")));
+        PlantFamily family = new PlantFamily(
+                PlantFamilyName.of("lamiaceae"),
+                PlantOrderName.of("lamiales"),
+                TaxonomicFamily.of("Lamiaceae"),
+                new Description(RandomValue.string(), RandomValue.string(), RandomValue.string(), RandomValue.string()),
+                Set.of(CommonName.of("mint family")));
+        PlantOrder order = new PlantOrder(
+                PlantOrderName.of("lamiales"),
+                TaxonomicOrder.of("Lamiales"),
+                new Description(RandomValue.string(), RandomValue.string(), RandomValue.string(), RandomValue.string()),
+                Set.of(CommonName.of("mint order")),
+                null);
+        return Plant.empty()
+                .withOrder(new OrderView(order, ImageCollection.empty()))
+                .withFamily(new FamilyView(family, ImageCollection.empty()))
+                .withGenus(new GenusView(genus, ImageCollection.empty()));
+    }
+}

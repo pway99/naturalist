@@ -62,7 +62,16 @@ You review one change for observability. You report; you never fix.
    Class-level rules (M8, the `Observer` field) are checked on every class the change touches:
    - every `throw` and every `catch` in a changed method (J1, J3, P2);
    - every refusal after a decision (J2): find the decider, not a caller that translates it;
-   - values handed on or consumed (J4), `invariants()` (J5), names (J6);
+   - values handed on or consumed (J4), `invariants()` (J5), names (J6). A J5 "can never fail"
+     finding is only for a constraint that cannot fail *by construction*, because the same code
+     guarantees it. A constraint that can't fail only because other code keeps a contract today
+     (a producer's guarantee, a factory satisfying a cross-field rule) is a guard. Never report it,
+     and never suggest removing it. If its contract is unnamed, the finding is J6: name the
+     contract it guards;
+   - every non-private method's parameters (J7): each parameter it uses is checked with
+     `arguments(...)` before use. Ask what the method does with `null` or an invalid value; an
+     NPE or a silently wrong result is a finding. Static helpers count; private helpers may rely
+     on their callers;
    - edges and Jackson (B1–B3), value types and enums (C1), mechanical rules (M1–M13).
    The census cannot see Observer calls: read each relevant handler body with
    `java_class_source {member: ...}` to check its `noticeError` / constraint and `Handling`.

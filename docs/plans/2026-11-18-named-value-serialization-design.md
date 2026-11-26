@@ -146,7 +146,8 @@ Where the body used the String (`"redirect:/insects/" + name`), it uses `name.va
    *Baseline 2026-11-22* (`mvn rewrite:dryRun -Drewrite.activeRecipes=com.naturalist.NamedValueEdges`):
    27 `TYPED`, 0 `REQUIRED` — plants 8, insects 8 (the 7 path variables and `updateNotes`'
    `observationId`), chemistry 4, garden 3, soil, glossary, concepts and registration 1 each.
-   Insects converted first: 27 → 19.
+   Insects converted first: 27 → 19. Plants next (2026-11-26; eight GET pages, each a 404
+   not-found page for an invalid or unknown name): 19 → 11.
 
 ## Decisions
 
@@ -171,6 +172,25 @@ Where the body used the String (`"redirect:/insects/" + name`), it uses `name.va
 - *My call:* the deserializer observes nothing for an invalid value. A missing factory (a defect
   `NamedValueHasFactory` prevents) and a failed reflective call are noticed (`state` /
   `noticeError ... WRAPPED`) and thrown.
+
+- Each method checks its own concern (Pat, 2026-11-26, from plants). The handler checks its argument
+  (`arguments(c -> c.entityName(plantName, "plantName")).observe(Level.INFO).isNotValid()`) and whether the
+  lookup found anything, and hands the found value to its page method:
+  `state(c -> c.isPresent(plant, "plant")).observe(Level.INFO).whenNotValid(() -> notInCatalog(...))`
+  `.otherwise(() -> speciesPage(plantName, plant.get(), model, response))`. Both are INFO: a name the catalog
+  does not hold is a signal that a record has not been added, nothing to fix. The page method then checks its
+  own argument at WARN (`readModel(plant, "plant").isTrue(plant, Plant::hasSpecies, "hasSpecies")`, or
+  `namedEntity`), since an invalid stored record is a state to fix. A `has<Rank>` predicate on the rank, because
+  `readModel(plant)` already walks the rank's invariants and a second `readModel` would count them twice.
+  Today's `PlantFactory.buildByName` always sets the asked-for rung, so the predicate cannot fail; Pat kept it
+  (2026-11-26) as the guard on that unwritten contract, the J5 exception: a query that degrades to an
+  ancestor would be counted and refused here, not rendered with a null rank. The degradable query is on the
+  tracker's Later list.
+  Every refusal is the not-found page. Each check is inline, labelled after its parameter or value: a little
+  repetition, easier to read. `InvariantObservation.isNotValid`, `whenNotValid(...).otherwise(...)` and
+  `whenValid(onValid, onNotValid)` were added to the framework for it. This departs from standards M1 (an edge
+  refusal ends in `observe(Level.WARN)`); the standards rule is Pat's open decision. Insects keeps its helper
+  form at WARN (`invalidName`, `unknownName`, `nameFound`) until Pat says otherwise.
 
 ## Left to the builder
 

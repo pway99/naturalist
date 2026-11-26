@@ -111,6 +111,7 @@ does not confuse same-named methods and does not match comments.
 | J2 | Where is this domain exception thrown? | `jvm_find_type` on the exception, `siteKind: body` |
 | J4 | Who consumes this producer's value, and which parts do they use? | `jvm_find_method` for callers, then `java_class_source` with `member` |
 | J5 | What does this type declare as valid? | `java_class_source` with `member: invariants` |
+| J7 | Which non-private methods in the diff's units take parameters, and does each open with an `arguments(...)` check? | `java_file_outline` for the signatures, then `java_class_source` with `member` |
 | C1 | Where are project enums mapped with `valueOf`? | `jvm_find_method` with `methodName: valueOf` |
 | M5, M6, M7 | Any `Objects.requireNonNull`, logger, or `io.micrometer` use in the diff's units? | `jvm_find_method` / `jvm_find_type` on those owners |
 
@@ -301,10 +302,20 @@ A plain result record handed back to startup or tooling code (a tally such as
 `invariants()`. Pat, 2026-11-17.
 
 The same goes for any constraint, inside `invariants()` or not: **a constraint that can never fail
-is a finding.** It checks something that is always true (a record's `toString()`, a value already
-guaranteed by an earlier check), so it looks like an observation but counts nothing. Example:
+by construction is a finding.** It checks something the same code already guarantees (a record's
+`toString()`, a value built on the previous line, a value already guaranteed by an earlier check in
+the same method), so it looks like an observation but counts nothing. Example:
 `isTrue(!stored.toString().isBlank(), "storedNamed")` is never false, because a record's
 `toString()` is `FileName[value=…]`; observe `valueObject(stored, "stored")` or `stored.isValid()`.
+
+**A guard is not a finding.** A constraint that cannot fail only because of how *other* code
+behaves today is a guard: a producer's unwritten contract, or a cross-field rule the factory
+happens to satisfy. It is what catches the refactor that breaks the contract, and removing it
+lowers the confidence a refactor needs. Keep it, and name the contract it guards. Example: a rank
+page's `isTrue(plant, Plant::hasSpecies, "hasSpecies")` cannot fail while `PlantFactory.buildByName`
+always sets the asked-for rung, but a query that degrades to the genus would trip it. It would not
+render a species page with no species. The test: *does it fail only if code elsewhere changes?* Then
+it is a guard. Pat, 2026-11-26.
 
 **Exception: a restricted path announces itself.** Under `MonitoringMode.ALWAYS`, a constraint
 placed inside the branch it names counts every entry to that branch. That is a deliberate
@@ -329,6 +340,24 @@ A constraint's name becomes the metric tag and the alert, so it has to explain i
 
 **Test.** *Read only the tag `Class.method.name`. Can you say what happened without opening the
 code?*
+
+#### J7. A callable method observes its parameters
+
+**Kind:** Judgment, partly tool-checkable.
+
+A method another class can call (public, protected or package-private, static or not) checks
+every parameter it uses before using it: `arguments(...)` with the kind's constraint (M14:
+`identifier`, `entityName`, `readModel`, `notNull` for a plain reference, ...), ending in
+`throwWhenInvalid()` (M1) or, at an edge that answers instead of throwing, in `observe(...)` (B1).
+Without the check, a `null` throws an NPE nobody counts (J1), and an invalid value produces a
+silently wrong result. A private helper may rely on its caller's check, when every caller checks the
+value it passes. A constructor is covered by M5.
+
+Example: `PlantMatch.genusOf(PlantSpeciesName species)` read `species.value()` unchecked. It now
+opens with `observer.arguments("genusOf", i -> i.entityName(species, "species")).throwWhenInvalid()`.
+
+**Test.** *What does this method do with `null`, or with an invalid value of the parameter's type?*
+If the answer is an NPE or a silently wrong result, it is a finding. Pat, 2026-11-26.
 
 ### Boundary rules
 
@@ -550,3 +579,8 @@ None.
 - A constraint that can never fail is still kept when, under `ALWAYS`, it sits inside a restricted
   branch and counts entries to it (the config-admin login): a critical non-error signal for the
   maintainer (J5). Pat, 2026-11-25.
+- A constraint that can't fail today only because other code keeps a contract is a guard, kept
+  and named after the contract it guards. Only a constraint that can never fail by construction is
+  a finding (J5). Removing guards lowers the confidence a refactor needs. Pat, 2026-11-26.
+- A method another class can call observes every parameter it uses before using it; only a
+  private helper may rely on its caller's check (J7). Pat, 2026-11-26.

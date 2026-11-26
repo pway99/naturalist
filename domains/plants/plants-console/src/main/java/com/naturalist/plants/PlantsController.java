@@ -4,6 +4,7 @@ import com.naturalist.clades.Clade;
 import com.naturalist.clades.CladeTraversal;
 import com.naturalist.clades.Plantae;
 import com.naturalist.data.FileName;
+import com.naturalist.ddd.EntityName;
 import com.naturalist.observability.Handling;
 import com.naturalist.observability.Level;
 import com.naturalist.observability.MethodObserver;
@@ -33,6 +34,8 @@ import com.naturalist.plants.phytochemistry.PhytochemicalConstituent;
 import com.naturalist.plants.phytochemistry.PhytochemicalConstituentName;
 import com.naturalist.plants.phytochemistry.PhytochemicalConstituentQuery;
 import com.naturalist.resilience.BulkheadFullException;
+import jakarta.servlet.http.HttpServletResponse;
+import org.jspecify.annotations.Nullable;
 import org.springframework.core.io.InputStreamResource;
 import org.springframework.core.io.Resource;
 import org.springframework.http.CacheControl;
@@ -112,31 +115,64 @@ public class PlantsController {
     }
 
     @GetMapping("/{name}")
-    String detail(@PathVariable String name, Model model) {
-        PlantSpeciesName plantName = PlantSpeciesName.of(name);
-        Optional<Plant> plant = plantQuery.getByName(plantName);
-        if (plant.isEmpty() || plant.get().species() == null) {
-            return "redirect:/plants";
+    String detail(@PathVariable("name") PlantSpeciesName plantName,
+                  HttpServletResponse response, Model model) {
+        MethodObserver methodObserver = observer.forMethod("detail");
+        if (methodObserver.arguments(c -> c
+                .entityName(plantName, "plantName"))
+                .observe(Level.INFO)
+                .isNotValid()) {
+            return notInCatalog(response, model, plantName, "/plants/species");
         }
-        PlantSpecies species = plant.get().species().species();
-        List<Cultivar> cultivars = plant.get().cultivars().stream()
+        Optional<PlantMatch> match = plantQuery.findByName(plantName);
+        return methodObserver.state(c -> c
+                .isPresent(match, "plant"))
+                .observe(Level.INFO)
+                .whenNotValid(() -> notInCatalog(response, model, plantName, "/plants/species"))
+                .otherwise(() -> match.get().exact()
+                        ? speciesPage(plantName, match.get().plant(), model, response)
+                        // both slugs in the redirect are validated names, which is why plain concatenation is safe
+                        : "redirect:" + pathOf(match.get().found()) + match.get().found().value()
+                        + "?missing=" + plantName.value());
+    }
+
+    private static String pathOf(PlantRankName name) {
+        return switch (name) {
+            case PlantSpeciesName species -> "/plants/";
+            case PlantGenusName genus -> "/plants/genera/";
+            case PlantFamilyName family -> "/plants/families/";
+            case PlantOrderName order -> "/plants/orders/";
+        };
+    }
+
+    private String speciesPage(PlantSpeciesName plantName, Plant plant, Model model, HttpServletResponse response) {
+        if (observer.arguments("speciesPage", c -> c
+                .readModel(plant, "plant")
+                .isTrue(plant, Plant::hasSpecies, "hasSpecies"))
+                .observe(Level.WARN)
+                .isNotValid()) {
+            // the catalog holds it, but the stored record is invalid: counted to fix, answered as not found
+            return notInCatalog(response, model, plantName, "/plants/species");
+        }
+        PlantSpecies species = plant.species().species();
+        List<Cultivar> cultivars = plant.cultivars().stream()
                 .sorted(Comparator.comparing((Cultivar c) -> c.name().value()))
                 .toList();
-        List<PlantProgram> programs = plant.get().programs().stream()
+        List<PlantProgram> programs = plant.programs().stream()
                 .sorted(Comparator.comparing((PlantProgram p) -> p.name().value()))
                 .toList();
-        List<PhytochemicalConstituent> constituents = plant.get().constituents().stream()
+        List<PhytochemicalConstituent> constituents = plant.constituents().stream()
                 .sorted(Comparator.comparing((PhytochemicalConstituent c) -> c.name().value()))
                 .toList();
         model.addAttribute("plant", species);
-        model.addAttribute("ecologicalRole", plant.get().role());
+        model.addAttribute("ecologicalRole", plant.role());
         model.addAttribute("cultivars", cultivars);
         model.addAttribute("programs", programs);
         model.addAttribute("constituents", constituents);
-        model.addAttribute("features", plant.get().features());
-        model.addAttribute("images", plant.get().images().stream().toList());
-        model.addAttribute("breadcrumb", breadcrumbFor(plant.get()));
-        model.addAttribute("cladeTrail", cladeTrailFor(plant.get()));
+        model.addAttribute("features", plant.features());
+        model.addAttribute("images", plant.images().stream().toList());
+        model.addAttribute("breadcrumb", breadcrumbFor(plant));
+        model.addAttribute("cladeTrail", cladeTrailFor(plant));
         addDescription(model, species.description());
         return "plants/detail";
     }
@@ -286,19 +322,39 @@ public class PlantsController {
     }
 
     @GetMapping("/orders/{name}")
-    String orderDetail(@PathVariable String name, Model model) {
-        PlantOrderName orderName = PlantOrderName.of(name);
-        Optional<Plant> plant = plantQuery.getByName(orderName);
-        if (plant.isEmpty() || plant.get().order() == null) {
-            return "redirect:/plants";
+    String orderDetail(@PathVariable("name") PlantOrderName orderName,
+                       HttpServletResponse response, Model model) {
+        MethodObserver methodObserver = observer.forMethod("orderDetail");
+        if (methodObserver.arguments(c -> c
+                .entityName(orderName, "orderName"))
+                .observe(Level.INFO)
+                .isNotValid()) {
+            return notInCatalog(response, model, orderName, "/plants/orders");
         }
-        PlantOrder order = plant.get().order().order();
+        Optional<Plant> plant = plantQuery.getByName(orderName);
+        return methodObserver.state(c -> c
+                .isPresent(plant, "plant"))
+                .observe(Level.INFO)
+                .whenNotValid(() -> notInCatalog(response, model, orderName, "/plants/orders"))
+                .otherwise(() -> orderPage(orderName, plant.get(), model, response));
+    }
+
+    private String orderPage(PlantOrderName orderName, Plant plant, Model model, HttpServletResponse response) {
+        if (observer.arguments("orderPage", c -> c
+                .readModel(plant, "plant")
+                .isTrue(plant, Plant::hasOrder, "hasOrder"))
+                .observe(Level.WARN)
+                .isNotValid()) {
+            // the catalog holds it, but the stored record is invalid: counted to fix, answered as not found
+            return notInCatalog(response, model, orderName, "/plants/orders");
+        }
+        PlantOrder order = plant.order().order();
         model.addAttribute("order", order);
-        model.addAttribute("children", plant.get().children());
-        model.addAttribute("features", plant.get().features());
-        model.addAttribute("images", plant.get().images().stream().toList());
-        model.addAttribute("breadcrumb", breadcrumbFor(plant.get()));
-        model.addAttribute("cladeTrail", cladeTrailFor(plant.get()));
+        model.addAttribute("children", plant.children());
+        model.addAttribute("features", plant.features());
+        model.addAttribute("images", plant.images().stream().toList());
+        model.addAttribute("breadcrumb", breadcrumbFor(plant));
+        model.addAttribute("cladeTrail", cladeTrailFor(plant));
         addDescription(model, order.description());
         return "plants/orders/detail";
     }
@@ -355,39 +411,98 @@ public class PlantsController {
     }
 
     @GetMapping("/families/{name}")
-    String familyDetail(@PathVariable String name, Model model) {
-        PlantFamilyName familyName = PlantFamilyName.of(name);
-        Optional<Plant> plant = plantQuery.getByName(familyName);
-        if (plant.isEmpty() || plant.get().family() == null) {
-            return "redirect:/plants";
+    String familyDetail(@PathVariable("name") PlantFamilyName familyName,
+                        HttpServletResponse response, Model model) {
+        MethodObserver methodObserver = observer.forMethod("familyDetail");
+        if (methodObserver.arguments(c -> c
+                .entityName(familyName, "familyName"))
+                .observe(Level.INFO)
+                .isNotValid()) {
+            return notInCatalog(response, model, familyName, "/plants/families");
         }
-        PlantFamily family = plant.get().family().family();
+        Optional<Plant> plant = plantQuery.getByName(familyName);
+        return methodObserver.state(c -> c
+                .isPresent(plant, "plant"))
+                .observe(Level.INFO)
+                .whenNotValid(() -> notInCatalog(response, model, familyName, "/plants/families"))
+                .otherwise(() -> familyPage(familyName, plant.get(), model, response));
+    }
+
+    private String familyPage(PlantFamilyName familyName, Plant plant, Model model, HttpServletResponse response) {
+        if (observer.arguments("familyPage", c -> c
+                .readModel(plant, "plant")
+                .isTrue(plant, Plant::hasFamily, "hasFamily"))
+                .observe(Level.WARN)
+                .isNotValid()) {
+            // the catalog holds it, but the stored record is invalid: counted to fix, answered as not found
+            return notInCatalog(response, model, familyName, "/plants/families");
+        }
+        PlantFamily family = plant.family().family();
         model.addAttribute("family", family);
-        model.addAttribute("children", plant.get().children());
-        model.addAttribute("features", plant.get().features());
-        model.addAttribute("images", plant.get().images().stream().toList());
-        model.addAttribute("breadcrumb", breadcrumbFor(plant.get()));
-        model.addAttribute("cladeTrail", cladeTrailFor(plant.get()));
+        model.addAttribute("children", plant.children());
+        model.addAttribute("features", plant.features());
+        model.addAttribute("images", plant.images().stream().toList());
+        model.addAttribute("breadcrumb", breadcrumbFor(plant));
+        model.addAttribute("cladeTrail", cladeTrailFor(plant));
         addDescription(model, family.description());
         return "plants/families/detail";
     }
 
     @GetMapping("/genera/{name}")
-    String genusDetail(@PathVariable String name, Model model) {
-        PlantGenusName genusName = PlantGenusName.of(name);
-        Optional<Plant> plant = plantQuery.getByName(genusName);
-        if (plant.isEmpty() || plant.get().genus() == null) {
-            return "redirect:/plants";
+    String genusDetail(@PathVariable("name") PlantGenusName genusName,
+                       @RequestParam(name = "missing", required = false) @Nullable PlantSpeciesName missing,
+                       HttpServletResponse response, Model model) {
+        MethodObserver methodObserver = observer.forMethod("genusDetail");
+        if (methodObserver.arguments(c -> c
+                .entityName(genusName, "genusName"))
+                .observe(Level.INFO)
+                .isNotValid()) {
+            return notInCatalog(response, model, genusName, "/plants/orders");
         }
-        PlantGenus genus = plant.get().genus().genus();
+        // an invalid "missing" is dropped, not refused: the genus page still answers
+        boolean missingUsable = !methodObserver.arguments(c -> c
+                .entityNameOrNull(missing, "missing"))
+                .observe(Level.INFO)
+                .isNotValid();
+        // only a valid missing can be asked its genus; a valid one of another genus is dropped too
+        boolean missingOfThisGenus = missingUsable && missing != null
+                && PlantMatch.genusOf(missing).equals(genusName);
+        if (missingUsable && missing != null) {
+            methodObserver.state(c -> c
+                    .isTrue(missingOfThisGenus, "missingIsOfGenus"))
+                    .observe(Level.INFO);
+        }
+        Optional<Plant> plant = plantQuery.getByName(genusName);
+        return methodObserver.state(c -> c
+                .isPresent(plant, "plant"))
+                .observe(Level.INFO)
+                .whenNotValid(() -> notInCatalog(response, model, genusName, "/plants/orders"))
+                .otherwise(() -> genusPage(genusName, plant.get(), missingOfThisGenus ? missing : null, model,
+                        response));
+    }
+
+    private String genusPage(PlantGenusName genusName, Plant plant, @Nullable PlantSpeciesName missing, Model model,
+                             HttpServletResponse response) {
+        if (observer.arguments("genusPage", c -> c
+                .readModel(plant, "plant")
+                .isTrue(plant, Plant::hasGenus, "hasGenus"))
+                .observe(Level.WARN)
+                .isNotValid()) {
+            // the catalog holds it, but the stored record is invalid: counted to fix, answered as not found
+            return notInCatalog(response, model, genusName, "/plants/orders");
+        }
+        PlantGenus genus = plant.genus().genus();
         model.addAttribute("genus", genus);
+        if (missing != null) {
+            model.addAttribute("missing", missing);
+        }
         model.addAttribute("family",
-                plant.get().family() == null ? null : plant.get().family().family());
-        model.addAttribute("children", plant.get().children());
-        model.addAttribute("features", plant.get().features());
-        model.addAttribute("images", plant.get().images().stream().toList());
-        model.addAttribute("breadcrumb", breadcrumbFor(plant.get()));
-        model.addAttribute("cladeTrail", cladeTrailFor(plant.get()));
+                plant.family() == null ? null : plant.family().family());
+        model.addAttribute("children", plant.children());
+        model.addAttribute("features", plant.features());
+        model.addAttribute("images", plant.images().stream().toList());
+        model.addAttribute("breadcrumb", breadcrumbFor(plant));
+        model.addAttribute("cladeTrail", cladeTrailFor(plant));
         addDescription(model, genus.description());
         return "plants/genera/detail";
     }
@@ -395,16 +510,36 @@ public class PlantsController {
     // ── Cultivars ─────────────────────────────────────────────────────────
 
     @GetMapping("/cultivars/{name}")
-    String cultivarDetail(@PathVariable String name, Model model) {
-        CultivarName cultivarName = CultivarName.of(name);
-        Optional<Cultivar> cultivar = cultivarQuery.getByName(cultivarName);
-        if (cultivar.isEmpty()) {
-            return "redirect:/plants";
+    String cultivarDetail(@PathVariable("name") CultivarName cultivarName,
+                          HttpServletResponse response, Model model) {
+        MethodObserver methodObserver = observer.forMethod("cultivarDetail");
+        if (methodObserver.arguments(c -> c
+                .entityName(cultivarName, "cultivarName"))
+                .observe(Level.INFO)
+                .isNotValid()) {
+            return notInCatalog(response, model, cultivarName, "/plants/species");
         }
-        List<SeedLineage> lineages = seedLineageQuery.forCultivarName(cultivarName).stream()
+        Optional<Cultivar> cultivar = cultivarQuery.getByName(cultivarName);
+        return methodObserver.state(c -> c
+                .isPresent(cultivar, "cultivar"))
+                .observe(Level.INFO)
+                .whenNotValid(() -> notInCatalog(response, model, cultivarName, "/plants/species"))
+                .otherwise(() -> cultivarPage(cultivarName, cultivar.get(), model, response));
+    }
+
+    private String cultivarPage(CultivarName cultivarName, Cultivar cultivar,
+                                Model model, HttpServletResponse response) {
+        if (observer.arguments("cultivarPage", c -> c
+                .namedEntity(cultivar, "cultivar"))
+                .observe(Level.WARN)
+                .isNotValid()) {
+            // the catalog holds it, but the stored record is invalid: counted to fix, answered as not found
+            return notInCatalog(response, model, cultivarName, "/plants/species");
+        }
+        List<SeedLineage> lineages = seedLineageQuery.forCultivarName(cultivar.name()).stream()
                 .sorted(Comparator.comparing((SeedLineage s) -> s.name().value()))
                 .toList();
-        model.addAttribute("cultivar", cultivar.get());
+        model.addAttribute("cultivar", cultivar);
         model.addAttribute("lineages", lineages);
         return "plants/cultivars/detail";
     }
@@ -412,26 +547,66 @@ public class PlantsController {
     // ── Seed lineages ────────────────────────────────────────────────────
 
     @GetMapping("/lineages/{name}")
-    String lineageDetail(@PathVariable String name, Model model) {
-        SeedLineageName lineageName = SeedLineageName.of(name);
-        Optional<SeedLineage> lineage = seedLineageQuery.getByName(lineageName);
-        if (lineage.isEmpty()) {
-            return "redirect:/plants";
+    String lineageDetail(@PathVariable("name") SeedLineageName lineageName,
+                         HttpServletResponse response, Model model) {
+        MethodObserver methodObserver = observer.forMethod("lineageDetail");
+        if (methodObserver.arguments(c -> c
+                .entityName(lineageName, "lineageName"))
+                .observe(Level.INFO)
+                .isNotValid()) {
+            return notInCatalog(response, model, lineageName, "/plants/species");
         }
-        model.addAttribute("lineage", lineage.get());
+        Optional<SeedLineage> lineage = seedLineageQuery.getByName(lineageName);
+        return methodObserver.state(c -> c
+                .isPresent(lineage, "lineage"))
+                .observe(Level.INFO)
+                .whenNotValid(() -> notInCatalog(response, model, lineageName, "/plants/species"))
+                .otherwise(() -> lineagePage(lineageName, lineage.get(), model, response));
+    }
+
+    private String lineagePage(SeedLineageName lineageName, SeedLineage lineage,
+                               Model model, HttpServletResponse response) {
+        if (observer.arguments("lineagePage", c -> c
+                .namedEntity(lineage, "lineage"))
+                .observe(Level.WARN)
+                .isNotValid()) {
+            // the catalog holds it, but the stored record is invalid: counted to fix, answered as not found
+            return notInCatalog(response, model, lineageName, "/plants/species");
+        }
+        model.addAttribute("lineage", lineage);
         return "plants/lineages/detail";
     }
 
     // ── Plant programs ───────────────────────────────────────────────────
 
     @GetMapping("/programs/{name}")
-    String programDetail(@PathVariable String name, Model model) {
-        PlantProgramName programName = PlantProgramName.of(name);
-        Optional<PlantProgram> program = plantProgramQuery.getByName(programName);
-        if (program.isEmpty()) {
-            return "redirect:/plants";
+    String programDetail(@PathVariable("name") PlantProgramName programName,
+                         HttpServletResponse response, Model model) {
+        MethodObserver methodObserver = observer.forMethod("programDetail");
+        if (methodObserver.arguments(c -> c
+                .entityName(programName, "programName"))
+                .observe(Level.INFO)
+                .isNotValid()) {
+            return notInCatalog(response, model, programName, "/plants/species");
         }
-        model.addAttribute("program", program.get());
+        Optional<PlantProgram> program = plantProgramQuery.getByName(programName);
+        return methodObserver.state(c -> c
+                .isPresent(program, "program"))
+                .observe(Level.INFO)
+                .whenNotValid(() -> notInCatalog(response, model, programName, "/plants/species"))
+                .otherwise(() -> programPage(programName, program.get(), model, response));
+    }
+
+    private String programPage(PlantProgramName programName, PlantProgram program,
+                               Model model, HttpServletResponse response) {
+        if (observer.arguments("programPage", c -> c
+                .namedEntity(program, "program"))
+                .observe(Level.WARN)
+                .isNotValid()) {
+            // the catalog holds it, but the stored record is invalid: counted to fix, answered as not found
+            return notInCatalog(response, model, programName, "/plants/species");
+        }
+        model.addAttribute("program", program);
         return "plants/programs/detail";
     }
 
@@ -446,13 +621,33 @@ public class PlantsController {
     }
 
     @GetMapping("/phytochemistry/{name}")
-    String constituentDetail(@PathVariable String name, Model model) {
-        PhytochemicalConstituentName constituentName = PhytochemicalConstituentName.of(name);
-        Optional<PhytochemicalConstituent> constituent = phytochemicalConstituentQuery.getByName(constituentName);
-        if (constituent.isEmpty()) {
-            return "redirect:/plants/phytochemistry";
+    String constituentDetail(@PathVariable("name") PhytochemicalConstituentName constituentName,
+                             HttpServletResponse response, Model model) {
+        MethodObserver methodObserver = observer.forMethod("constituentDetail");
+        if (methodObserver.arguments(c -> c
+                .entityName(constituentName, "constituentName"))
+                .observe(Level.INFO)
+                .isNotValid()) {
+            return notInCatalog(response, model, constituentName, "/plants/phytochemistry");
         }
-        model.addAttribute("constituent", constituent.get());
+        Optional<PhytochemicalConstituent> constituent = phytochemicalConstituentQuery.getByName(constituentName);
+        return methodObserver.state(c -> c
+                .isPresent(constituent, "constituent"))
+                .observe(Level.INFO)
+                .whenNotValid(() -> notInCatalog(response, model, constituentName, "/plants/phytochemistry"))
+                .otherwise(() -> constituentPage(constituentName, constituent.get(), model, response));
+    }
+
+    private String constituentPage(PhytochemicalConstituentName constituentName, PhytochemicalConstituent constituent,
+                                   Model model, HttpServletResponse response) {
+        if (observer.arguments("constituentPage", c -> c
+                .namedEntity(constituent, "constituent"))
+                .observe(Level.WARN)
+                .isNotValid()) {
+            // the catalog holds it, but the stored record is invalid: counted to fix, answered as not found
+            return notInCatalog(response, model, constituentName, "/plants/phytochemistry");
+        }
+        model.addAttribute("constituent", constituent);
         return "plants/phytochemistry/detail";
     }
 
@@ -489,10 +684,10 @@ public class PlantsController {
     private ResponseEntity<Resource> serve(String space, FileName filename, ImageVariant variant) {
         MethodObserver methodObserver = observer.forMethod("serve");
         // A name with a directory part names no stored photo: answered here, before the store refuses it.
-        if (!methodObserver.arguments(i -> i
+        if (methodObserver.arguments(i -> i
                 .namedValue(filename, "filename"))
                 .observe(Level.WARN)
-                .violations().isEmpty()) {
+                .isNotValid()) {
             return notFound();
         }
         Optional<StoredImage> found;
@@ -527,6 +722,17 @@ public class PlantsController {
                         throw opened;
                     }
                 }));
+    }
+
+    /**
+     * Answers a request for a name the catalog does not hold with the not-found page and a 404, linking back to
+     * the list {@code back}. The caller has already observed why (invalid slug or unknown name).
+     */
+    private static String notInCatalog(HttpServletResponse response, Model model, EntityName name, String back) {
+        response.setStatus(HttpServletResponse.SC_NOT_FOUND);
+        model.addAttribute("name", name.value());
+        model.addAttribute("back", back);
+        return "plants/not-found";
     }
 
     /** An uncached 404: the photo may be written later, so the miss must not be remembered. */

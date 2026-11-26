@@ -4,6 +4,7 @@ import com.naturalist.exception.InvariantViolationException;
 
 import java.util.LinkedHashSet;
 import java.util.Set;
+import java.util.function.Supplier;
 import java.util.stream.Collectors;
 
 /**
@@ -125,6 +126,75 @@ public class InvariantObservation {
         Level resolved = level == null ? Level.INFO : level;
         emitMetrics(resolved, Level.INFO);
         return this;
+    }
+
+    /**
+     * True when any constraint was violated: the guard form of {@link #whenValid}, for an endpoint that refuses
+     * early and goes on otherwise:
+     *
+     * <pre>{@code
+     * if (methodObserver.arguments(c -> c.entityName(plantName, "plantName"))
+     *         .observe(Level.WARN)
+     *         .isNotValid()) {
+     *     return notInCatalog(response, model, plantName, "/plants/species");
+     * }
+     * }</pre>
+     *
+     * <p>Emits nothing itself: call it after {@link #observe(Level)}, which counts the violations.
+     */
+    public boolean isNotValid() {
+        return !violations().isEmpty();
+    }
+
+    /**
+     * Answers {@code onValid} when no constraint was violated, otherwise {@code onNotValid}, so an endpoint can
+     * return its page or its refusal from one chain:
+     *
+     * <pre>{@code
+     * return methodObserver.state(i -> i.isPresent(plant, "plant"))
+     *         .observe(Level.WARN)
+     *         .whenValid(() -> render(plant.get(), model), () -> notInCatalog(response, model, name, back));
+     * }</pre>
+     *
+     * <p>Emits nothing itself: call it after {@link #observe(Level)}, which counts the violations.
+     */
+    public <T> T whenValid(Supplier<? extends T> onValid, Supplier<? extends T> onNotValid) {
+        return violations().isEmpty() ? onValid.get() : onNotValid.get();
+    }
+
+    /**
+     * The refusal half of an endpoint's answer, read in guard order: the chain returns {@code onNotValid}'s answer
+     * when a constraint was violated, otherwise the answer {@link Refusal#otherwise} is given:
+     *
+     * <pre>{@code
+     * return methodObserver.state(c -> c.isPresent(plant, "plant"))
+     *         .observe(Level.INFO)
+     *         .whenNotValid(() -> notInCatalog(response, model, plantName, "/plants/species"))
+     *         .otherwise(() -> speciesPage(plantName, plant.get(), response, model));
+     * }</pre>
+     *
+     * <p>Nothing runs until {@code otherwise} is called, so a chain left without it does not compile where an
+     * answer is returned. Emits nothing itself: call it after {@link #observe(Level)}, which counts the violations.
+     */
+    public <T> Refusal<T> whenNotValid(Supplier<? extends T> onNotValid) {
+        return new Refusal<>(this, onNotValid);
+    }
+
+    /** A refusal waiting for the answer to give when the observation held; see {@link #whenNotValid}. */
+    public static final class Refusal<T> {
+
+        private final InvariantObservation observation;
+        private final Supplier<? extends T> onNotValid;
+
+        private Refusal(InvariantObservation observation, Supplier<? extends T> onNotValid) {
+            this.observation = observation;
+            this.onNotValid = onNotValid;
+        }
+
+        /** Answers the refusal when a constraint was violated, otherwise {@code onValid}'s answer. */
+        public T otherwise(Supplier<? extends T> onValid) {
+            return observation.isNotValid() ? onNotValid.get() : onValid.get();
+        }
     }
 
     public String scope() {

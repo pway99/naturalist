@@ -110,6 +110,7 @@ Still to delete (Pat; fully on `main`):
   - Info pattern (`PlantTaxonView`, `OrganismFeatureView`, `CladeView`).
   - Child-card thumbnails and role badges.
   - Unused `FeatureCollection`.
+  - Plant `findByName` ([design](plans/2026-11-26-plant-find-by-name-design.md)): binomial strategy (a missing species answers its genus, the species page redirects there with a "not added yet" note) built on `claude/named-values-step3-cbc835`; `getByName` stays exact. Next PR: a look-alike search strategy behind the same `findByName`. Open: whether the redirect is also counted at the edge (B1).
 - **Catalog and navigation:**
   - Dual-strategy slice 3, the collection lens.
   - `/concepts` restyle.
