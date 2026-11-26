@@ -9,6 +9,14 @@ updates:
     schedule:
       interval: weekly
       day: monday
+    ignore:
+      # Stay on Java 25, the long-term-support line; a new Java major is moved by hand.
+      - dependency-name: eclipse-temurin
+        update-types: ["version-update:semver-major"]
+      # The build image's tag carries the JDK in its suffix (3.9.16-eclipse-temurin-25-noble), and
+      # Dependabot proposed a floating 3.9-eclipse-temurin-26 tag (PR #5). Bump it by hand with a
+      # Temurin move; only the runtime image above ships.
+      - dependency-name: maven
     groups:
       base-images:
         patterns: ["*"]

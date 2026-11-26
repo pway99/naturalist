@@ -21,6 +21,7 @@ import org.springframework.security.config.Customizer;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.http.SessionCreationPolicy;
+import org.springframework.security.core.session.SessionRegistry;
 import org.springframework.security.crypto.factory.PasswordEncoderFactories;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
@@ -39,7 +40,8 @@ class SecurityConfiguration {
     SecurityFilterChain filterChain(HttpSecurity http, Resilience resilience,
                                     CurrentNaturalist currentNaturalist,
                                     IdentificationBudget identificationBudget,
-                                    ChallengeGate challengeGate) throws Exception {
+                                    ChallengeGate challengeGate,
+                                    SessionRegistry sessionRegistry) throws Exception {
         return http
                 // Global ceiling on POST /login (auth.login): caps the BCrypt CPU a
                 // credential-stuffing run can burn; rejections are observed as withinRate.
@@ -107,6 +109,13 @@ class SecurityConfiguration {
                                 .logoutSuccessUrl("/login?logout")
                                 .permitAll()
                 )
+                // Every login's session is recorded, without a limit on how many, so AccountSessions
+                // can end all of an account's sessions (admin suspend); an ended session is logged
+                // out on its next request.
+                .sessionManagement(session -> session
+                        .maximumSessions(-1)
+                        .sessionRegistry(sessionRegistry)
+                        .expiredUrl("/login?expired"))
                 .build();
     }
 
