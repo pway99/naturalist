@@ -1,6 +1,7 @@
 package com.naturalist.account;
 
 import java.util.Optional;
+import java.util.Set;
 
 /**
  * Write port for accounts. Passwords arrive already-encoded (the app's {@code PasswordEncoder}) —
@@ -59,4 +60,15 @@ public interface AccountCommand {
      * reset token.
      */
     void resetPassword(String rawToken, String newPasswordHash);
+
+    /**
+     * Deletes up to {@code limit} registrations that lapsed unverified: accounts never verified,
+     * still {@code BROWSE_ONLY} and {@code ACTIVE}, whose every email-verification token has
+     * expired (24 hours after registration). Each account's tokens are deleted first, then the
+     * account, which frees its email address for its real owner. A verified account is never
+     * deleted. Returns the names actually deleted, so the caller can remove what other domains
+     * hold against them (the linked {@code Naturalist}). Throws {@code InvariantViolationException}
+     * unless {@code 1 <= limit <= PageRequest.MAX_PAGE_SIZE}.
+     */
+    Set<AccountName> purgeLapsedRegistrations(int limit);
 }

@@ -101,4 +101,11 @@ class EmailVerificationTokenRepositoryRdbms
         getByTokenHash.state(s -> s.namedEntityOrNull(result.orElse(null), "result")).observe(Level.WARN);
         return result;
     }
+
+    @Override
+    public int deleteForUnverifiedAccounts(Set<AccountName> accounts) {
+        observer().arguments("deleteForUnverifiedAccounts", i -> i.entityNameCollection(accounts, "accounts")).throwWhenInvalid();
+        if (accounts.isEmpty()) return 0;
+        return mapper.deleteForUnverifiedAccounts(accounts.stream().map(AccountName::value).toList());
+    }
 }

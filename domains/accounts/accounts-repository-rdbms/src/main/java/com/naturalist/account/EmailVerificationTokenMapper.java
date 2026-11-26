@@ -1,5 +1,6 @@
 package com.naturalist.account;
 
+import org.apache.ibatis.annotations.Delete;
 import org.apache.ibatis.annotations.Insert;
 import org.apache.ibatis.annotations.Mapper;
 import org.apache.ibatis.annotations.Param;
@@ -63,4 +64,15 @@ interface EmailVerificationTokenMapper {
             WHERE id = #{id}::uuid
             """)
     int updateById(EmailVerificationTokenDbo dbo);
+
+    @Delete("""
+            <script>
+            DELETE FROM email_verification_token
+            WHERE account_id IN (
+                SELECT id FROM account WHERE email_verified = false AND name IN
+                <foreach item='n' collection='accounts' open='(' separator=',' close=')'>#{n}</foreach>
+            )
+            </script>
+            """)
+    int deleteForUnverifiedAccounts(@Param("accounts") Collection<String> accounts);
 }

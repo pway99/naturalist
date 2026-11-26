@@ -8,6 +8,8 @@ import com.naturalist.observability.Level;
 import com.naturalist.observability.MethodObserver;
 
 import java.util.Optional;
+import java.util.Set;
+import java.util.stream.Collectors;
 
 @MockDomainService
 class NaturalistEntityRepositoryMock
@@ -28,5 +30,16 @@ class NaturalistEntityRepositoryMock
                 .findFirst();
         getByAccount.state(s -> s.namedEntityOrNull(result.orElse(null), "result")).observe(Level.WARN);
         return result;
+    }
+
+    @Override
+    public int deleteByAccounts(Set<AccountName> accounts) {
+        observer().arguments("deleteByAccounts", i -> i.entityNameCollection(accounts, "accounts"))
+                .throwWhenInvalid();
+        Set<NaturalistName> linked = testEntitySource().entityStream()
+                .filter(naturalist -> accounts.contains(naturalist.account()))
+                .map(Naturalist::name)
+                .collect(Collectors.toUnmodifiableSet());
+        return testEntitySource().delete(linked);
     }
 }

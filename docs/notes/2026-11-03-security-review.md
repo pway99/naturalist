@@ -9,7 +9,9 @@ two of them are worth a decision before public hosting (the action items below).
 
 ## Action items (pre-hosting)
 
-- [ ] **S1 — Unverified accounts can squat a victim's email** (reviewer confidence 5, Low).
+- [x] **S1 — Unverified accounts can squat a victim's email** (reviewer confidence 5, Low).
+  Closed 2026-11-25 by launch 1.5: confirm-page wording, the hourly purge of lapsed
+  registrations, and a verified email required for member writes.
   `RegistrationController.submit` (`apps/management-console/.../account/RegistrationController.java:90-130`)
   registers any email and auto-logs the registrant in; `POST /verify` (`:155-164`, permitAll)
   redeems the token for whoever submits it, and `AccountCommandImpl.verifyEmail`

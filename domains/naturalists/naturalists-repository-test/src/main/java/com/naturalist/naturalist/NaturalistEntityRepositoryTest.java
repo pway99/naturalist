@@ -9,6 +9,7 @@ import org.junit.jupiter.api.Test;
 
 import java.util.List;
 import java.util.Optional;
+import java.util.Set;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
@@ -101,5 +102,26 @@ interface NaturalistEntityRepositoryTest
     @Test
     default void getByAccount_returnsEmptyForUnknownAccount() {
         assertThat(repository().getByAccount(AccountName.of("acct-nobody"))).isEmpty();
+    }
+
+    @Test
+    default void deleteByAccounts_rejectsNull() {
+        assertThatThrownBy(() -> repository().deleteByAccounts(null))
+                .isInstanceOf(InvariantViolationException.class)
+                .hasMessageContaining("accounts");
+    }
+
+    @Test
+    default void deleteByAccounts_deletesOnlyTheLinkedNaturalist() {
+        int deleted = repository().deleteByAccounts(Set.of(AccountName.of("acct-018f3a2e9b71"), AccountName.of("acct-nobody")));
+
+        assertThat(deleted).isEqualTo(1);
+        assertThat(repository().getByName(PATRICK)).isEmpty();
+        assertThat(repository().getByAccount(AccountName.of("acct-018f3a2ec4d2"))).isPresent();
+    }
+
+    @Test
+    default void deleteByAccounts_emptySetDeletesNothing() {
+        assertThat(repository().deleteByAccounts(Set.of())).isZero();
     }
 }

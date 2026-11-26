@@ -6,4 +6,9 @@ class AccountRepositoryMockTest implements AccountRepositoryTest {
     public AccountRepository.AccountEntityRepository repository() {
         return new AccountRepositoryMock(db);
     }
+
+    @Override
+    public AccountRepository.VerificationTokenRepository tokenRepository() {
+        return new EmailVerificationTokenRepositoryMock(db);
+    }
 }

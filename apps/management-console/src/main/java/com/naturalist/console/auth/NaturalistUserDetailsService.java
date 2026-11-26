@@ -103,6 +103,7 @@ class NaturalistUserDetailsService implements UserDetailsService {
                 resolved.email(),
                 resolved.passwordHash(),
                 resolved.access() == AccessLevel.VISION,
+                resolved.emailVerified(),
                 resolved.status() != AccountStatus.SUSPENDED);
     }
 }

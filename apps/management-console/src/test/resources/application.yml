@@ -39,6 +39,9 @@ naturalist:
   usage:
     warning-percent: 80
     alert-email: test@example.com
+  accounts:
+    # No scheduled purge in tests: a run would delete seeded fixtures from the standing database.
+    purge-cron: "-"
   email:
     # Deliberately NOT the MockMvc host (localhost): the registration test proves the emailed
     # link comes from this setting and not from the request.

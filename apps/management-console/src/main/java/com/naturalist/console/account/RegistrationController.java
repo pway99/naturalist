@@ -147,8 +147,10 @@ class RegistrationController {
         emailSender.send(new EmailMessage(
                 result.email(),
                 "Verify your email — The Backyard Naturalist",
-                "Welcome! Confirm your email address to unlock vision identification:\n\n"
-                        + verifyUrl + "\n\nIf you didn't sign up, you can ignore this message."));
+                "Welcome! Confirm your email address to record sightings and photos and to unlock"
+                        + " vision identification:\n\n" + verifyUrl
+                        + "\n\nThe link works for 24 hours. If you didn't sign up, ignore this message"
+                        + " and don't confirm: the unconfirmed sign-up is removed after 24 hours."));
 
         autoLogin(result.email().value(), request, response);
         return "redirect:/register?registered";

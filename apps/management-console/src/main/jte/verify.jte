@@ -74,6 +74,10 @@
         @if(confirm)
             <p>Press the button to confirm your email address. (Opening this link does not confirm
                 it by itself — that keeps automated link scanners from using up your one-time code.)</p>
+            <p><strong>Didn't sign up for The Backyard Naturalist?</strong> Then don't press the button.
+                Someone may have used your email address to sign up; confirming would hand them an account
+                in your name. Leave it unconfirmed: it is removed after 24 hours, and you are then free
+                to sign up with this address yourself.</p>
             <form method="post" action="/verify">
                 @if(_csrf != null)
                     <input type="hidden" name="${_csrf.getParameterName()}" value="${_csrf.getToken()}">

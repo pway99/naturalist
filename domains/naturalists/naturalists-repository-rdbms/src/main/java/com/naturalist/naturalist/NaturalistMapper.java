@@ -1,5 +1,6 @@
 package com.naturalist.naturalist;
 
+import org.apache.ibatis.annotations.Delete;
 import org.apache.ibatis.annotations.Insert;
 import org.apache.ibatis.annotations.Mapper;
 import org.apache.ibatis.annotations.Options;
@@ -57,4 +58,12 @@ interface NaturalistMapper {
             WHERE name = #{name}
             """)
     int updateByName(NaturalistDbo dbo);
+
+    @Delete("""
+            <script>
+            DELETE FROM naturalist WHERE account_name IN
+            <foreach item='a' collection='accounts' open='(' separator=',' close=')'>#{a}</foreach>
+            </script>
+            """)
+    int deleteByAccounts(@Param("accounts") Collection<String> accounts);
 }
