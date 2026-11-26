@@ -28,7 +28,7 @@ public record PlantMatch(PlantRankName asked, PlantRankName found, Plant plant) 
      * The genus a species slug names: the segment before its first '-', or the whole slug when
      * it has none. The one place the binomial rule lives; the name returned may not be valid.
      */
-    public static PlantGenusName genusqOf(PlantSpeciesName species) {
+    public static PlantGenusName genusOf(PlantSpeciesName species) {
         String slug = species.value();
         int dash = slug.indexOf('-');
         return PlantGenusName.of(dash < 0 ? slug : slug.substring(0, dash));
