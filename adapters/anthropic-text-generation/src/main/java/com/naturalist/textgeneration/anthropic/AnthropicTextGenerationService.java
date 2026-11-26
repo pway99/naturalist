@@ -80,7 +80,7 @@ public class AnthropicTextGenerationService implements TextGenerationService {
                 .model(config.model())
                 .maxTokens(config.maxTokens())
                 .systemOfTextBlockParams(List.of(systemBlock))
-                .addUserMessageOfBlockParams(List.of(textBlock))
+                .addUserMessageOfContentBlockParams(List.of(textBlock))
                 .addTool(toolDef)
                 .toolChoice(ToolChoice.ofTool(
                         ToolChoiceTool.builder()
