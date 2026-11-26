@@ -84,7 +84,7 @@ services:
 
   # Reads the app's management port over this private network. See deploy/prometheus.
   prometheus:
-    image: prom/prometheus:v3.13.5
+    image: prom/prometheus:v3.16.0
     restart: unless-stopped
     command:
       - --config.file=/etc/prometheus/prometheus.yml
@@ -106,7 +106,7 @@ services:
 
   # Sends the alerts. Each overlay chooses where: compose.override.yaml or compose.production.yaml.
   alertmanager:
-    image: prom/alertmanager:v0.34.2
+    image: prom/alertmanager:v0.35.0
     restart: unless-stopped
     volumes:
       - ./deploy/alertmanager:/etc/alertmanager/config:ro
