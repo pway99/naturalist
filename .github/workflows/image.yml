@@ -1,0 +1,22 @@
+# Weekly rebuild of the two deployment images with --pull, so a broken base image or Dockerfile
+# fails here rather than on the host (Java4Shell plan, WI-2). It pushes nothing. The base-image
+# tags are pinned, so --pull only picks up images re-published under the same tag; version bumps
+# arrive as Dependabot PRs. Never switch the trigger to pull_request_target.
+name: image
+on:
+  schedule:
+    - cron: '0 6 * * 1'   # Mondays 06:00 UTC, after Dependabot's weekly run
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4.4.0
+      - name: Build db-init
+        run: docker build --pull --target db-init -t naturalist-db-init:ci .
+      - name: Build app
+        run: docker build --pull --target app -t naturalist-app:ci .
+      - name: Report the runtime JDK
+        run: docker run --rm --entrypoint java naturalist-app:ci -version

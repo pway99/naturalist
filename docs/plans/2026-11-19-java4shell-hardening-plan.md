@@ -18,7 +18,7 @@ Reviewed on 2026-11-19: Dockerfile, the three compose files, `SecurityConfigurat
 | --- | --- | --- |
 | JDK | Both images used `eclipse-temurin:25-jre-noble`, inside the affected range. Now pinned to `25.0.5.1_2-jre-noble`, the fixed build (WI-2, 2026-11-25) | Fixed |
 | Egress | `app` sits on Compose's default network and can open connections anywhere | Gap |
-| Image rebuilds | CI (`ci.yml`) runs Maven only and never builds the Docker image, so nothing rebuilds on a schedule (checked 2026-11-25) | Gap |
+| Image rebuilds | CI (`ci.yml`) ran Maven only and never built the Docker image. A weekly `image.yml` now rebuilds both images with `--pull` (WI-2, 2026-11-25) | Fixed |
 | Base64 decode paths | Own code only encodes (`JdkSecureTokens`, `AnthropicVisionService`). No JWT library, no `httpBasic`, no remember-me; form login with server sessions | Low exposure |
 | Anthropic key | Compose secret file `model-credential` via `FileSecretProvider`, not an env var; ADR-028 workspace spend limit | Sound |
 | Git history | No Anthropic, GitHub or AWS key patterns; `secrets/` and `.env` never committed | Clean |
@@ -36,7 +36,7 @@ Do these in order. WI-1 is the stopgap; WI-2 removes the need for it; WI-3 limit
   Files: `compose.yaml`. Add `JAVA_OPTS: -XX:-UseBASE64Intrinsics` to the `app` service, and append it to the existing `db-init` `JAVA_OPTS`. The Dockerfile entrypoints already pass `$JAVA_OPTS` through. Do not use `-XX:UseAVX=2`; see Rejected alternatives. Verify: in the running container, `java -XX:+PrintFlagsFinal -version` (with the same opts) shows `UseBASE64Intrinsics = false`, and the app starts healthy. Remove once WI-2 lands on a confirmed fixed build.
 
   Done 2026-11-19 (`f8d9de23`). **Retired 2026-11-25 by WI-2:** the flag is gone from `compose.yaml`, because the pinned runtime is the build Adoptium names as fixed.
-- [ ] **WI-2: Get onto a patched JDK and keep it patched.**
+- [x] **WI-2: Get onto a patched JDK and keep it patched.**
 
   Files: `Dockerfile`, `.github/workflows/ci.yml`, plus a Renovate or Dependabot config. Pin the runtime by full version (e.g. `eclipse-temurin:25.0.x_y-jre-noble`) instead of the floating `25-jre-noble`, so a JDK change is a visible PR. Add automated update PRs for Docker base images. Check whether CI rebuilds on a schedule; if not, add a weekly build with `--pull`. Verify: Temurin's advisory names CVE-2026-114938 as fixed in the pinned version.
 
@@ -45,7 +45,7 @@ Do these in order. WI-1 is the stopgap; WI-2 removes the need for it; WI-3 limit
   - [x] WI-1 flag removed, since the pinned build is confirmed fixed.
   - [x] `.sdkmanrc` moved to `25.0.5.1+2-tem`, matching the image. CI's `setup-java` keeps `java-version: '25'`, which resolves to the newest Temurin 25 GA (25.0.5.1+2 today). CI only runs the tests; the deployed runtime is pinned in the Dockerfile.
   - [x] Update PRs: `.github/dependabot.yml` covers `docker` (Dockerfile), `docker-compose` (the third-party images in the compose files), `github-actions` and `maven`, weekly, grouped. In Maven, Dependabot edits the `${...}` property in the root pom, so the "versions live only in root `<properties>`" rule holds. The Boot-managed properties are ignored, because they move with `spring-boot.version`.
-  - [ ] Weekly `--pull` rebuild. CI never builds the image, so there is nothing to schedule yet. The smallest addition is a separate `.github/workflows/image.yml`, `on: schedule` (weekly) plus `workflow_dispatch`, with `permissions: contents: read`, the SHA-pinned checkout, and `docker build --pull --target db-init .` then `docker build --pull --target app .`. It pushes nothing. Its job is to fail visibly when a base image or the build breaks. Pinned tags mean `--pull` only picks up re-published images under the same tag; the version bumps themselves arrive as Dependabot PRs.
+  - [x] Weekly `--pull` rebuild. CI never built the image, so a separate `.github/workflows/image.yml` now does it. It runs on `schedule` (Mondays 06:00 UTC) and `workflow_dispatch`, with `permissions: contents: read` and the SHA-pinned checkout. It runs `docker build --pull` for `db-init` and then `app`, and prints the runtime `java -version`. It pushes nothing; its job is to fail visibly when a base image or the build breaks. The base tags are pinned, so `--pull` only picks up images re-published under the same tag. The version bumps themselves arrive as Dependabot PRs.
 - [ ] **WI-3: Restrict outbound network access.**
 
   Files: `compose.yaml`, `compose.production.yaml`, new `deploy/egress-proxy/`. Put `app` and `db` on an `internal: true` network. Route `app`'s outbound HTTPS through a small forward proxy with a host allowlist: `api.anthropic.com`, the SMTP host, Cloudflare's Turnstile verification endpoint. `cloudflared` keeps its own network path to the edge. Configure the Anthropic OkHttp client, Spring Mail and the challenge client to use the proxy. Verify: from inside `app`, a request to an arbitrary host fails, while identification, mail and the login challenge still work. Record the decision as an ADR.
