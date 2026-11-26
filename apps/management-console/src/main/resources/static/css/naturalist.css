@@ -1394,6 +1394,30 @@ figure.compound-depiction img {
     padding: 0.15rem 0;
 }
 
+/* /admin/accounts — one row per account; the action forms sit side by
+   side in the last cell. Pico styles a bare <button> full-width, so the
+   width and margin are declared. */
+.admin-accounts-notice {
+    border-left: 3px solid var(--sepia-rule);
+    padding-left: 0.75rem;
+}
+
+.admin-accounts-actions {
+    white-space: nowrap;
+}
+
+.admin-accounts-action {
+    display: inline-block;
+    margin: 0 0.25rem 0 0;
+}
+
+.admin-accounts-action button {
+    width: auto;
+    margin: 0;
+    padding: 0.2rem 0.6rem;
+    font-size: 0.85rem;
+}
+
 /* /admin/usage gauges — deferred from C1, shipped in C3. Three states
    (state name = the class suffix AdminUsageController computes) so the
    dashboard reads at a glance: green = comfortably under the warning
