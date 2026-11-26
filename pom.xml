@@ -46,7 +46,7 @@
         <project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
 
         <!-- Spring -->
-        <spring-boot.version>4.1.1</spring-boot.version>
+        <spring-boot.version>4.2.0</spring-boot.version>
         <!-- Boot-managed: the Spring Framework line behind spring-boot ${spring-boot.version}. -->
         <spring-context-version>7.0.9</spring-context-version>
 
