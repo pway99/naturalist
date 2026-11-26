@@ -1,0 +1,75 @@
+# Weekly version-update PRs, grouped so each ecosystem opens at most a couple per week.
+# Security updates come through Dependabot alerts (WI-5) independently of this schedule.
+version: 2
+updates:
+  # Base images in the Dockerfile: the build stage (maven) and the pinned Temurin runtime.
+  # A JDK bump is a visible PR here; check Adoptium's advisories before merging.
+  - package-ecosystem: docker
+    directory: /
+    schedule:
+      interval: weekly
+      day: monday
+    groups:
+      base-images:
+        patterns: ["*"]
+
+  # Third-party images in compose.yaml, compose.override.yaml and compose.production.yaml.
+  - package-ecosystem: docker-compose
+    directory: /
+    schedule:
+      interval: weekly
+      day: monday
+    ignore:
+      # A Postgres major needs a data-directory upgrade; move it by hand.
+      - dependency-name: postgres
+        update-types: ["version-update:semver-major"]
+    groups:
+      compose-images:
+        patterns: ["*"]
+
+  # actions/checkout and actions/setup-java are pinned by commit SHA; Dependabot keeps the SHA
+  # and the trailing tag comment in step.
+  - package-ecosystem: github-actions
+    directory: /
+    schedule:
+      interval: weekly
+      day: monday
+    groups:
+      actions:
+        patterns: ["*"]
+
+  # The reactor root. Every third-party version is a ${...} property in the root pom.xml
+  # <properties> (root CLAUDE.md), and Dependabot updates the property in place, so the rule holds.
+  - package-ecosystem: maven
+    directory: /
+    schedule:
+      interval: weekly
+      day: monday
+    open-pull-requests-limit: 5
+    ignore:
+      # Boot-managed properties are pinned to the version spring-boot-dependencies ships, not
+      # the newest release (root CLAUDE.md). They move with spring-boot.version, by hand, in
+      # the Spring Boot PR.
+      - dependency-name: "org.springframework:*"
+      - dependency-name: "org.postgresql:postgresql"
+      - dependency-name: "com.zaxxer:HikariCP"
+      - dependency-name: "com.fasterxml.jackson:*"
+      - dependency-name: "io.micrometer:*"
+      - dependency-name: "org.jspecify:jspecify"
+      - dependency-name: "org.apache.commons:commons-lang3"
+      - dependency-name: "jakarta.transaction:jakarta.transaction-api"
+      - dependency-name: "org.junit:*"
+      - dependency-name: "org.junit.jupiter:*"
+      - dependency-name: "org.assertj:assertj-core"
+      - dependency-name: "net.bytebuddy:*"
+    groups:
+      spring-boot:
+        patterns: ["org.springframework.boot:*"]
+      build-plugins:
+        patterns:
+          - "org.apache.maven.plugins:*"
+          - "org.openrewrite*"
+          - "gg.jte:*"
+      libraries:
+        patterns: ["*"]
+        update-types: ["minor", "patch"]
