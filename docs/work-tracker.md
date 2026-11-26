@@ -5,8 +5,9 @@ Forks and open questions live in the [parking lot](notes/parking-lot.md). Launch
 [public launch work plan](plans/2026-11-05-public-launch-work-plan.md) and the
 [hosting readiness checklist](hosting-readiness.md). [`plans/README.md`](plans/README.md) indexes plan files.
 
-Last updated: 2026-11-25, rebuilt from a roll-call of every session active since 2026-11-01 and checked
-against git. `main` = `origin/main` = `d548ead0`. Everything shipped before 2026-11-12 is in the
+Last updated: 2026-11-25 (after PR #17), rebuilt from a roll-call of every session active since
+2026-11-01 and checked against git. `origin/main` = `d2947203`; the main checkout's local `main` is
+at `760799fc` and needs a pull. Everything shipped before 2026-11-12 is in the
 [2026-11-12 snapshot](plans/archive/work-tracker-2026-11-12-snapshot.md).
 
 ---
@@ -25,7 +26,7 @@ work comes first; the paused engineering threads follow.
 | 4a | ✅ 2026-11-25 **Dependabot's first run triaged**: #6 actions and #7 compose images merged; #5 (Temurin 26) closed, and the config now ignores Temurin majors and the maven build image; PR #12 supersedes #8, #10, #11 (Spring Boot 4.2.0 with every Boot-managed property re-pinned and two deprecated `server.*` keys renamed; anthropic-java 3.12.0 with the v3 builder migration; MyBatis 3.6.0, CDK 2.14.1, ArchUnit 1.5.1). `.sdkmanrc` pins Maven 3.9.16 | Claude | S | Merged to main (`39e87de8`). #9 build plugins waits, see the small backlog |
 | 5  | ✅ 2026-11-25 **Launch 1.8: storage-capacity alerts**: Boot's disk-space metrics for `/data/images` and `/data/database` (read-only mount, no exporter); `DiskSpaceLow`, `DiskFillsWithinThreeDays`, `DiskSpaceCritical`, `PhotoDeleteFailed`, all promtool-tested | Claude | S–M | Merged to main 2026-11-25 (PR #13, `d255a712`). Thresholds tuned in launch phase 5 |
 | 6  | ✅ 2026-11-25 **Seed data review**: ✅ 2026-11-25 launch 1.2 seed field observations (places → "Sacramento Valley, CA", note typos fixed, observer slugs kept); ✅ 2026-11-25 the "Oak Vista" / "Chico" sweep (193 files: prose → "the garden" and "Sacramento Valley, CA", lineage slugs → `*-garden-saved`, emails → `@naturalist.example`, chemistry keys → `local*` / `garden*`; cold storage left as history); ✅ 2026-11-25 Java4Shell WI-4 throwaway seed passwords (none is real, and production loads no seed accounts) | Pat | S–M | Public pages show this content. Git history still holds the old strings. Standing test DB reseeded 2026-11-25 from the sweep plus launch 1.2's field observations |
-| 7  | ✅ 2026-11-25 **Java4Shell WI-3: egress allowlist proxy** + ADR-029 (`app`/`db`/`db-init` on an internal network; Squid `egress-proxy` allows only the model API, the challenge endpoint and the mail host) | Claude | M | Done on branch, not yet merged. VM checks (Docker ≥ 26, `deploy/egress-proxy/check.sh`) are in hosting-readiness §5; DigitalOcean's SMTP block bears on 2.4 |
+| 7  | ✅ 2026-11-25 **Java4Shell WI-3: egress allowlist proxy** + ADR-029 (`app`/`db`/`db-init` on an internal network; Squid `egress-proxy` allows only the model API, the challenge endpoint and the mail host) | Claude | M | Merged to main 2026-11-25 (PR #17, `d2947203`); `image.yml`'s allowlist probe passed on GitHub. VM checks (Docker Engine ≥ 26, `deploy/egress-proxy/check.sh`) are in hosting-readiness §5; DigitalOcean's SMTP block bears on 2.4; four fix-forward minors in the small backlog |
 | 8  | **Launch phases 2–3: outside accounts and production** (vendor workspace + spend limit, Cloudflare zone, email + SPF/DKIM, heartbeat, DigitalOcean VM, secrets, tunnel, backups) | Pat (+ Claude for 3.3, 3.5) | M–L | Host decided; phase 3 needs 2.2, 2.4 and 2.5 |
 | 9  | **Launch phase 4: prove it unannounced** (real widget, edge checks, Secure cookie, real identification, email, rotation rehearsal, restore) | Both | M | Needs #8 |
 | 10 | **Named values step 3**: plants controller (8 markers) → chemistry 4 → garden 3 → soil / glossary / concepts / registration 1 each; then `TypedPathVariable` joins `EnforceArchitecture` | Claude | M | Paused 2026-11-22 mid-sweep; four Pat decisions listed below |
@@ -36,8 +37,8 @@ work comes first; the paused engineering threads follow.
 
 | Effort | State | Where | Left |
 |--------|-------|-------|------|
-| Public launch ([plan](plans/2026-11-05-public-launch-work-plan.md), [checklist](hosting-readiness.md)) | In progress | main | Phase 0 ✅. Phase 1: 1.1, 1.3, 1.4, 1.5, 1.6, 1.7, 1.8, 1.9 ✅; **1.2** (Pat) open. Phase 2: 2.3 ✅ (DigitalOcean). Phases 3–4 not started. Pat also owes a `backyardnaturalist.app` address in `secrets/alert-email` on the host |
-| Java4Shell hardening ([plan](plans/2026-11-19-java4shell-hardening-plan.md)) | In progress | WI-1 `f8d9de23` | WI-1 ✅, then retired by WI-2. WI-5 ✅ (`62f05c18` SECURITY.md; private reporting, Dependabot alerts, CodeQL on). WI-2 ✅ (pinned Temurin 25.0.5.1+2, the confirmed fix; WI-1 flag retired; `image.yml` builds images on PRs; scheduled rebuild deferred to production). WI-6 ✅ (read-only token `9e27d97f`; actions pinned by SHA; Dependabot config). WI-7 ✅ ("main safety net" ruleset). WI-4 ✅ (2026-11-25: Pat confirmed no seed password is real; `DeploymentDbInitializer` loads no accounts). WI-3 ✅ (2026-11-25, ADR-029: egress allowlist proxy; not yet merged). **WI-8 open.** Deploy the pinned image to the DigitalOcean VM once it exists |
+| Public launch ([plan](plans/2026-11-05-public-launch-work-plan.md), [checklist](hosting-readiness.md)) | In progress | main | Phase 0 ✅. Phase 1 ✅ (1.1–1.9; 1.2 merged as PR #15). Phase 2: 2.3 ✅ (DigitalOcean). Phases 3–4 not started. Pat also owes a `backyardnaturalist.app` address in `secrets/alert-email` on the host |
+| Java4Shell hardening ([plan](plans/2026-11-19-java4shell-hardening-plan.md)) | In progress | WI-1 `f8d9de23` | WI-1 ✅, then retired by WI-2. WI-5 ✅ (`62f05c18` SECURITY.md; private reporting, Dependabot alerts, CodeQL on). WI-2 ✅ (pinned Temurin 25.0.5.1+2, the confirmed fix; WI-1 flag retired; `image.yml` builds images on PRs; scheduled rebuild deferred to production). WI-6 ✅ (read-only token `9e27d97f`; actions pinned by SHA; Dependabot config). WI-7 ✅ ("main safety net" ruleset). WI-4 ✅ (2026-11-25: Pat confirmed no seed password is real; `DeploymentDbInitializer` loads no accounts). WI-3 ✅ (2026-11-25, ADR-029: egress allowlist proxy, PR #17 `d2947203`). **WI-8 open.** On the DigitalOcean VM once it exists: deploy the pinned image, install Docker Engine ≥ 26, run `deploy/egress-proxy/check.sh` |
 | Cloudflare edge ([ADR-027](adr/ADR-027-cloudflare-edge-and-abuse-protection.md)) | Code done | PRs 1–7 on main | Real-widget login check and deployment (launch 4.1, 4.2) |
 | Secrets + model spend ([ADR-028](adr/ADR-028-secrets-and-model-spend-protection.md)) | Code done | main | Operational only: step 0 vendor workspaces/limits/keys (launch 2.1), step 7 rotation rehearsal (4.8), step 8 deploy config + forged-address check + refusal alert rule (4.3). Turnstile secret is on `SecretProvider` ✅ |
 | Named-value serialization ([design](plans/2026-11-18-named-value-serialization-design.md)) | Paused 2026-11-22 | steps 1–2 + insects step 3 on main | Step 3 for 7 more controllers, then arm `TypedPathVariable` |
@@ -48,7 +49,9 @@ work comes first; the paused engineering threads follow.
 ## Waiting on Pat
 
 **Launch:** 2.1 spend limit (proposed $60/month), whether dev gets its own limit, and identify in
-Cloudflare rule E1 (ADR-027 recommends no); 2.4 email provider; 2.5 heartbeat service; 2.6 who gets
+Cloudflare rule E1 (ADR-027 recommends no); 2.4 email provider (DigitalOcean blocks outbound SMTP
+25/465/587 on new Droplets: pick a provider that accepts port 2525, or ask DigitalOcean to unblock
+587; ADR-029); 2.5 heartbeat service; 2.6 who gets
 identification at launch, reopened by decision C (`self-serve` makes "invited" only unannounced;
 `request` grants are made at `/admin/accounts`, launch 1.9); a metrics backend. Decisions A–D and the 2.3 host were
 settled 2026-11-25.
@@ -75,12 +78,16 @@ settled 2026-11-25.
 - Dynamic test contexts: the reachability check doesn't inherit class-level `@Transactional`; cache parsed JSON test catalogs per JVM (the dominant core-test cost).
 - Traffic snapshot job: a failed run only writes a FAILED line to `~/dev/naturalist-traffic/snapshot.log`.
 - Kaname engine issues #1 and #2 (kaname-evaluators), waiting on the engine team.
-- Dependabot #9 (10 build plugins): blocked because `rewrite-recipe-bom` 3.38.0 imports `org.openrewrite:rewrite-bom:8.91.0`, still 404 on Maven Central (newest 8.90.4). Once it is published, comment `@dependabot recreate` on #9. The other nine bumps were built locally on 2026-11-25 and pass.
+- `rewrite-recipe-bom` 3.38.0 is skipped in `dependabot.yml` (`4c3755e7`), because it imports `org.openrewrite:rewrite-bom:8.91.0`, which was still 404 on Maven Central. The other nine build-plugin bumps merged as PR #16 (`760799fc`). Lift the skip once 8.91.0 is published.
+- Egress proxy minors (WI-3 review, fix forward): `deploy/egress-proxy/start.sh` renders `SMTP_HOST`/`SMTP_PORT` unvalidated (a space or `|` in `.env` breaks or widens the rule); the `inward` list lacks `0.0.0.0/8`, `100.64.0.0/10`, `::1`, `::ffff:0:0/96`; a mail host given as an IP address can never match (`dstdomain -n`), undocumented; `check.sh` always fails two checks locally (app also on `default`).
 - The Anthropic adapters' tests check construction only; nothing pins the request shape, and the v3 `Authorization: Bearer` header has not met the live API (launch phase 4 does).
 
 ## Worktrees and branches
 
-No worktrees: only the main checkout. Cleaned up 2026-11-25: four merged worktrees and seven merged
+One worktree besides the main checkout: `.claude/worktrees/confident-cohen-d3c979` (the WI-3 session),
+on `claude/wi3-tracker-merged` for this tracker update. Its earlier branch `claude/zen-lamarr-b7bfc8`
+(local and `origin`) is fully merged by PR #17 and can be deleted. Before 2026-11-25's WI-3 work there
+were no worktrees, only the main checkout. Cleaned up 2026-11-25: four merged worktrees and seven merged
 branches removed; then the `observe-every-throw-8d0d18` worktree (reused by the Java4Shell WI-2
 session) and its branch `claude/java4shell-wi2-pinning-fa05da`; the `dependabot-followups-954d84`
 worktree and its branch, after PR #12 merged; the launch 1.5 and 1.9 worktrees and branches; and the
@@ -114,6 +121,9 @@ Still to delete (Pat; fully on `main`):
 
 | Effort | Done | Commit(s) |
 |--------|------|-----------|
+| Java4Shell WI-3 (ADR-029): egress allowlist proxy; `app`/`db`/`db-init` on an internal network; Squid allows only the model API, Turnstile and the mail host; `check.sh` + `image.yml` probe | 2026-11-25 | `881e0eca` (PR #17, `d2947203`) |
+| Dependabot build plugins (PR #16, supersedes #9), `rewrite-recipe-bom` 3.38.0 skipped, `-DskipTests` skips ITs again under failsafe 3.6 | 2026-11-25 | `4c3755e7`, `2e6ff901`, `760799fc` |
+| Launch 1.2: seed field observation places generalized (PR #15) | 2026-11-25 | `a23f062b` (PR #15, `651873a7`) |
 | Storage-capacity alerts (launch 1.8): Boot disk-space metrics for the image and database volumes; `DiskSpaceLow`, `DiskFillsWithinThreeDays`, `DiskSpaceCritical`, `PhotoDeleteFailed` | 2026-11-25 | `d255a712` |
 | Dependabot first run: PR #12 (Boot 4.2.0 + Boot-managed re-pin, anthropic-java 3.12.0, MyBatis 3.6.0), #6, #7; #5/#8/#10/#11 closed | 2026-11-25 | `39e87de8` |
 | Java4Shell WI-2 + WI-6: Temurin 25.0.5.1+2 pinned (WI-1 flag retired), actions pinned by SHA, Dependabot, `image.yml` | 2026-11-25 | `72247a8f`..`5b3f77c5` |
