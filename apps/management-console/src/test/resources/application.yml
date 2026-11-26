@@ -25,12 +25,16 @@ spring:
 # The main application.yml's client-identity block, repeated because this file replaces it
 # (ForwardedClientAddressTest proves the trust boundary against it).
 server:
-  forward-headers-strategy: native
+  request:
+    header:
+      forwarded:
+        strategy: web-server
   tomcat:
     remoteip:
       remote-ip-header: CF-Connecting-IP
       protocol-header: X-Forwarded-Proto
-    redirect-context-root: false
+    servlet:
+      redirect-context-root: false
 
 naturalist:
   admin:

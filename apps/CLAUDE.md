@@ -94,7 +94,7 @@ any client can send is not an identity, and only the container knows which peer 
 Decisions in [ADR-027](../docs/adr/ADR-027-cloudflare-edge-and-abuse-protection.md) D3/D4.
 
 - **The container rewrites the address, for trusted peers only.** `management-console`'s
-  `application.yml` sets `server.forward-headers-strategy: native` and
+  `application.yml` sets `server.request.header.forwarded.strategy: web-server` and
   `server.tomcat.remoteip.remote-ip-header: CF-Connecting-IP` (plus `protocol-header:
   X-Forwarded-Proto`). Tomcat's `RemoteIpValve` then rewrites `getRemoteAddr()` and the scheme,
   but only when the TCP peer matches `internal-proxies`. That is left at Boot's default
