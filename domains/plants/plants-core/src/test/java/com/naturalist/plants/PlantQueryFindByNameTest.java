@@ -80,6 +80,18 @@ class PlantQueryFindByNameTest {
     }
 
     @Test
+    void findByName_fallback_producesASelfConsistentMatch() {
+        plantQuery.findByName(PlantSpeciesName.of("aristolochia-tomentosa"));
+        plantQuery.findByName(PlantSpeciesName.of("aristolochia-californica"));
+
+        double violated = meters.find("naturalist.invariant.check").tag("outcome", "violated").counters().stream()
+                .filter(c -> String.valueOf(c.getId().getTag("name")).startsWith("PlantQueryImpl.findByName.match"))
+                .mapToDouble(Counter::count)
+                .sum();
+        assertThat(violated).isZero();
+    }
+
+    @Test
     void findByName_null_throws() {
         assertThat(catchThrowable(() -> plantQuery.findByName(null)))
                 .isInstanceOf(InvariantViolationException.class);

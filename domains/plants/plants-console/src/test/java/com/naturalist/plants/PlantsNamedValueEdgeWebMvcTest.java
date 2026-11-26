@@ -81,6 +81,19 @@ class PlantsNamedValueEdgeWebMvcTest {
         mockMvc.perform(get("/plants/aristolochia-tomentosa"))
                 .andExpect(status().isFound())
                 .andExpect(redirectedUrl("/plants/genera/aristolochia?missing=aristolochia-tomentosa"));
+
+        assertThat(violated("PlantsController.detail.plant")).isZero();
+        assertThat(violated("PlantQueryImpl.findByName.exact")).isEqualTo(1.0);
+    }
+
+    @Test
+    void genusDetail_missingOfAnotherGenus_isDropped_andIsCounted() throws Exception {
+        mockMvc.perform(get("/plants/genera/aristolochia").param("missing", "quercus-alba"))
+                .andExpect(status().isOk())
+                .andExpect(content().string(not(containsString("No record for"))));
+
+        assertThat(violated("PlantsController.genusDetail.missingIsOfGenus")).isEqualTo(1.0);
+        assertThat(levelOf("PlantsController.genusDetail.missingIsOfGenus")).isEqualTo("info");
     }
 
     @Test

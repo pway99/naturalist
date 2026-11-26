@@ -118,18 +118,22 @@ class PlantQueryImpl implements PlantQuery {
         MethodObserver methodObserver = observer.forMethod("findByName");
         methodObserver.arguments(i -> i.identifier(name, "name")).throwWhenInvalid();
         Optional<Plant> exact = getByName(name);
-        if (methodObserver.state(c -> c.isPresent(exact, "exact")).observe(Level.INFO).isNotValid()) {
-            return nearest(name);
-        }
-        return Optional.of(new PlantMatch(name, name, exact.get()));
+        Optional<PlantMatch> match = methodObserver.state(c -> c.isPresent(exact, "exact"))
+                .observe(Level.INFO)
+                .isNotValid()
+                ? nearest(name)
+                : Optional.of(new PlantMatch(name, name, exact.get()));
+        // a match that breaks its own rules is a fault in this producer, not a signal about the asked name
+        match.ifPresent(m -> methodObserver.observable(m, "match").observe(Level.WARN));
+        return match;
     }
 
     /** The catalog lacks {@code name}: only a species climbs, to the genus its binomial slug names. */
     private Optional<PlantMatch> nearest(PlantRankName name) {
-        if (!(name instanceof PlantSpeciesName)) {
+        if (!(name instanceof PlantSpeciesName species)) {
             return Optional.empty();
         }
-        PlantGenusName genus = PlantMatch.genusOf((PlantSpeciesName) name);
+        PlantGenusName genus = PlantMatch.genusOf(species);
         if (observer.state("nearest", i -> i.entityName(genus, "genus")).observe(Level.INFO).isNotValid()) {
             return Optional.empty();
         }

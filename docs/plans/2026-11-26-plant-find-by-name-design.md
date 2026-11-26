@@ -1,6 +1,6 @@
 # Plant findByName: the nearest plant the catalog holds
 
-Status: design, awaiting Pat's approval (2026-11-26). Small change, one PR. A second PR adds a
+Status: approved by Pat 2026-11-26; built on claude/named-values-step3-cbc835. Small change, one PR. A second PR adds a
 look-alike search strategy after this one merges.
 
 ## Why
@@ -74,4 +74,5 @@ guess which names exist. They should land on the closest thing the catalog does 
 
 - Wording and placement of the "not added yet" note on the genus page.
 - Whether the binomial split is a static helper on `PlantSpeciesName` or private to the impl
-  (prefer the impl unless a second caller appears).
+  (prefer the impl unless a second caller appears). The split landed as public
+  `PlantMatch.genusOf`, because `PlantMatch.invariants()` is its second caller.

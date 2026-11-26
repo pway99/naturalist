@@ -40,7 +40,7 @@
 
 **Interfaces:**
 - Produces:
-  - `public record PlantMatch(PlantRankName asked, PlantRankName found, Plant plant) implements ValueObject`, with `boolean exact()` (`asked.equals(found)`) and `invariants()`: `notNull(asked)`, `notNull(found)`, `readModel(plant, "plant")`.
+  - `public record PlantMatch(PlantRankName asked, PlantRankName found, Plant plant) implements ValueObject`, with `boolean exact()` (`asked.equals(found)`) and `invariants()`: `identifier(asked, "asked")`, `identifier(found, "found")`, `readModel(plant, "plant")`, plus `plantIsFound` and `foundIsAskedOrItsGenus`.
   - `Optional<PlantMatch> PlantQuery.findByName(PlantRankName name)`.
   - Javadoc on both query methods: `getByName` is exact; `findByName` may answer a different (ancestor) rank and says so through `PlantMatch.found`.
 
@@ -111,7 +111,7 @@ git commit -m "feat(plants): findByName answers the nearest plant the catalog ho
 
 **Files:**
 - Modify: `domains/plants/plants-console/src/main/java/com/naturalist/plants/PlantsController.java` (`detail` ~line 115, `genusDetail`/`genusPage` ~line 438)
-- Modify: `domains/plants/plants-console/src/main/jte/plants/genera/detail.jte` (new `@param String missing = null`, note under the `<h1>`)
+- Modify: `domains/plants/plants-console/src/main/jte/plants/genera/detail.jte` (new `@param PlantSpeciesName missing = null`, note under the `<h1>`)
 - Test: `domains/plants/plants-console/src/test/java/com/naturalist/plants/PlantsNamedValueEdgeWebMvcTest.java`
 
 **Interfaces:**
@@ -162,7 +162,7 @@ Expected: the redirect test gets 404; the note test finds no "No record for".
 - Pass `missing.value()` to `genusPage` only when it is present and valid, else `null`.
 
 `genusPage`:
-- Gains a `@Nullable String missing` parameter and sets the model attribute when it is non-null.
+- Gains a `@Nullable PlantSpeciesName missing` parameter and sets the model attribute when it is non-null.
 
 Template, under the `<h1>`: `@if(missing != null)<p class="not-yet-added">No record for <code>${missing}</code> yet; here is its genus.</p>@endif`.
 

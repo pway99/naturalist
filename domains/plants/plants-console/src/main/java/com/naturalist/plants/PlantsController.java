@@ -131,7 +131,18 @@ public class PlantsController {
                 .whenNotValid(() -> notInCatalog(response, model, plantName, "/plants/species"))
                 .otherwise(() -> match.get().exact()
                         ? speciesPage(plantName, match.get().plant(), model, response)
-                        : "redirect:/plants/genera/" + match.get().found().value() + "?missing=" + plantName.value());
+                        // both slugs in the redirect are validated names, which is why plain concatenation is safe
+                        : "redirect:" + pathOf(match.get().found()) + match.get().found().value()
+                        + "?missing=" + plantName.value());
+    }
+
+    private static String pathOf(PlantRankName name) {
+        return switch (name) {
+            case PlantSpeciesName species -> "/plants/";
+            case PlantGenusName genus -> "/plants/genera/";
+            case PlantFamilyName family -> "/plants/families/";
+            case PlantOrderName order -> "/plants/orders/";
+        };
     }
 
     private String speciesPage(PlantSpeciesName plantName, Plant plant, Model model, HttpServletResponse response) {
@@ -453,12 +464,20 @@ public class PlantsController {
                 .entityNameOrNull(missing, "missing"))
                 .observe(Level.INFO)
                 .isNotValid();
+        // only a valid missing can be asked its genus; a valid one of another genus is dropped too
+        boolean missingOfThisGenus = missingUsable && missing != null
+                && PlantMatch.genusOf(missing).equals(genusName);
+        if (missingUsable && missing != null) {
+            methodObserver.state(c -> c
+                    .isTrue(missingOfThisGenus, "missingIsOfGenus"))
+                    .observe(Level.INFO);
+        }
         Optional<Plant> plant = plantQuery.getByName(genusName);
         return methodObserver.state(c -> c
                 .isPresent(plant, "plant"))
                 .observe(Level.INFO)
                 .whenNotValid(() -> notInCatalog(response, model, genusName, "/plants/orders"))
-                .otherwise(() -> genusPage(genusName, plant.get(), missingUsable ? missing : null, model,
+                .otherwise(() -> genusPage(genusName, plant.get(), missingOfThisGenus ? missing : null, model,
                         response));
     }
 
