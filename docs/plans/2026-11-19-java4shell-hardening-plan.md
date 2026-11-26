@@ -50,9 +50,15 @@ Do these in order. WI-1 is the stopgap; WI-2 removes the need for it; WI-3 limit
 - [ ] **WI-3: Restrict outbound network access.**
 
   Files: `compose.yaml`, `compose.production.yaml`, new `deploy/egress-proxy/`. Put `app` and `db` on an `internal: true` network. Route `app`'s outbound HTTPS through a small forward proxy with a host allowlist: `api.anthropic.com`, the SMTP host, Cloudflare's Turnstile verification endpoint. `cloudflared` keeps its own network path to the edge. Configure the Anthropic OkHttp client, Spring Mail and the challenge client to use the proxy. Verify: from inside `app`, a request to an arbitrary host fails, while identification, mail and the login challenge still work. Record the decision as an ADR.
-- [ ] **WI-4: Confirm seed passwords are throwaway.**
+- [x] **WI-4: Confirm seed passwords are throwaway.**
 
   Confirm the passwords behind the bcrypt hashes in `naturalist-credentials.json` are not used for any real account. No code change if they are not.
+
+  Done 2026-11-25, no code change. Pat confirmed none of the seed passwords protects a real account. That covers two sets:
+  - `domains/accounts/accounts-repository-test/src/main/resources/account/accounts.json`, the successor file: all five accounts share one bcrypt hash (`4baedf13`). Its plaintext is written nowhere in the repo, and no test depends on it. The login tests (`NaturalistLoginWebMvcTest`, `AdminAccountsControllerWebMvcTest`) re-encode their own throwaway password and restore the fixture afterwards.
+  - The four hashes in the deleted `naturalist-credentials.json` (2026-07-06 to 2026-08-31). They are still in public git history, and each matches the plaintext in the `SeedHashPrinter` step of `2026-07-06-naturalist-auth-plan.md`, so they were public anyway.
+
+  Seed accounts never reach production. `DeploymentDbInitializer` (the Dockerfile's `db-init` entrypoint) applies the `accounts` DDL only and loads catalog and usage data; `AccountSeeding` runs only from `TestDbSeeder`. The db-init jar still bundles `accounts-repository-test` and its `accounts.json` through `test-db-seeder`'s dependencies, but nothing in the deployment path reads them. No production code outside `test-db-seeder` references `AccountTestEntitySource`. `management-console` takes `accounts-repository-test` at test scope only.
 
 WI-5 to WI-8 are repository and host hygiene, independent of Java4Shell. WI-5 and WI-6 are code changes; WI-7 and WI-8 are manual settings a code session cannot make.
 
