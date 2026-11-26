@@ -57,7 +57,7 @@ WI-5 to WI-8 are repository and host hygiene, independent of Java4Shell. WI-5 an
   Require pull requests and a passing `ci` check before merge; block force-pushes and deletion. This is the backstop for agent-driven sessions.
 - [ ] **WI-8: Lock down the host and review personal detail (manual).**
 
-  Hetzner firewall: drop all inbound except SSH, ideally from known IPs only. SSH key-only, no password or root login. Enable unattended security upgrades. Separately, decide whether the Chico, apiary and "Oak Vista" references in domain docs and seed data are acceptable public detail, and keep future seed data and skill files at that level.
+  The host is a DigitalOcean Droplet (launch 2.3, decided 2026-11-25). DigitalOcean cloud firewall: drop all inbound except SSH, ideally from known IPs only. SSH key-only, no password or root login. Enable unattended security upgrades. Separately, decide whether the Chico, apiary and "Oak Vista" references in domain docs and seed data are acceptable public detail, and keep future seed data and skill files at that level.
 
 ## Rejected alternatives
 
@@ -71,7 +71,8 @@ WI-5 to WI-8 are repository and host hygiene, independent of Java4Shell. WI-5 an
 
 ## Open questions
 
-- [ ] Does the production Hetzner server's CPU report `avx512vbmi` in `/proc/cpuinfo`? If it is a CAX (ARM) server, Java4Shell does not apply at all.
+- [x] Which host, and is it ARM? Decided 2026-11-25 (launch 2.3): a DigitalOcean 4 GiB Droplet, x86, US region, not Hetzner. It is not ARM, so Java4Shell can apply and the WI-1 flag stays until WI-2 pins a fixed Temurin. Nothing in the Dockerfile or compose files is x86-only, so an ARM host remains a fallback.
+- [ ] Does the Droplet's CPU report `avx512vbmi` in `/proc/cpuinfo`? Check once the VM exists (launch 3.1). Either way, keep the WI-1 flag until WI-2 lands.
 - [ ] Which Temurin 25.x build is the confirmed fix for CVE-2026-114938?
 - [ ] Does any transitive dependency decode Base64 from unauthenticated requests? A quick check: grep the resolved dependency tree, or run the app with a breakpoint on `java.util.Base64$Decoder.decode` while hitting public endpoints.
 - [ ] Is the Anthropic workspace spend limit from ADR-028 actually set in the Console?
