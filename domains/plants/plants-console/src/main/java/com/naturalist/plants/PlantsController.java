@@ -47,6 +47,7 @@ import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.jspecify.annotations.Nullable;
 import org.springframework.web.bind.annotation.RequestParam;
 
 import java.util.ArrayList;
@@ -123,12 +124,14 @@ public class PlantsController {
                 .isNotValid()) {
             return notInCatalog(response, model, plantName, "/plants/species");
         }
-        Optional<Plant> plant = plantQuery.getByName(plantName);
+        Optional<PlantMatch> match = plantQuery.findByName(plantName);
         return methodObserver.state(c -> c
-                .isPresent(plant, "plant"))
+                .isPresent(match, "plant"))
                 .observe(Level.INFO)
                 .whenNotValid(() -> notInCatalog(response, model, plantName, "/plants/species"))
-                .otherwise(() -> speciesPage(plantName, plant.get(), model, response));
+                .otherwise(() -> match.get().exact()
+                        ? speciesPage(plantName, match.get().plant(), model, response)
+                        : "redirect:/plants/genera/" + match.get().found().value() + "?missing=" + plantName.value());
     }
 
     private String speciesPage(PlantSpeciesName plantName, Plant plant, Model model, HttpServletResponse response) {
@@ -436,6 +439,7 @@ public class PlantsController {
 
     @GetMapping("/genera/{name}")
     String genusDetail(@PathVariable("name") PlantGenusName genusName,
+                       @RequestParam(name = "missing", required = false) @Nullable PlantSpeciesName missing,
                        HttpServletResponse response, Model model) {
         MethodObserver methodObserver = observer.forMethod("genusDetail");
         if (methodObserver.arguments(c -> c
@@ -444,15 +448,22 @@ public class PlantsController {
                 .isNotValid()) {
             return notInCatalog(response, model, genusName, "/plants/orders");
         }
+        // an invalid "missing" is dropped, not refused: the genus page still answers
+        boolean missingUsable = missing != null && !methodObserver.arguments(c -> c
+                .entityName(missing, "missing"))
+                .observe(Level.INFO)
+                .isNotValid();
         Optional<Plant> plant = plantQuery.getByName(genusName);
         return methodObserver.state(c -> c
                 .isPresent(plant, "plant"))
                 .observe(Level.INFO)
                 .whenNotValid(() -> notInCatalog(response, model, genusName, "/plants/orders"))
-                .otherwise(() -> genusPage(genusName, plant.get(), model, response));
+                .otherwise(() -> genusPage(genusName, plant.get(), missingUsable ? missing.value() : null, model,
+                        response));
     }
 
-    private String genusPage(PlantGenusName genusName, Plant plant, Model model, HttpServletResponse response) {
+    private String genusPage(PlantGenusName genusName, Plant plant, @Nullable String missing, Model model,
+                             HttpServletResponse response) {
         if (observer.arguments("genusPage", c -> c
                 .readModel(plant, "plant")
                 .isTrue(plant, Plant::hasGenus, "hasGenus"))
@@ -463,6 +474,9 @@ public class PlantsController {
         }
         PlantGenus genus = plant.genus().genus();
         model.addAttribute("genus", genus);
+        if (missing != null) {
+            model.addAttribute("missing", missing);
+        }
         model.addAttribute("family",
                 plant.family() == null ? null : plant.family().family());
         model.addAttribute("children", plant.children());

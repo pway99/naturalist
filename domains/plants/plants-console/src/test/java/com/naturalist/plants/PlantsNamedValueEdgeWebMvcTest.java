@@ -14,8 +14,10 @@ import org.springframework.test.web.servlet.MockMvc;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.hamcrest.Matchers.containsString;
+import static org.hamcrest.Matchers.not;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.redirectedUrl;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 /**
@@ -72,6 +74,35 @@ class PlantsNamedValueEdgeWebMvcTest {
         assertThat(levelOf("PlantsController.detail.plant")).as("a plant not added yet is a signal, not a fault")
                 .isEqualTo("info");
         assertThat(violated("PlantsController.detail.plantName")).isZero();
+    }
+
+    @Test
+    void detail_missingSpeciesOfAKnownGenus_redirectsToTheGenus() throws Exception {
+        mockMvc.perform(get("/plants/aristolochia-tomentosa"))
+                .andExpect(status().isFound())
+                .andExpect(redirectedUrl("/plants/genera/aristolochia?missing=aristolochia-tomentosa"));
+    }
+
+    @Test
+    void genusDetail_missing_saysTheSpeciesIsNotAddedYet() throws Exception {
+        mockMvc.perform(get("/plants/genera/aristolochia").param("missing", "aristolochia-tomentosa"))
+                .andExpect(status().isOk())
+                .andExpect(content().string(containsString("No record for")))
+                .andExpect(content().string(containsString("aristolochia-tomentosa")));
+    }
+
+    @Test
+    void genusDetail_missingNotASlug_isDropped() throws Exception {
+        mockMvc.perform(get("/plants/genera/aristolochia").param("missing", NOT_A_SLUG))
+                .andExpect(status().isOk())
+                .andExpect(content().string(not(containsString("No record for"))));
+    }
+
+    @Test
+    void genusDetail_withoutMissing_showsNoNote() throws Exception {
+        mockMvc.perform(get("/plants/genera/aristolochia"))
+                .andExpect(status().isOk())
+                .andExpect(content().string(not(containsString("No record for"))));
     }
 
     @Test

@@ -12,6 +12,7 @@
 @import java.util.List
 
 @param PlantGenus genus
+@param String missing = null
 @param PlantFamily family = null
 @param List<PlantTaxonView> children = java.util.List.of()
 @param String descriptionPreschool = ""
@@ -28,6 +29,9 @@
 @template.layout.page(title = genus.genus().value(), content = @`
     @template.plants.nav(breadcrumb = breadcrumb, cladeTrail = cladeTrail)
     <h1>${commonName}</h1>
+    @if(missing != null)
+        <p class="not-yet-added">No record for <code>${missing}</code> yet; here is its genus.</p>
+    @endif
     <p>
         <a href="/plants/families/${genus.familyName().value()}">${genus.family().value()}</a>
         &middot; <em>${genus.genus().value()}</em>
