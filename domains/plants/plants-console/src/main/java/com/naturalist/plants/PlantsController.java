@@ -35,6 +35,7 @@ import com.naturalist.plants.phytochemistry.PhytochemicalConstituentName;
 import com.naturalist.plants.phytochemistry.PhytochemicalConstituentQuery;
 import com.naturalist.resilience.BulkheadFullException;
 import jakarta.servlet.http.HttpServletResponse;
+import org.jspecify.annotations.Nullable;
 import org.springframework.core.io.InputStreamResource;
 import org.springframework.core.io.Resource;
 import org.springframework.http.CacheControl;
@@ -47,7 +48,6 @@ import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
-import org.jspecify.annotations.Nullable;
 import org.springframework.web.bind.annotation.RequestParam;
 
 import java.util.ArrayList;

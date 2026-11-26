@@ -96,6 +96,10 @@ class PlantsNamedValueEdgeWebMvcTest {
         mockMvc.perform(get("/plants/genera/aristolochia").param("missing", NOT_A_SLUG))
                 .andExpect(status().isOk())
                 .andExpect(content().string(not(containsString("No record for"))));
+
+        assertThat(violated("PlantsController.genusDetail.missing")).isEqualTo(1.0);
+        assertThat(levelOf("PlantsController.genusDetail.missing")).as("a dropped parameter is a signal, not a fault")
+                .isEqualTo("info");
     }
 
     @Test
