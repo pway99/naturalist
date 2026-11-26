@@ -19,11 +19,24 @@ public record PlantMatch(PlantRankName asked, PlantRankName found, Plant plant) 
         return asked.equals(found);
     }
 
+    /** True when the plant carries {@code found} as its most specific rung. */
+    boolean plantIsFound() {
+        return plant != null && found != null && plant.identifiedTo().filter(found::equals).isPresent();
+    }
+
+    /** True when {@code found} is {@code asked} itself or a broader rank than it. */
+    boolean foundIsAskedOrAbove() {
+        return asked != null && found != null
+                && (found.equals(asked) || found.rank().compareTo(asked.rank()) < 0);
+    }
+
     @Override
     public Consumer<? extends Constraints> invariants() {
         return i -> i
-                .notNull(asked, "asked")
-                .notNull(found, "found")
-                .readModel(plant, "plant");
+                .identifier(asked, "asked")
+                .identifier(found, "found")
+                .readModel(plant, "plant")
+                .isTrue(plantIsFound(), "plantIsFound")
+                .isTrue(foundIsAskedOrAbove(), "foundIsAskedOrAbove");
     }
 }
