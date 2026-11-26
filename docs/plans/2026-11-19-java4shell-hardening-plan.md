@@ -40,7 +40,7 @@ Do these in order. WI-1 is the stopgap; WI-2 removes the need for it; WI-3 limit
 
   Files: `Dockerfile`, `.github/workflows/ci.yml`, plus a Renovate or Dependabot config. Pin the runtime by full version (e.g. `eclipse-temurin:25.0.x_y-jre-noble`) instead of the floating `25-jre-noble`, so a JDK change is a visible PR. Add automated update PRs for Docker base images. Check whether CI rebuilds on a schedule; if not, add a weekly build with `--pull`. Verify: Temurin's advisory names CVE-2026-114938 as fixed in the pinned version.
 
-  Status 2026-11-25 (branch `claude/java4shell-wi2-pinning-fa05da`):
+  Status 2026-11-25 (`72247a8f`..`5b3f77c5`, merged to main):
   - [x] Runtime pinned. Both `db-init` and `app` stages use `eclipse-temurin:25.0.5.1_2-jre-noble`. Adoptium's [guidance for CVE-2026-114938](https://adoptium.net/news/2026/11/temurin-november-2026-cspu-java4shell) (2026-11-18) lists JDK 25.0.5.1+2 as the Temurin 25 build with the fix. The Docker Hub tag was published 2026-11-20. The build stage is pinned too, to `maven:3.9.16-eclipse-temurin-25-noble`, the image the floating `3.9-eclipse-temurin-25` already resolved to.
   - [x] WI-1 flag removed, since the pinned build is confirmed fixed.
   - [x] `.sdkmanrc` moved to `25.0.5.1+2-tem`, matching the image. CI's `setup-java` keeps `java-version: '25'`, which resolves to the newest Temurin 25 GA (25.0.5.1+2 today). CI only runs the tests; the deployed runtime is pinned in the Dockerfile.
@@ -69,7 +69,7 @@ WI-5 to WI-8 are repository and host hygiene, independent of Java4Shell. WI-5 an
   Require pull requests and a passing `ci` check before merge; block force-pushes and deletion. This is the backstop for agent-driven sessions.
 - [ ] **WI-8: Lock down the host and review personal detail (manual).**
 
-  Hetzner firewall: drop all inbound except SSH, ideally from known IPs only. SSH key-only, no password or root login. Enable unattended security upgrades. Separately, decide whether the Chico, apiary and "Oak Vista" references in domain docs and seed data are acceptable public detail, and keep future seed data and skill files at that level.
+  The host is a DigitalOcean Droplet (launch 2.3, decided 2026-11-25). DigitalOcean cloud firewall: drop all inbound except SSH, ideally from known IPs only. SSH key-only, no password or root login. Enable unattended security upgrades. Separately, decide whether the Chico, apiary and "Oak Vista" references in domain docs and seed data are acceptable public detail, and keep future seed data and skill files at that level.
 
 ## Rejected alternatives
 
@@ -83,7 +83,8 @@ WI-5 to WI-8 are repository and host hygiene, independent of Java4Shell. WI-5 an
 
 ## Open questions
 
-- [ ] Does the production Hetzner server's CPU report `avx512vbmi` in `/proc/cpuinfo`? If it is a CAX (ARM) server, Java4Shell does not apply at all.
+- [x] Which host, and is it ARM? Decided 2026-11-25 (launch 2.3): a DigitalOcean 4 GiB Droplet, x86, US region, not Hetzner. It is not ARM, so Java4Shell can apply. WI-2 has since pinned the fixed Temurin build and retired the WI-1 flag. Nothing in the Dockerfile or compose files is x86-only, so an ARM host remains a fallback.
+- [ ] Does the Droplet's CPU report `avx512vbmi` in `/proc/cpuinfo`? Check once the VM exists (launch 3.1). It no longer decides anything: the pinned 25.0.5.1+2 runtime is fixed either way.
 - [x] Which Temurin 25.x build is the confirmed fix for CVE-2026-114938? **25.0.5.1+2** (Docker tag `25.0.5.1_2`), per Adoptium's 2026-11-18 guidance.
 - [ ] Does any transitive dependency decode Base64 from unauthenticated requests? A quick check: grep the resolved dependency tree, or run the app with a breakpoint on `java.util.Base64$Decoder.decode` while hitting public endpoints.
 - [ ] Is the Anthropic workspace spend limit from ADR-028 actually set in the Console?

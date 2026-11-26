@@ -18,24 +18,25 @@ work comes first; the paused engineering threads follow.
 
 | #  | Task | Who | Size | Why now |
 |----|------|-----|------|---------|
-| 1  | **Decide launch decisions A and C** (account recovery approach, launch size) and **2.3 host** (DigitalOcean x86 per the research, or Hetzner; if ARM, Java4Shell doesn't apply) | Pat | S | A and C unblock 1.5; the host unblocks phase 3 and Java4Shell WI-8 |
-| 2  | **Launch 1.5: account recovery** (closes security finding S1) | Claude | S or L | Last open code item in launch phase 1, and the next item in the plan |
-| 3  | ✅ **Java4Shell WI-2 + rest of WI-6** (branch `claude/java4shell-wi2-pinning-fa05da`, awaiting Pat's review): runtime pinned to `eclipse-temurin:25.0.5.1_2-jre-noble` (Adoptium's named CVE-2026-114938 fix), WI-1 flag removed, actions pinned by SHA, `dependabot.yml` (docker, docker-compose, github-actions, maven). plus `.github/workflows/image.yml`, which builds both images on every PR that touches them. The weekly `--pull` rebuild is deferred to the production redeploy job | Claude | S | Merge, then deploy the pinned image once a host exists |
-| 4  | **Launch 1.8: storage-capacity alerts** (image-store + database volume free space, failed photo deletes) | Claude | S–M | Pat asked 2026-11-16; a full disk stops everything |
-| 5  | **Seed data review**: launch 1.2 seed field observations, the "Oak Vista" name (~180 files), Java4Shell WI-4 throwaway seed passwords | Pat | S–M | Public pages show this content |
-| 6  | **Java4Shell WI-3: egress allowlist proxy** + ADR | Claude | M | Limits damage from any future runtime RCE; before public traffic |
-| 7  | **Launch phases 2–3: outside accounts and production** (vendor workspace + spend limit, Cloudflare zone, email + SPF/DKIM, heartbeat, VM, secrets, tunnel, backups) | Pat (+ Claude for 3.3, 3.5) | M–L | Needs #1 |
-| 8  | **Launch phase 4: prove it unannounced** (real widget, edge checks, Secure cookie, real identification, email, rotation rehearsal, restore) | Both | M | Needs #7 |
-| 9  | **Named values step 3**: plants controller (8 markers) → chemistry 4 → garden 3 → soil / glossary / concepts / registration 1 each; then `TypedPathVariable` joins `EnforceArchitecture` | Claude | M | Paused 2026-11-22 mid-sweep; four Pat decisions listed below |
-| 10 | **Observability: resume the sweep**: path-mode reviews (plants, insects-console); slices 4–8, plus the 5 catch sites PL-19 unblocks | Pat → Claude | L | Slices 1–3 on main (PR #3 merged 2026-11-25); on hold until Pat finishes reviewing the rules |
-| 11 | **Small backlog** (see the table below) | Claude | S each | Fill-in work |
+| 1  | ✅ 2026-11-25 **Launch decisions A–D and 2.3 host**: C small invited group first; A the cheap option now (confirm-page wording + purge accounts unverified after 24 h), real reset (launch 5.4) before opening up; B migration tool straight after launch; D image sharing separate; host DigitalOcean 4 GiB x86, US | Pat | S | Done |
+| 2  | **Launch 1.5: account recovery, cheap option** (closes security finding S1): new confirm-page wording, purge accounts never verified after 24 hours | Claude | S | Last open code item in launch phase 1, and the next item in the plan. Real password reset is launch 5.4, before opening up |
+| 3  | **Launch 1.9: admin accounts page** (`/admin/accounts`: list accounts; grant/revoke `VISION`; suspend/reinstate; suspend ends live sessions) | Claude | M | Pat asked 2026-11-25: no account change should need direct SQL on production. Commands exist; needs a paged `AccountQuery` list. Makes `request` workable for 2.6 |
+| 4  | ✅ **Java4Shell WI-2 + rest of WI-6** (on main 2026-11-25): runtime pinned to `eclipse-temurin:25.0.5.1_2-jre-noble` (Adoptium's named CVE-2026-114938 fix), WI-1 flag removed, actions pinned by SHA, `dependabot.yml` (docker, docker-compose, github-actions, maven), plus `.github/workflows/image.yml`, which builds both images on every PR that touches them. The weekly `--pull` rebuild is deferred to the production redeploy job | Claude | S | Done; deploy the pinned image when the DigitalOcean VM exists (launch 3.1) |
+| 5  | **Launch 1.8: storage-capacity alerts** (image-store + database volume free space, failed photo deletes) | Claude | S–M | Pat asked 2026-11-16; a full disk stops everything |
+| 6  | **Seed data review**: launch 1.2 seed field observations, the "Oak Vista" name (~180 files), Java4Shell WI-4 throwaway seed passwords | Pat | S–M | Public pages show this content |
+| 7  | **Java4Shell WI-3: egress allowlist proxy** + ADR | Claude | M | Limits damage from any future runtime RCE; before public traffic |
+| 8  | **Launch phases 2–3: outside accounts and production** (vendor workspace + spend limit, Cloudflare zone, email + SPF/DKIM, heartbeat, DigitalOcean VM, secrets, tunnel, backups) | Pat (+ Claude for 3.3, 3.5) | M–L | Host decided; phase 3 needs 2.2, 2.4 and 2.5 |
+| 9  | **Launch phase 4: prove it unannounced** (real widget, edge checks, Secure cookie, real identification, email, rotation rehearsal, restore) | Both | M | Needs #8 |
+| 10 | **Named values step 3**: plants controller (8 markers) → chemistry 4 → garden 3 → soil / glossary / concepts / registration 1 each; then `TypedPathVariable` joins `EnforceArchitecture` | Claude | M | Paused 2026-11-22 mid-sweep; four Pat decisions listed below |
+| 11 | **Observability: resume the sweep**: path-mode reviews (plants, insects-console); slices 4–8, plus the 5 catch sites PL-19 unblocks | Pat → Claude | L | Slices 1–3 on main (PR #3 merged 2026-11-25); on hold until Pat finishes reviewing the rules |
+| 12 | **Small backlog** (see the table below) | Claude | S each | Fill-in work |
 
 ## Active efforts
 
 | Effort | State | Where | Left |
 |--------|-------|-------|------|
-| Public launch ([plan](plans/2026-11-05-public-launch-work-plan.md), [checklist](hosting-readiness.md)) | In progress | main | Phase 0 ✅. Phase 1: 1.1, 1.3, 1.4, 1.6, 1.7 ✅; **1.2** (Pat), **1.5**, **1.8** open. Phases 2–4 not started. Pat also owes a `backyardnaturalist.app` address in `secrets/alert-email` on the host |
-| Java4Shell hardening ([plan](plans/2026-11-19-java4shell-hardening-plan.md)) | In progress | WI-1 `f8d9de23` | WI-1 ✅, then retired by WI-2. WI-5 ✅ (`62f05c18` SECURITY.md; private reporting, Dependabot alerts, CodeQL on). WI-2 ✅ on branch `claude/java4shell-wi2-pinning-fa05da` (pinned Temurin 25.0.5.1+2, the confirmed fix; WI-1 flag retired; `image.yml` builds images on PRs; scheduled rebuild deferred to production). WI-6 ✅ on the same branch (read-only token `9e27d97f`; actions pinned by SHA; Dependabot config). WI-7 ✅ ("main safety net" ruleset). **WI-3, WI-4, WI-8 open.** Deploy the pinned image to the host once one exists |
+| Public launch ([plan](plans/2026-11-05-public-launch-work-plan.md), [checklist](hosting-readiness.md)) | In progress | main | Phase 0 ✅. Phase 1: 1.1, 1.3, 1.4, 1.6, 1.7 ✅; **1.2** (Pat), **1.5** (cheap option, S), **1.8**, **1.9** (admin accounts page) open. Phase 2: 2.3 ✅ (DigitalOcean). Phases 3–4 not started. Pat also owes a `backyardnaturalist.app` address in `secrets/alert-email` on the host |
+| Java4Shell hardening ([plan](plans/2026-11-19-java4shell-hardening-plan.md)) | In progress | WI-1 `f8d9de23` | WI-1 ✅, then retired by WI-2. WI-5 ✅ (`62f05c18` SECURITY.md; private reporting, Dependabot alerts, CodeQL on). WI-2 ✅ (pinned Temurin 25.0.5.1+2, the confirmed fix; WI-1 flag retired; `image.yml` builds images on PRs; scheduled rebuild deferred to production). WI-6 ✅ (read-only token `9e27d97f`; actions pinned by SHA; Dependabot config). WI-7 ✅ ("main safety net" ruleset). **WI-3, WI-4, WI-8 open.** Deploy the pinned image to the DigitalOcean VM once it exists |
 | Cloudflare edge ([ADR-027](adr/ADR-027-cloudflare-edge-and-abuse-protection.md)) | Code done | PRs 1–7 on main | Real-widget login check and deployment (launch 4.1, 4.2) |
 | Secrets + model spend ([ADR-028](adr/ADR-028-secrets-and-model-spend-protection.md)) | Code done | main | Operational only: step 0 vendor workspaces/limits/keys (launch 2.1), step 7 rotation rehearsal (4.8), step 8 deploy config + forged-address check + refusal alert rule (4.3). Turnstile secret is on `SecretProvider` ✅ |
 | Named-value serialization ([design](plans/2026-11-18-named-value-serialization-design.md)) | Paused 2026-11-22 | steps 1–2 + insects step 3 on main | Step 3 for 7 more controllers, then arm `TypedPathVariable` |
@@ -45,10 +46,11 @@ work comes first; the paused engineering threads follow.
 
 ## Waiting on Pat
 
-**Launch:** decisions A (account recovery), B (migration tool timing), C (launch size), D (sharing the
-image); 2.1 spend limit (proposed $60/month), whether dev gets its own limit, and identify in Cloudflare
-rule E1 (ADR-027 recommends no); 2.3 host (and whether it is ARM); 2.4 email provider; 2.5 heartbeat
-service; 2.6 who gets identification at launch; a metrics backend.
+**Launch:** 2.1 spend limit (proposed $60/month), whether dev gets its own limit, and identify in
+Cloudflare rule E1 (ADR-027 recommends no); 2.4 email provider; 2.5 heartbeat service; 2.6 who gets
+identification at launch, reopened by decision C (`self-serve` makes "invited" only unannounced;
+`request` needs hand grants until the admin page, launch 1.9); a metrics backend. Decisions A–D and the 2.3 host were
+settled 2026-11-25.
 
 **Named values / observability:**
 - A second `MethodObserver` per method (always-mode `refusals` in `identify` / `reserveStoreAndCatalogue`): name it or drop it.
@@ -87,7 +89,7 @@ Still to delete (Pat; both fully on `main`):
 
 - **Launch phase 5:** migration tool (blocks the first schema change), alert-threshold tuning, area pre-filter for candidate species.
 - **Re-identification:** rebuild `/insects/{name}/re-identify` on `InsectCommand.sightings()` after the authorization work.
-- **Accounts:** admin UI (slice 6). Young naturalist and classroom accounts are postponed.
+- **Accounts:** slice 6 is now split: the admin grant page is launch 1.9, password reset is launch 5.4, and change-handle is still unscheduled. Young naturalist and classroom accounts are postponed.
 - **Soil↔naturalist ownership:** `Property` aggregate ([memo](notes/2026-08-09-soil-profile-naturalist-association.md)).
 - **Plants:**
   - Info pattern (`PlantTaxonView`, `OrganismFeatureView`, `CladeView`).
@@ -106,6 +108,7 @@ Still to delete (Pat; both fully on `main`):
 
 | Effort | Done | Commit(s) |
 |--------|------|-----------|
+| Java4Shell WI-2 + WI-6: Temurin 25.0.5.1+2 pinned (WI-1 flag retired), actions pinned by SHA, Dependabot, `image.yml` | 2026-11-25 | `72247a8f`..`5b3f77c5` |
 | Repo security settings: main ruleset, Dependabot alerts + fixes, CodeQL, private reporting, read-only CI token, SECURITY.md | 2026-11-23 | `9e27d97f`, `39877cb8`, `62f05c18` |
 | Code-hygiene gates: `NoVar`, explicit imports, `ObserverMethodName`, IntelliJ AutoFormat | 2026-11-22 | `fa164ca2`, `808f5f38`, `4ff04270` |
 | Photo sizes (launch 1.7): 1024 px photo + 640 px tile, store before charge, atomic writes | 2026-11-22 | `353df6ca` |
