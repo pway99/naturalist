@@ -17,4 +17,9 @@ class AccountEntityRepositoryRdbmsIT implements AccountRepositoryTest {
     public AccountRepository.AccountEntityRepository repository() {
         return new AccountEntityRepositoryRdbms(rdbms.mapper(AccountMapper.class));
     }
+
+    @Override
+    public AccountRepository.VerificationTokenRepository tokenRepository() {
+        return new EmailVerificationTokenRepositoryRdbms(rdbms.mapper(EmailVerificationTokenMapper.class));
+    }
 }

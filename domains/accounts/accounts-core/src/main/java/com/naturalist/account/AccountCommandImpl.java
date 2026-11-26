@@ -1,5 +1,7 @@
 package com.naturalist.account;
 
+import com.naturalist.data.Page;
+import com.naturalist.data.PageRequest;
 import com.naturalist.infrastructure.DomainService;
 import com.naturalist.observability.InvariantObservation;
 import com.naturalist.observability.Level;
@@ -11,6 +13,8 @@ import java.time.Clock;
 import java.time.Duration;
 import java.time.Instant;
 import java.util.Optional;
+import java.util.Set;
+import java.util.stream.Collectors;
 
 /**
  * Plain {@code @DomainService} write command (ADR-010 style; mirrors {@code UsageCommandImpl}).
@@ -46,7 +50,8 @@ class AccountCommandImpl implements AccountCommand {
     private static final Duration VERIFICATION_TTL = Duration.ofHours(24);
     private static final Duration RESET_TTL = Duration.ofHours(1);
 
-    private final Observer observer = Observer.forClass(getClass(), Observer.MonitoringMode.ALWAYS);
+    private static final Observer observer =
+            Observer.forClass(AccountCommandImpl.class, Observer.MonitoringMode.ALWAYS);
 
     private final AccountRepository.AccountEntityRepository accounts;
     private final AccountRepository.VerificationTokenRepository tokens;
@@ -216,6 +221,40 @@ class AccountCommandImpl implements AccountCommand {
         Account reset = account.withPasswordHash(newPasswordHash);
         accounts.update(reset);
         resetPassword.namedEntity(reset, "passwordReset").observe(Level.WARN);
+    }
+
+    /**
+     * One batch of the lapsed-registration purge (launch item 1.5, security finding S1). The
+     * repository selects only never-verified {@code BROWSE_ONLY} {@code ACTIVE} accounts with no
+     * live verification token, and both deletes re-check {@code emailVerified}, so an account
+     * verified after the select is left whole. Each deleted account is observed as
+     * {@code purged} (so the count of that name is how many were purged), and
+     * {@code stillUnverified} records whether every candidate was still unverified at the
+     * delete — a {@code false} is a registration verified in the moment between the two.
+     */
+    @Override
+    @Transactional
+    public Set<AccountName> purgeLapsedRegistrations(int limit) {
+        MethodObserver methodObserver = observer.forMethod("purgeLapsedRegistrations");
+        methodObserver.arguments(i -> i.inRange(limit, 1, PageRequest.MAX_PAGE_SIZE, "limit")).throwWhenInvalid();
+
+        Page<Account> lapsed = accounts.getLapsedRegistrations(clock.instant(), PageRequest.first(limit));
+        Set<AccountName> candidates = lapsed.content().stream()
+                .map(Account::name)
+                .collect(Collectors.toUnmodifiableSet());
+        if (candidates.isEmpty()) {
+            return Set.of();
+        }
+        tokens.deleteForUnverifiedAccounts(candidates);
+        Set<AccountName> deleted = accounts.deleteUnverified(candidates);
+
+        methodObserver.state(i -> i.isTrue(deleted.equals(candidates), "stillUnverified")).observe(Level.WARN);
+        for (Account account : lapsed.content()) {
+            if (deleted.contains(account.name())) {
+                methodObserver.namedEntity(account, "purged").observe(Level.INFO);
+            }
+        }
+        return deleted;
     }
 
     /**

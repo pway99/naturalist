@@ -17,6 +17,7 @@ import java.time.Duration;
 import java.time.Instant;
 import java.time.ZoneId;
 import java.time.ZoneOffset;
+import java.util.Set;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
@@ -368,5 +369,75 @@ class AccountCommandImplTest {
                 .isInstanceOf(AccountNotFoundException.class);
 
         assertThat(violations("suspend.accountKnown")).isEqualTo(1);
+    }
+
+    @Test
+    void purgeLapsedRegistrations_deletesRegistrationOnceItsTokenExpiredAndFreesTheEmail() {
+        AccountCommand cmd = command();
+        AccountCommand.Registration squatted = cmd.register("victim@example.org", "hash");
+        clock.advance(Duration.ofHours(25));
+
+        Set<AccountName> purged = cmd.purgeLapsedRegistrations(100);
+
+        assertThat(purged).containsExactly(squatted.account());
+        assertThat(accounts.getByName(squatted.account())).isEmpty();
+        assertThat(tokens.getByTokenHash(secureTokens.hash(squatted.rawToken()))).isEmpty();
+        // The real owner can now register the address the squatter held.
+        AccountCommand.Registration owner = cmd.register("victim@example.org", "hash");
+        assertThat(owner.account()).isNotEqualTo(squatted.account());
+    }
+
+    @Test
+    void purgeLapsedRegistrations_leavesRegistrationWhoseLinkIsStillLive() {
+        AccountCommand cmd = command();
+        AccountCommand.Registration fresh = cmd.register("fresh@example.org", "hash");
+        clock.advance(Duration.ofHours(23));
+
+        assertThat(cmd.purgeLapsedRegistrations(100)).isEmpty();
+        assertThat(accounts.getByName(fresh.account())).isPresent();
+    }
+
+    @Test
+    void purgeLapsedRegistrations_neverDeletesVerifiedAccount() {
+        AccountCommand cmd = command();
+        AccountCommand.Registration verified = cmd.register("verified@example.org", "hash");
+        cmd.verifyEmail(verified.rawToken());
+        clock.advance(Duration.ofDays(60));
+
+        Set<AccountName> purged = cmd.purgeLapsedRegistrations(100);
+
+        assertThat(purged).doesNotContain(verified.account());
+        assertThat(accounts.getByName(verified.account())).isPresent();
+        assertThat(tokens.getByTokenHash(secureTokens.hash(verified.rawToken()))).isPresent();
+    }
+
+    @Test
+    void purgeLapsedRegistrations_deletesAtMostLimit() {
+        AccountCommand cmd = command();
+        cmd.register("first@example.org", "hash");
+        cmd.register("second@example.org", "hash");
+        clock.advance(Duration.ofHours(25));
+
+        assertThat(cmd.purgeLapsedRegistrations(1)).hasSize(1);
+    }
+
+    @Test
+    void purgeLapsedRegistrations_rejectsLimitOutOfRange() {
+        assertThatThrownBy(() -> command().purgeLapsedRegistrations(0))
+                .isInstanceOf(InvariantViolationException.class)
+                .hasMessageContaining("limit");
+    }
+
+    @Test
+    void purgeLapsedRegistrations_observesEachPurgedAccount() {
+        AccountCommand cmd = command();
+        cmd.register("observed@example.org", "hash");
+        clock.advance(Duration.ofHours(25));
+
+        cmd.purgeLapsedRegistrations(100);
+
+        assertThat(baseline("purgeLapsedRegistrations.purged.name")).isEqualTo(1);
+        assertThat(baseline("purgeLapsedRegistrations.stillUnverified")).isEqualTo(1);
+        assertThat(violations("purgeLapsedRegistrations.stillUnverified")).isZero();
     }
 }

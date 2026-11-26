@@ -8,6 +8,7 @@ import com.naturalist.exception.EntityNotFoundException;
 import com.naturalist.exception.ForeignKeyConstraintException;
 import com.naturalist.exception.PrimaryKeyConstraintException;
 import com.naturalist.exception.UniqueConstraintException;
+import com.naturalist.observability.Level;
 import com.naturalist.observability.MethodObserver;
 import com.naturalist.observability.Observer;
 import com.naturalist.test.query.nofanout.SelectTrace;
@@ -228,6 +229,64 @@ public abstract class TestEntitySource<NAME, ENTITY extends Named<NAME>> {
     }
 
     /**
+     * Removes every stored entity keyed by one of {@code names}, returning how many were removed
+     * (an unknown name removes nothing). Inbound foreign keys are enforced the way Postgres enforces
+     * them: if any source already registered in this {@link NaturalistDatabase} declares a
+     * {@link ForeignKeyConstraint} into this source and still holds a row referencing one of
+     * {@code names}, nothing is removed and {@link ForeignKeyConstraintException} is thrown. A caller
+     * deletes children before their parent, as it must against the rdbms adapter. Sources load
+     * lazily, so only children already registered are checked: a repository that deletes a
+     * parent acquires its child sources first.
+     */
+    public int delete(Set<NAME> names) {
+        SelectTrace.recordWrite();
+        MethodObserver methodObserver = observer.forMethod("delete");
+        methodObserver.arguments(i -> i.notNull(names, "names")).throwWhenInvalid();
+        @Nullable ForeignKeyConstraintException referenced = null;
+        for (Object registered : database.sourceMap.values()) {
+            if (referenced == null) {
+                referenced = inboundReference((TestEntitySource<?, ?>) registered, names);
+            }
+        }
+        final boolean unreferenced = referenced == null;
+        methodObserver.state(i -> i.isTrue(unreferenced, "noInboundReference")).observe(Level.WARN);
+        if (referenced != null) {
+            throw referenced;
+        }
+        Set<String> touchedFiles = names.stream()
+                .filter(entityMap::containsKey)
+                .map(originFile::get)
+                .filter(file -> file != null)
+                .collect(Collectors.toSet());
+        int removed = 0;
+        for (NAME name : names) {
+            if (entityMap.remove(name) != null) {
+                originFile.remove(name);
+                removed++;
+            }
+        }
+        flushIfWritable(touchedFiles);
+        return removed;
+    }
+
+    /** The refusal for the first row of {@code child} referencing one of {@code names}, or {@code null} if none does. */
+    private <CHILD extends Named<?>> @Nullable ForeignKeyConstraintException inboundReference(
+            TestEntitySource<?, CHILD> child, Set<NAME> names) {
+        for (ForeignKeyConstraint<CHILD, ?> fk : child.foreignKeyConstraints()) {
+            if (!fk.foreignSourceClass().equals(getClass())) {
+                continue;
+            }
+            for (CHILD row : child.entityMap.values()) {
+                Object foreignValue = fk.value(row);
+                if (foreignValue != null && names.contains(foreignValue)) {
+                    return new ForeignKeyConstraintException(row, fk.name(), foreignValue);
+                }
+            }
+        }
+        return null;
+    }
+
+    /**
      * Insert-or-update, resolved by identity rather than by attempting
      * {@link #insert} or {@link #update} and catching the other's constraint
      * exception to recover. Three cases, evaluated in order:
@@ -408,6 +467,14 @@ public abstract class TestEntitySource<NAME, ENTITY extends Named<NAME>> {
      * framing rather than failing.
      */
     private void flushIfWritable() {
+        flushIfWritable(Set.of());
+    }
+
+    /**
+     * As {@link #flushIfWritable()}, and also rewrites each of {@code alsoWrite} even when no entity
+     * is left in it — a delete that empties a file must still empty it on disk.
+     */
+    private void flushIfWritable(Set<String> alsoWrite) {
         if (!PERSISTENCE_ENABLED) return;
         // Sort by name().toString() to match pageOf's read-side ordering. The entity
         // map is a HashMap, so iteration order is unstable; without a sort, every flush
@@ -416,6 +483,9 @@ public abstract class TestEntitySource<NAME, ENTITY extends Named<NAME>> {
                 .filter(e -> originFile.get(e.key()) != null)
                 .sorted(Comparator.comparing(e -> e.key().toString()))
                 .collect(Collectors.groupingBy(e -> originFile.get(e.key())));
+        for (String emptied : alsoWrite) {
+            byFile.putIfAbsent(emptied, List.of());
+        }
         for (Map.Entry<String, List<ENTITY>> entry : byFile.entrySet()) {
             Path target = resolveSourcePath(entry.getKey());
             if (target == null) continue;

@@ -57,7 +57,9 @@ class PackagedJarIT {
                 "--naturalist.admin.password=not-a-real-secret",
                 "--naturalist.vision.provider=none",
                 "--naturalist.email.log-only=true",
-                "--naturalist.challenge.log-only=true"))
+                "--naturalist.challenge.log-only=true",
+                // The purge must never run against the standing test database
+                "--naturalist.accounts.purge-cron=-"))
                 .directory(workingDirectory.toFile())
                 .redirectErrorStream(true)
                 .redirectOutput(output.toFile())

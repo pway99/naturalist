@@ -9,6 +9,7 @@ import org.junit.jupiter.api.Test;
 import java.time.Instant;
 import java.util.List;
 import java.util.Optional;
+import java.util.Set;
 import java.util.UUID;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -100,5 +101,33 @@ interface EmailVerificationTokenRepositoryTest
     @Test
     default void getByTokenHash_returnsEmptyForUnknownHash() {
         assertThat(repository().getByTokenHash("sha256:does-not-exist")).isEmpty();
+    }
+
+    @Test
+    default void deleteForUnverifiedAccounts_rejectsNull() {
+        assertThatThrownBy(() -> repository().deleteForUnverifiedAccounts(null))
+                .isInstanceOf(InvariantViolationException.class)
+                .hasMessageContaining("accounts");
+    }
+
+    @Test
+    default void deleteForUnverifiedAccounts_deletesTheUnverifiedAccountsTokens() {
+        int deleted = repository().deleteForUnverifiedAccounts(Set.of(AccountName.of("acct-018f3a2ef533")));
+
+        assertThat(deleted).isEqualTo(1);
+        assertThat(repository().getByName(TOKEN_ONE)).isEmpty();
+    }
+
+    @Test
+    default void deleteForUnverifiedAccounts_neverTouchesAVerifiedAccountsTokens() {
+        int deleted = repository().deleteForUnverifiedAccounts(Set.of(AccountName.of("acct-018f3a2e9b71")));
+
+        assertThat(deleted).isZero();
+        assertThat(repository().getByName(TOKEN_TWO)).isPresent();
+    }
+
+    @Test
+    default void deleteForUnverifiedAccounts_emptySetDeletesNothing() {
+        assertThat(repository().deleteForUnverifiedAccounts(Set.of())).isZero();
     }
 }

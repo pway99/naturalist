@@ -303,6 +303,10 @@ to the log instead. A deployment leaves all of these out and follows the
 `mvn -pl apps/management-console spring-boot:run` with the same arguments in
 `-Dspring-boot.run.arguments`.
 
+The app deletes accounts left unverified past their 24-hour link, hourly at minute 17. Against
+the standing test database that would delete its unverified fixture account, so a local run
+against it adds `--naturalist.accounts.purge-cron=-`, which turns the purge off.
+
 To enable identification, pass `--naturalist.vision.provider=anthropic` and
 supply the `model-credential` secret: as the `MODEL_CREDENTIAL` environment
 variable (the default source), or as the file `<dir>/model-credential` with

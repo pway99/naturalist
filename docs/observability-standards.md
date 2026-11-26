@@ -306,6 +306,15 @@ guaranteed by an earlier check), so it looks like an observation but counts noth
 `isTrue(!stored.toString().isBlank(), "storedNamed")` is never false, because a record's
 `toString()` is `FileName[value=…]`; observe `valueObject(stored, "stored")` or `stored.isValid()`.
 
+**Exception: a restricted path announces itself.** Under `MonitoringMode.ALWAYS`, a constraint
+placed inside the branch it names counts every entry to that branch. That is a deliberate
+non-error signal, and it is not a finding when the branch is a restricted code path the maintainer
+must know is being used. Example: in `NaturalistUserDetailsService.loadUserByUsername`,
+`state(i -> i.isTrue(isConfigAdmin, "isConfigAdmin")).observe(Level.WARN)` inside
+`if (isConfigAdmin)` counts every config-admin login. The constraint is named after the branch
+condition. The exception never covers an `ON_FAILURE` observer, where the constraint counts
+nothing.
+
 #### J6. Names say the reason
 
 **Kind:** Judgment, partly tool-checkable.
@@ -538,3 +547,6 @@ None.
   2026-11-16.
 - An edge orders its checks cheapest first: parameters, then reading the body, then decoding
   (B1). Pat, 2026-11-17.
+- A constraint that can never fail is still kept when, under `ALWAYS`, it sits inside a restricted
+  branch and counts entries to it (the config-admin login): a critical non-error signal for the
+  maintainer (J5). Pat, 2026-11-25.

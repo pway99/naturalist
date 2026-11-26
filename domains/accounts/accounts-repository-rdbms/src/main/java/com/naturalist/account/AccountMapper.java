@@ -3,10 +3,12 @@ package com.naturalist.account;
 import org.apache.ibatis.annotations.Insert;
 import org.apache.ibatis.annotations.Mapper;
 import org.apache.ibatis.annotations.Options;
+import org.apache.ibatis.annotations.Options.FlushCachePolicy;
 import org.apache.ibatis.annotations.Param;
 import org.apache.ibatis.annotations.Select;
 import org.apache.ibatis.annotations.Update;
 
+import java.time.Instant;
 import java.util.Collection;
 import java.util.List;
 
@@ -57,4 +59,34 @@ interface AccountMapper {
             WHERE name = #{name}
             """)
     int updateByName(AccountDbo dbo);
+
+    /** A lapsed registration: unverified, BROWSE_ONLY, ACTIVE, with verify tokens and none live at {@code now}. */
+    String LAPSED = """
+            FROM account a
+            WHERE a.email_verified = false AND a.access = 'BROWSE_ONLY' AND a.status = 'ACTIVE'
+              AND EXISTS (SELECT 1 FROM email_verification_token t
+                          WHERE t.account_id = a.id AND t.purpose = 'VERIFY_EMAIL')
+              AND NOT EXISTS (SELECT 1 FROM email_verification_token t
+                              WHERE t.account_id = a.id AND t.purpose = 'VERIFY_EMAIL'
+                                AND t.expires_at >= #{now})
+            """;
+
+    @Select("SELECT a.id, a.name, a.email, a.password_hash, a.email_verified, a.access, a.status "
+            + LAPSED + " ORDER BY a.name LIMIT #{limit} OFFSET #{offset}")
+    List<AccountDbo> selectLapsedPage(@Param("now") Instant now, @Param("limit") int limit, @Param("offset") int offset);
+
+    @Select("SELECT count(*) FROM (SELECT 1 " + LAPSED + " ORDER BY a.name OFFSET #{skip} LIMIT #{window}) w")
+    int countLapsedInWindow(@Param("now") Instant now, @Param("skip") int skip, @Param("window") int window);
+
+    /** Deletes the still-unverified accounts among {@code names}; {@code RETURNING} names the ones deleted. */
+    @Select("""
+            <script>
+            DELETE FROM account
+            WHERE email_verified = false AND name IN
+            <foreach item='n' collection='names' open='(' separator=',' close=')'>#{n}</foreach>
+            RETURNING name
+            </script>
+            """)
+    @Options(flushCache = FlushCachePolicy.TRUE, useCache = false)
+    List<String> deleteUnverified(@Param("names") Collection<String> names);
 }

@@ -3,6 +3,8 @@ package com.naturalist.naturalist;
 import com.naturalist.account.AccountName;
 import org.jspecify.annotations.Nullable;
 
+import java.util.Set;
+
 /**
  * Write port for naturalists. {@code create} mints a fresh, opaque {@link NaturalistName}
  * and links the new ecological record to an already-existing authentication {@link
@@ -30,4 +32,13 @@ public interface NaturalistCommand {
      * if either argument is invalid, or a not-found exception if {@code name} is unknown.
      */
     void rename(NaturalistName name, String newPublicHandle);
+
+    /**
+     * Deletes the naturalists linked to {@code accounts}, returning how many were deleted. Only
+     * for accounts the accounts domain has just purged as never verified (the app's
+     * {@code UnverifiedAccountPurgeTransaction}): such an account could not record sightings,
+     * photos or notes, so no other domain refers to its naturalist. Throws
+     * {@code InvariantViolationException} if {@code accounts} is null.
+     */
+    int deleteForAccounts(Set<AccountName> accounts);
 }

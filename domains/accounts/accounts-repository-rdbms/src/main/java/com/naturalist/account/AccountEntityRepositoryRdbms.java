@@ -10,9 +10,11 @@ import com.naturalist.observability.Level;
 import com.naturalist.observability.MethodObserver;
 import com.naturalist.persistence.RdbmsExceptions;
 
+import java.time.Instant;
 import java.util.List;
 import java.util.Optional;
 import java.util.Set;
+import java.util.stream.Collectors;
 
 @DomainService
 class AccountEntityRepositoryRdbms
@@ -97,5 +99,42 @@ class AccountEntityRepositoryRdbms
         Optional<Account> result = Optional.ofNullable(mapper.selectByEmail(email)).map(AccountDbo::toEntity);
         getByEmail.state(s -> s.namedEntityOrNull(result.orElse(null), "result")).observe(Level.WARN);
         return result;
+    }
+
+    @Override
+    public Page<Account> getLapsedRegistrations(Instant now, PageRequest pageRequest) {
+        MethodObserver methodObserver = observer().forMethod("getLapsedRegistrations");
+        methodObserver.arguments(i -> i
+                .notNull(now, "now")
+                .valueObject(pageRequest, "pageRequest"))
+                .throwWhenInvalid();
+        int pageSize = pageRequest.pageSize();
+        List<AccountDbo> rows = mapper.selectLapsedPage(now, pageSize + 1, pageRequest.offset());
+        boolean immediateMore = rows.size() > pageSize;
+        List<Account> content = rows.stream().limit(pageSize).map(AccountDbo::toEntity).toList();
+
+        int pagesAheadKnown = 0;
+        boolean moreBeyondLookahead = immediateMore;
+        if (pageRequest.lookahead() > 0 && immediateMore) {
+            int window = pageRequest.lookahead() * pageSize + 1;
+            int beyond = mapper.countLapsedInWindow(now, pageRequest.offset() + pageSize, window);
+            pagesAheadKnown = Math.min(pageRequest.lookahead(), (beyond + pageSize - 1) / pageSize);
+            moreBeyondLookahead = beyond > pageRequest.lookahead() * pageSize;
+        } else if (pageRequest.lookahead() > 0) {
+            moreBeyondLookahead = false;
+        }
+        Page<Account> page = new Page<>(content, pageRequest.pageNumber(), pageSize, pagesAheadKnown, moreBeyondLookahead);
+        methodObserver.state(s -> s.observableCollection(page.content(), "result")).observe(Level.WARN);
+        return page;
+    }
+
+    @Override
+    public Set<AccountName> deleteUnverified(Set<AccountName> names) {
+        observer().arguments("deleteUnverified", i -> i.entityNameCollection(names, "names")).throwWhenInvalid();
+        if (names.isEmpty()) return Set.of();
+        List<String> slugs = names.stream().map(AccountName::value).toList();
+        return mapper.deleteUnverified(slugs).stream()
+                .map(AccountName::of)
+                .collect(Collectors.toUnmodifiableSet());
     }
 }

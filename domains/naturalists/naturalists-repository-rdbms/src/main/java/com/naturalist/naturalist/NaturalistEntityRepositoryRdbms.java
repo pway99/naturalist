@@ -99,4 +99,12 @@ class NaturalistEntityRepositoryRdbms
         getByAccount.state(s -> s.namedEntityOrNull(result.orElse(null), "result")).observe(Level.WARN);
         return result;
     }
+
+    @Override
+    public int deleteByAccounts(Set<AccountName> accounts) {
+        observer().arguments("deleteByAccounts", i -> i.entityNameCollection(accounts, "accounts"))
+                .throwWhenInvalid();
+        if (accounts.isEmpty()) return 0;
+        return mapper.deleteByAccounts(accounts.stream().map(AccountName::value).toList());
+    }
 }

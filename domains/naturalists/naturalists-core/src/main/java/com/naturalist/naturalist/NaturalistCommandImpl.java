@@ -6,6 +6,8 @@ import com.naturalist.observability.Observer;
 
 import org.jspecify.annotations.Nullable;
 
+import java.util.Set;
+
 /**
  * Plain {@code @DomainService} write command (ADR-010 style; mirrors {@code AccountCommandImpl}).
  * {@link #create} mints a fresh, opaque {@link NaturalistName} and links the new ecological
@@ -16,7 +18,7 @@ import org.jspecify.annotations.Nullable;
 @DomainService
 class NaturalistCommandImpl implements NaturalistCommand {
 
-    private final Observer observer = Observer.forClass(getClass());
+    private static final Observer observer = Observer.forClass(NaturalistCommandImpl.class);
 
     private final NaturalistRepository.NaturalistEntityRepository naturalists;
 
@@ -57,5 +59,12 @@ class NaturalistCommandImpl implements NaturalistCommand {
 
         Naturalist existing = naturalists.getByName(name).orElseThrow();
         naturalists.update(existing.withPublicHandle(newPublicHandle));
+    }
+
+    @Override
+    public int deleteForAccounts(Set<AccountName> accounts) {
+        observer.arguments("deleteForAccounts", i -> i.entityNameCollection(accounts, "accounts"))
+                .throwWhenInvalid();
+        return naturalists.deleteByAccounts(accounts);
     }
 }

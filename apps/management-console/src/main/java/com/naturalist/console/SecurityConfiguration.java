@@ -5,6 +5,8 @@ import com.naturalist.console.auth.CurrentNaturalist;
 import com.naturalist.console.auth.IdentifyRateLimitFilter;
 import com.naturalist.console.auth.LoginChallengeFilter;
 import com.naturalist.console.auth.LoginRateLimitFilter;
+import com.naturalist.console.auth.NaturalistPrincipal;
+import com.naturalist.console.auth.ObservedAccessDeniedHandler;
 import com.naturalist.console.challenge.ChallengeGate;
 import com.naturalist.resilience.Resilience;
 import com.naturalist.usage.IdentificationBudget;
@@ -61,9 +63,14 @@ class SecurityConfiguration {
                                 // The paid vision feature: identification requires the VISION entitlement.
                                 // (Anonymous callers are bounced to login; a signed-in BROWSE_ONLY
                                 // naturalist gets 403 — they lack the authority.)
-                                .requestMatchers(HttpMethod.POST,
-                                        "/insects/identify", "/plants/identify")
+                                .requestMatchers(HttpMethod.POST, ObservedAccessDeniedHandler.IDENTIFY)
                                 .hasAuthority("VISION")
+                                // Member writes (record a sighting, add a photo, edit notes) need a verified
+                                // email: a never-verified registration then owns no content, so the purge
+                                // of lapsed registrations (launch 1.5) deletes it whole. A signed-in but
+                                // unverified naturalist gets 403, as BROWSE_ONLY does on identify.
+                                .requestMatchers(HttpMethod.POST, ObservedAccessDeniedHandler.MEMBER_WRITES)
+                                .hasAuthority(NaturalistPrincipal.VERIFIED)
                                 // Anonymous browsing of the public catalog: the organism domains and the
                                 // field-guide library. Operational Oak Vista domains stay authenticated
                                 // (they fall through to anyRequest below).
@@ -71,7 +78,7 @@ class SecurityConfiguration {
                                         "/insects/**", "/plants/**",
                                         "/citations/**", "/concepts/**", "/glossary/**").permitAll()
                                 // Admin console (GET and POST).
-                                .requestMatchers("/admin/**").hasRole("ADMIN")
+                                .requestMatchers(ObservedAccessDeniedHandler.ADMIN).hasRole("ADMIN")
                                 // A naturalist's own profile / handle management.
                                 .requestMatchers("/naturalists/me/**").authenticated()
                                 // Everything else — member write actions (observe, add image, notes) and
@@ -89,6 +96,10 @@ class SecurityConfiguration {
                         .contentSecurityPolicy(csp -> csp.policyDirectives(
                                 "connect-src 'self'; form-action 'self'; frame-ancestors 'none'"))
                         .contentTypeOptions(Customizer.withDefaults()))
+                // Every 403 to a signed-in caller (and every CSRF refusal) is counted under the rule
+                // that refused it, then answered as Spring's default handler would.
+                .exceptionHandling(exceptions -> exceptions
+                        .accessDeniedHandler(new ObservedAccessDeniedHandler()))
                 .formLogin(form -> form
                                 .loginPage("/login")
                                 .failureUrl("/login?error")

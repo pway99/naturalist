@@ -4,6 +4,7 @@ import com.naturalist.account.AccountName;
 import com.naturalist.data.EntityRepository;
 
 import java.util.Optional;
+import java.util.Set;
 
 /**
  * Namespace for the naturalists sub-context's write-side repositories.
@@ -26,5 +27,11 @@ class NaturalistRepository {
          * "given an account, find its naturalist").
          */
         Optional<Naturalist> getByAccount(AccountName account);
+
+        /**
+         * Deletes every naturalist linked to one of {@code accounts}, returning how many were
+         * deleted. The naturalists half of purging a lapsed registration.
+         */
+        int deleteByAccounts(Set<AccountName> accounts);
     }
 }

@@ -100,6 +100,10 @@ naturalist:
     alert-email: operator@naturalist.local
   access:
     grant-policy: self-serve
+  accounts:
+    # When the purge of registrations never verified within their 24-hour link runs (launch 1.5):
+    # hourly, at minute 17. "-" disables it.
+    purge-cron: "0 17 * * * *"
   images:
     # Filesystem root of the image store: one <space>/ subdirectory per domain holds the
     # photos, seed photos included (the seeder copies them here). The path is relative

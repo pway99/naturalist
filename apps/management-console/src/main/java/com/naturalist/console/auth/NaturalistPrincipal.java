@@ -17,9 +17,15 @@ import java.util.List;
  * <p>
  * Login username is the account {@code email}. {@code VISION} is carried as a plain
  * granted authority (not a role) alongside {@code ROLE_NATURALIST}, present only when
- * the backing account's access level is {@code VISION}.
+ * the backing account's access level is {@code VISION}. {@code VERIFIED} is carried the same way,
+ * present only once the account's email is verified: it gates the member writes (sightings,
+ * photos, notes), so a never-verified registration owns no content and can be purged whole
+ * (launch item 1.5).
  */
 public final class NaturalistPrincipal implements UserDetails {
+
+    /** The authority a verified email carries; {@code SecurityConfiguration} requires it for member writes. */
+    public static final String VERIFIED = "VERIFIED";
 
     private final NaturalistName naturalistName;
     private final String givenName;
@@ -29,7 +35,8 @@ public final class NaturalistPrincipal implements UserDetails {
     private final Collection<GrantedAuthority> authorities;
 
     public NaturalistPrincipal(NaturalistName naturalistName, String givenName, String email,
-                               String passwordHash, boolean hasVision, boolean accountNonLocked) {
+                               String passwordHash, boolean hasVision, boolean emailVerified,
+                               boolean accountNonLocked) {
         this.naturalistName = naturalistName;
         this.givenName = givenName;
         this.email = email;
@@ -38,6 +45,7 @@ public final class NaturalistPrincipal implements UserDetails {
         ArrayList<GrantedAuthority> auths = new ArrayList<GrantedAuthority>();
         auths.add(new SimpleGrantedAuthority("ROLE_NATURALIST"));
         if (hasVision) auths.add(new SimpleGrantedAuthority("VISION"));
+        if (emailVerified) auths.add(new SimpleGrantedAuthority(VERIFIED));
         this.authorities = List.copyOf(auths);
     }
 

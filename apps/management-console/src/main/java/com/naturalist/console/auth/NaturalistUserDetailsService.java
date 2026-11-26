@@ -10,6 +10,7 @@ import com.naturalist.exception.InvariantViolationException;
 import com.naturalist.naturalist.Naturalist;
 import com.naturalist.naturalist.NaturalistQuery;
 import com.naturalist.observability.Level;
+import com.naturalist.observability.MethodObserver;
 import com.naturalist.observability.Observer;
 import org.springframework.security.core.userdetails.User;
 import org.springframework.security.core.userdetails.UserDetails;
@@ -43,7 +44,8 @@ import java.util.Optional;
 @Service
 class NaturalistUserDetailsService implements UserDetailsService {
 
-    private final Observer observer = Observer.forClass(getClass(), Observer.MonitoringMode.ALWAYS);
+    private static final Observer observer =
+            Observer.forClass(NaturalistUserDetailsService.class, Observer.MonitoringMode.ALWAYS);
 
     private final AdminProperties admin;
     private final String adminPasswordHash;
@@ -62,9 +64,10 @@ class NaturalistUserDetailsService implements UserDetailsService {
 
     @Override
     public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
+        MethodObserver methodObserver = observer.forMethod("loadUserByUsername");
         boolean isConfigAdmin = admin.username().equals(username);
         if (isConfigAdmin) {
-            observer.forMethod("loadUserByUsername")
+            methodObserver
                     .state(i -> i.isTrue(isConfigAdmin, "isConfigAdmin"))
                     .observe(Level.WARN);
             return User.withUsername(admin.username())
@@ -85,7 +88,7 @@ class NaturalistUserDetailsService implements UserDetailsService {
 
         final Optional<Account> found = account;
         final boolean usernameWellFormed = wellFormed;
-        observer.forMethod("loadUserByUsername")
+        methodObserver
                 .state(i -> i
                         .isTrue(usernameWellFormed, "usernameWellFormed")
                         .isTrue(found.isPresent(), "accountKnown")
@@ -103,6 +106,7 @@ class NaturalistUserDetailsService implements UserDetailsService {
                 resolved.email(),
                 resolved.passwordHash(),
                 resolved.access() == AccessLevel.VISION,
+                resolved.emailVerified(),
                 resolved.status() != AccountStatus.SUSPENDED);
     }
 }

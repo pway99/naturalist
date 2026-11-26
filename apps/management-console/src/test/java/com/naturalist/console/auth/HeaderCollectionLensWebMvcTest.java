@@ -44,7 +44,7 @@ class HeaderCollectionLensWebMvcTest {
 
     private static UsernamePasswordAuthenticationToken patrick() {
         NaturalistPrincipal p = new NaturalistPrincipal(NaturalistName.of("patrick-way"), "Patrick",
-                "gerald.durrell@oakvista.example", "{bcrypt}x", false, true);
+                "gerald.durrell@oakvista.example", "{bcrypt}x", false, true, true);
         return new UsernamePasswordAuthenticationToken(p, "n/a", p.getAuthorities());
     }
 

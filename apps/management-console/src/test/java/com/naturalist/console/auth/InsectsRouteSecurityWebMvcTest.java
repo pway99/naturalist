@@ -18,6 +18,7 @@ import static org.springframework.security.test.web.servlet.request.SecurityMock
 import static org.springframework.security.test.web.servlet.setup.SecurityMockMvcConfigurers.springSecurity;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.multipart;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 /**
@@ -101,6 +102,32 @@ class InsectsRouteSecurityWebMvcTest {
         mockMvc.perform(multipart("/insects/battus-philenor/images").file(file)
                 .with(user("naturalist").roles("ADMIN")))
                 .andExpect(status().isForbidden());
+    }
+
+    @Test
+    void memberWrites_signedInButUnverified_areForbidden() throws Exception {
+        // Launch 1.5: a never-verified registration may own no content, so it can be purged whole.
+        SimpleGrantedAuthority naturalist = new SimpleGrantedAuthority("ROLE_NATURALIST");
+        MockMultipartFile file = new MockMultipartFile("image", "test.jpg", "image/jpeg", TINY_JPEG);
+        mockMvc.perform(post("/insects/battus-philenor/observe").with(csrf())
+                .with(user("naturalist").authorities(naturalist)))
+                .andExpect(status().isForbidden());
+        mockMvc.perform(multipart("/insects/battus-philenor/images").file(file).with(csrf())
+                .with(user("naturalist").authorities(naturalist)))
+                .andExpect(status().isForbidden());
+        mockMvc.perform(post("/insects/battus-philenor/notes").param("notes", "x").with(csrf())
+                .with(user("naturalist").authorities(naturalist)))
+                .andExpect(status().isForbidden());
+    }
+
+    @Test
+    void observe_signedInAndVerified_passesSecurityGate() throws Exception {
+        mockMvc.perform(post("/insects/battus-philenor/observe").with(csrf())
+                .with(user("naturalist").authorities(
+                        new SimpleGrantedAuthority("ROLE_NATURALIST"),
+                        new SimpleGrantedAuthority(NaturalistPrincipal.VERIFIED))))
+                // VERIFIED clears the gate; the controller redirects a plain test user (no NaturalistPrincipal).
+                .andExpect(status().is3xxRedirection());
     }
 
     /**
