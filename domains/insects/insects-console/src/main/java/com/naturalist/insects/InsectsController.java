@@ -273,13 +273,13 @@ public class InsectsController {
     }
 
     private CladeTrail cladeTrail(List<InsectCladeAnchors.LineageEntry> lineage) {
-        MethodObserver m = OBSERVER.forMethod("cladeTrail");
-        m.arguments(i -> i
+        MethodObserver methodObserver = observer.forMethod("cladeTrail");
+        methodObserver.arguments(i -> i
                 .notNull(lineage, "lineage"))
                 .throwWhenInvalid();
         InsectCladeAnchors.Anchor anchor = InsectCladeAnchors.resolve(lineage);
         Optional<CladeView> found = cladeQuery.getBySlug(anchor.cladeSlug());
-        m.state(s -> s
+        methodObserver.state(s -> s
                 .isPresent(found, "anchorClade"))
                 .throwWhenInvalid();
         CladeView view = found.orElseThrow();
@@ -326,7 +326,7 @@ public class InsectsController {
 
     private CladeTrail cladeTrailAt(String slug) {
         Optional<CladeView> found = cladeQuery.getBySlug(slug);
-        OBSERVER.state("cladeTrailAt", s -> s
+        observer.state("cladeTrailAt", s -> s
                 .isPresent(found, "clade"))
                 .throwWhenInvalid();
         CladeView view = found.orElseThrow();
@@ -456,7 +456,7 @@ public class InsectsController {
         if (me.isEmpty()) {
             return "redirect:/insects/identify";
         }
-        MethodObserver methodObserver = OBSERVER.forMethod("identify");
+        MethodObserver methodObserver = observer.forMethod("identify");
         if (notesTooLong(methodObserver, notes)) {
             return "redirect:/insects/identify?error=notes";
         }
@@ -543,19 +543,37 @@ public class InsectsController {
     String familyDetail(@PathVariable InsectFamilyName name,
                         @RequestParam(name = "error", required = false) String error,
                         HttpServletRequest request, HttpServletResponse response, Model model) {
-        MethodObserver methodObserver = OBSERVER.forMethod("familyDetail");
-        if (invalidName(methodObserver, name)) {
+        MethodObserver methodObserver = observer.forMethod("familyDetail");
+        if (methodObserver.arguments(c -> c
+                .entityName(name, "name"))
+                .observe(Level.INFO)
+                .isNotValid()) {
             return notFound(response, model, name, "/insects/families");
         }
         Optional<InsectViews.RankPage> rankPage = insectViewQuery.rankPage(name, currentNaturalist(request).orElse(null));
-        if (unknownName(methodObserver, rankPage.isPresent())) {
+        return methodObserver.state(c -> c
+                .isPresent(rankPage, "nameFound"))
+                .observe(Level.INFO)
+                .whenNotValid(() -> notFound(response, model, name, "/insects/families"))
+                .otherwise(() -> familyPage(name, rankPage.get(), error, response, model));
+    }
+
+    private String familyPage(InsectFamilyName name, InsectViews.RankPage rankPage, @Nullable String error,
+                              HttpServletResponse response, Model model) {
+        if (observer.arguments("familyPage", c -> c
+                .readModel(rankPage, "rankPage")
+                .isTrue(rankPage.insect(), Insect::hasFamily, "hasFamily"))
+                .observe(Level.WARN)
+                .isNotValid()) {
+            // the catalog holds it, but the read model is invalid: counted to fix, answered as not found
             return notFound(response, model, name, "/insects/families");
         }
-        Insect insect = rankPage.get().insect();
+        // Insect.invariants() requires the order whenever the family is present
+        Insect insect = rankPage.insect();
         InsectFamilyInfo family = insect.family().info();
         InsectOrderInfo order = insect.order().info();
         Description description = family.description();
-        model.addAttribute("page", rankPage.get());
+        model.addAttribute("page", rankPage);
         model.addAttribute("glossaryLinker", glossaryLinker);
         model.addAttribute("descriptionPreschool", descriptionRenderer.render(description.preschool()));
         model.addAttribute("descriptionElementary", descriptionRenderer.render(description.elementary()));
@@ -586,17 +604,34 @@ public class InsectsController {
     String orderDetail(@PathVariable InsectOrderName name,
                        @RequestParam(name = "error", required = false) String error,
                        HttpServletRequest request, HttpServletResponse response, Model model) {
-        MethodObserver methodObserver = OBSERVER.forMethod("orderDetail");
-        if (invalidName(methodObserver, name)) {
+        MethodObserver methodObserver = observer.forMethod("orderDetail");
+        if (methodObserver.arguments(c -> c
+                .entityName(name, "name"))
+                .observe(Level.INFO)
+                .isNotValid()) {
             return notFound(response, model, name, "/insects/orders");
         }
         Optional<InsectViews.RankPage> rankPage = insectViewQuery.rankPage(name, currentNaturalist(request).orElse(null));
-        if (unknownName(methodObserver, rankPage.isPresent())) {
+        return methodObserver.state(c -> c
+                .isPresent(rankPage, "nameFound"))
+                .observe(Level.INFO)
+                .whenNotValid(() -> notFound(response, model, name, "/insects/orders"))
+                .otherwise(() -> orderPage(name, rankPage.get(), error, response, model));
+    }
+
+    private String orderPage(InsectOrderName name, InsectViews.RankPage rankPage, @Nullable String error,
+                             HttpServletResponse response, Model model) {
+        if (observer.arguments("orderPage", c -> c
+                .readModel(rankPage, "rankPage")
+                .isTrue(rankPage.insect(), Insect::hasOrder, "hasOrder"))
+                .observe(Level.WARN)
+                .isNotValid()) {
+            // the catalog holds it, but the read model is invalid: counted to fix, answered as not found
             return notFound(response, model, name, "/insects/orders");
         }
-        InsectOrderInfo order = rankPage.get().insect().order().info();
+        InsectOrderInfo order = rankPage.insect().order().info();
         Description description = order.description();
-        model.addAttribute("page", rankPage.get());
+        model.addAttribute("page", rankPage);
         model.addAttribute("glossaryLinker", glossaryLinker);
         model.addAttribute("descriptionPreschool", descriptionRenderer.render(description.preschool()));
         model.addAttribute("descriptionElementary", descriptionRenderer.render(description.elementary()));
@@ -627,20 +662,38 @@ public class InsectsController {
     String genusDetail(@PathVariable InsectGenusName name,
                        @RequestParam(name = "error", required = false) String error,
                        HttpServletRequest request, HttpServletResponse response, Model model) {
-        MethodObserver methodObserver = OBSERVER.forMethod("genusDetail");
-        if (invalidName(methodObserver, name)) {
+        MethodObserver methodObserver = observer.forMethod("genusDetail");
+        if (methodObserver.arguments(c -> c
+                .entityName(name, "name"))
+                .observe(Level.INFO)
+                .isNotValid()) {
             return notFound(response, model, name, "/insects/genera");
         }
         Optional<InsectViews.RankPage> rankPage = insectViewQuery.rankPage(name, currentNaturalist(request).orElse(null));
-        if (unknownName(methodObserver, rankPage.isPresent())) {
+        return methodObserver.state(c -> c
+                .isPresent(rankPage, "nameFound"))
+                .observe(Level.INFO)
+                .whenNotValid(() -> notFound(response, model, name, "/insects/genera"))
+                .otherwise(() -> genusPage(name, rankPage.get(), error, response, model));
+    }
+
+    private String genusPage(InsectGenusName name, InsectViews.RankPage rankPage, @Nullable String error,
+                             HttpServletResponse response, Model model) {
+        if (observer.arguments("genusPage", c -> c
+                .readModel(rankPage, "rankPage")
+                .isTrue(rankPage.insect(), Insect::hasGenus, "hasGenus"))
+                .observe(Level.WARN)
+                .isNotValid()) {
+            // the catalog holds it, but the read model is invalid: counted to fix, answered as not found
             return notFound(response, model, name, "/insects/genera");
         }
-        Insect insect = rankPage.get().insect();
+        // Insect.invariants() requires the family and order whenever the genus is present
+        Insect insect = rankPage.insect();
         InsectGenusInfo genus = insect.genus().info();
         InsectFamilyInfo family = insect.family().info();
         InsectOrderInfo order = insect.order().info();
         Description description = genus.description();
-        model.addAttribute("page", rankPage.get());
+        model.addAttribute("page", rankPage);
         model.addAttribute("glossaryLinker", glossaryLinker);
         model.addAttribute("descriptionPreschool", descriptionRenderer.render(description.preschool()));
         model.addAttribute("descriptionElementary", descriptionRenderer.render(description.elementary()));
@@ -680,16 +733,36 @@ public class InsectsController {
     String detail(@PathVariable InsectSpeciesName name,
                   @RequestParam(name = "error", required = false) String error,
                   HttpServletRequest request, HttpServletResponse response, Model model) {
-        MethodObserver methodObserver = OBSERVER.forMethod("detail");
-        if (invalidName(methodObserver, name)) {
+        MethodObserver methodObserver = observer.forMethod("detail");
+        if (methodObserver.arguments(c -> c
+                .entityName(name, "name"))
+                .observe(Level.INFO)
+                .isNotValid()) {
             return notFound(response, model, name, "/insects/species");
         }
-        java.util.Optional<NaturalistName> viewer = currentNaturalist(request);
+        Optional<NaturalistName> viewer = currentNaturalist(request);
         Optional<InsectViews.RankPage> rankPage = insectViewQuery.rankPage(name, viewer.orElse(null));
-        if (unknownName(methodObserver, rankPage.isPresent())) {
+        return methodObserver.state(c -> c
+                .isPresent(rankPage, "nameFound"))
+                .observe(Level.INFO)
+                .whenNotValid(() -> notFound(response, model, name, "/insects/species"))
+                .otherwise(() -> speciesPage(name, rankPage.get(), viewer.isPresent(), error, request, response,
+                        model));
+    }
+
+    private String speciesPage(InsectSpeciesName name, InsectViews.RankPage rankPage, boolean signedIn,
+                               @Nullable String error, HttpServletRequest request, HttpServletResponse response,
+                               Model model) {
+        if (observer.arguments("speciesPage", c -> c
+                .readModel(rankPage, "rankPage")
+                .isTrue(rankPage.insect(), Insect::hasSpecies, "hasSpecies"))
+                .observe(Level.WARN)
+                .isNotValid()) {
+            // the catalog holds it, but the read model is invalid: counted to fix, answered as not found
             return notFound(response, model, name, "/insects/species");
         }
-        Insect i = rankPage.get().insect();
+        // Insect.invariants() requires the genus, family and order whenever the species is present
+        Insect i = rankPage.insect();
         InsectSpeciesInfo s = i.species().info();
         InsectGenusInfo genus = i.genus().info();
         InsectFamilyInfo family = i.family().info();
@@ -710,8 +783,8 @@ public class InsectsController {
         if ("busy".equals(error)) {
             model.addAttribute("busyError", true);
         }
-        model.addAttribute("page", rankPage.get());
-        model.addAttribute("lens", collectionLensOn(request) && viewer.isPresent());
+        model.addAttribute("page", rankPage);
+        model.addAttribute("lens", collectionLensOn(request) && signedIn);
         model.addAttribute("glossaryLinker", glossaryLinker);
         model.addAttribute("descriptionPreschool", descriptionRenderer.render(description.preschool()));
         model.addAttribute("descriptionElementary", descriptionRenderer.render(description.elementary()));
@@ -737,8 +810,11 @@ public class InsectsController {
     String observe(@PathVariable InsectSpeciesName name,
                    @RequestParam(name = "notes", required = false) String notes,
                    HttpServletRequest request) {
-        MethodObserver methodObserver = OBSERVER.forMethod("observe");
-        if (invalidName(methodObserver, name)) {
+        MethodObserver methodObserver = observer.forMethod("observe");
+        if (methodObserver.arguments(c -> c
+                .entityName(name, "name"))
+                .observe(Level.INFO)
+                .isNotValid()) {
             return "redirect:/insects/species?error=name";
         }
         java.util.Optional<NaturalistName> me = currentNaturalist(request);
@@ -760,8 +836,11 @@ public class InsectsController {
                     @RequestParam(name = "areaLat", required = false) String areaLat,
                     @RequestParam(name = "areaLon", required = false) String areaLon,
                     HttpServletRequest request) throws IOException {
-        MethodObserver methodObserver = OBSERVER.forMethod("addImage");
-        if (invalidName(methodObserver, name)) {
+        MethodObserver methodObserver = observer.forMethod("addImage");
+        if (methodObserver.arguments(c -> c
+                .entityName(name, "name"))
+                .observe(Level.INFO)
+                .isNotValid()) {
             return "redirect:/insects/species?error=name";
         }
         if (notesTooLong(methodObserver, notes)) {
@@ -807,7 +886,7 @@ public class InsectsController {
     private static boolean notesTooLong(MethodObserver methodObserver, @Nullable String notes) {
         return !methodObserver.arguments(i -> i
                 .maxLength(notes, OrganismObservation.MAX_NOTES_LENGTH, "notes"))
-                .observe(Level.WARN)
+                .observe(Level.INFO)
                 .violations().isEmpty();
     }
 
@@ -822,26 +901,6 @@ public class InsectsController {
         return "insects/not-found";
     }
 
-    /** Observes whether a valid name found a catalog entry (WARN when not) and answers true when it did not. */
-    private static boolean unknownName(MethodObserver methodObserver, boolean found) {
-        return !methodObserver.state(i -> i
-                .isTrue(found, "nameFound"))
-                .observe(Level.WARN)
-                .violations().isEmpty();
-    }
-
-    /**
-     * Stops a request whose path names no valid slug before it reaches a query or command: Spring hands the
-     * name on as given ({@code NamedValueConversion}), so the endpoint observes it here and answers true, and
-     * the caller answers as it does for an unknown name.
-     */
-    private static boolean invalidName(MethodObserver methodObserver, EntityName name) {
-        return !methodObserver.arguments(i -> i
-                .entityName(name, "name"))
-                .observe(Level.WARN)
-                .violations().isEmpty();
-    }
-
     /**
      * Stops a request whose claimed {@code area} is unreadable or off the lattice before the image is
      * read: observes the refusal through the endpoint's {@code methodObserver} and answers true, so the
@@ -850,7 +909,7 @@ public class InsectsController {
     private static boolean areaOffTheLattice(MethodObserver methodObserver, @Nullable GridCell area) {
         return !methodObserver.state(i -> i
                 .valueObjectOrNull(area, "area"))
-                .observe(Level.WARN)
+                .observe(Level.INFO)
                 .violations().isEmpty();
     }
 
@@ -861,13 +920,13 @@ public class InsectsController {
                        @RequestParam(value = "returnPath", required = false) String returnPath,
                        HttpServletRequest request) {
         String destination = safeReturnPath(returnPath, "/insects/" + name);
-        MethodObserver methodObserver = OBSERVER.forMethod("updateNotes");
+        MethodObserver methodObserver = observer.forMethod("updateNotes");
         if (notesTooLong(methodObserver, notes)) {
             return "redirect:" + destination + (destination.contains("?") ? "&" : "?") + "error=notes";
         }
         if (!methodObserver.arguments(i -> i
                 .entityId(observationId, "observationId"))
-                .observe(Level.WARN)
+                .observe(Level.INFO)
                 .violations().isEmpty()) {
             // a missing, malformed or non-v7 observationId (Spring hands an unreadable one on as null). It names no
             // observation, so saying so leaks nothing about who owns one (a non-owner's edit stays silent below).
@@ -905,15 +964,31 @@ public class InsectsController {
 
     @GetMapping("/{name}/life-stages")
     String lifeStages(@PathVariable InsectSpeciesName name, HttpServletResponse response, Model model) {
-        MethodObserver methodObserver = OBSERVER.forMethod("lifeStages");
-        if (invalidName(methodObserver, name)) {
+        MethodObserver methodObserver = observer.forMethod("lifeStages");
+        if (methodObserver.arguments(c -> c
+                .entityName(name, "name"))
+                .observe(Level.INFO)
+                .isNotValid()) {
             return notFound(response, model, name, "/insects/species");
         }
         Optional<Insect> insect = insectQuery.getByName(name);
-        if (unknownName(methodObserver, insect.isPresent())) {
+        return methodObserver.state(c -> c
+                .isPresent(insect, "nameFound"))
+                .observe(Level.INFO)
+                .whenNotValid(() -> notFound(response, model, name, "/insects/species"))
+                .otherwise(() -> lifeStagesPage(name, insect.get(), response, model));
+    }
+
+    private String lifeStagesPage(InsectSpeciesName name, Insect i, HttpServletResponse response, Model model) {
+        if (observer.arguments("lifeStagesPage", c -> c
+                .readModel(i, "insect")
+                .isTrue(i, Insect::hasSpecies, "hasSpecies"))
+                .observe(Level.WARN)
+                .isNotValid()) {
+            // the catalog holds it, but the read model is invalid: counted to fix, answered as not found
             return notFound(response, model, name, "/insects/species");
         }
-        Insect i = insect.get();
+        // Insect.invariants() requires the genus, family and order whenever the species is present
         InsectSpeciesInfo s = i.species().info();
         InsectGenusInfo genus = i.genus().info();
         InsectFamilyInfo family = i.family().info();
@@ -945,11 +1020,11 @@ public class InsectsController {
      * falls back to the full photo, and the 404 must not be remembered once the tile is written.
      */
     private ResponseEntity<Resource> serve(String space, FileName filename, ImageVariant variant) {
-        MethodObserver methodObserver = OBSERVER.forMethod("serve");
+        MethodObserver methodObserver = observer.forMethod("serve");
         // A name with a directory part names no stored photo: answered here, before the store refuses it.
         if (!methodObserver.arguments(i -> i
                 .namedValue(filename, "filename"))
-                .observe(Level.WARN)
+                .observe(Level.INFO)
                 .violations().isEmpty()) {
             return notFound();
         }
@@ -967,7 +1042,7 @@ public class InsectsController {
         // a broken link of ours, or someone probing names: the caller is told, and the miss is counted
         if (!methodObserver.state(i -> i
                 .isTrue(found.isPresent(), "found"))
-                .observe(Level.WARN)
+                .observe(Level.INFO)
                 .violations().isEmpty()) {
             return notFound();
         }
@@ -1003,6 +1078,6 @@ public class InsectsController {
         return serve("insects", filename, ImageVariant.TILE);
     }
 
-    private static final Observer OBSERVER = Observer.forClass(InsectsController.class);
+    private static final Observer observer = Observer.forClass(InsectsController.class);
 
 }

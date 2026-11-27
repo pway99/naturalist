@@ -28,7 +28,8 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
  * {@code NamedValueConversion}, handing each on as given). An endpoint observes a name that is not a valid slug,
  * or an observation id that is missing, unreadable or not a UUIDv7, counts it under its own name and says so,
  * without calling a query or command: a page answers 404 (as it does, counted, for a valid name the catalog does
- * not hold), and a post redirects with an error the target page shows.
+ * not hold), and a post redirects with an error the target page shows. Each is counted at INFO: what the caller
+ * sent, a signal of what visitors ask for, not a fault to fix (standards B1).
  */
 @WebMvcTest
 class InsectsNamedValueEdgeWebMvcTest {
@@ -68,6 +69,8 @@ class InsectsNamedValueEdgeWebMvcTest {
                 .andExpect(content().string(containsString("href=\"/insects/species\"")));
 
         assertThat(violated("InsectsController.detail.name")).isEqualTo(1.0);
+        assertThat(levelOf("InsectsController.detail.name")).as("a malformed name is a signal, not a fault")
+                .isEqualTo("info");
         assertThat(violated("InsectsController.detail.nameFound")).as("no query ran").isZero();
     }
 
@@ -78,7 +81,10 @@ class InsectsNamedValueEdgeWebMvcTest {
                 .andExpect(content().string(containsString("unobtainium-moth")));
 
         assertThat(violated("InsectsController.detail.nameFound")).isEqualTo(1.0);
-        assertThat(violated("InsectsController.detail.name.")).isZero();
+        assertThat(levelOf("InsectsController.detail.nameFound")).as("an insect not added yet is a signal, not a fault")
+                .isEqualTo("info");
+        assertThat(violated("InsectsController.detail.name")).isZero();
+        assertThat(violated("InsectsController.speciesPage")).as("the page was never reached").isZero();
     }
 
     @Test
@@ -95,6 +101,37 @@ class InsectsNamedValueEdgeWebMvcTest {
         assertThat(violated("InsectsController.orderDetail.name")).isEqualTo(1.0);
         assertThat(violated("InsectsController.genusDetail.name")).isEqualTo(1.0);
         assertThat(violated("InsectsController.lifeStages.name")).isEqualTo(1.0);
+        assertThat(levelOf("InsectsController.familyDetail.name")).isEqualTo("info");
+        assertThat(levelOf("InsectsController.orderDetail.name")).isEqualTo("info");
+        assertThat(levelOf("InsectsController.genusDetail.name")).isEqualTo("info");
+        assertThat(levelOf("InsectsController.lifeStages.name")).isEqualTo("info");
+    }
+
+    @Test
+    void rankPages_unknownName_areNotFound_andAreCountedAtInfo() throws Exception {
+        mockMvc.perform(get("/insects/families/unobtainium-idae")).andExpect(status().isNotFound());
+        mockMvc.perform(get("/insects/orders/unobtainium-optera")).andExpect(status().isNotFound());
+        mockMvc.perform(get("/insects/genera/unobtainium")).andExpect(status().isNotFound());
+        mockMvc.perform(get("/insects/unobtainium-moth/life-stages")).andExpect(status().isNotFound());
+
+        for (String endpoint : new String[]{"familyDetail", "orderDetail", "genusDetail", "lifeStages"}) {
+            assertThat(violated("InsectsController." + endpoint + ".nameFound")).as(endpoint).isEqualTo(1.0);
+            assertThat(levelOf("InsectsController." + endpoint + ".nameFound")).as(endpoint).isEqualTo("info");
+        }
+    }
+
+    @Test
+    void rankPages_knownName_renderThePage_andCountNothing() throws Exception {
+        mockMvc.perform(get("/insects/battus-philenor")).andExpect(status().isOk());
+        mockMvc.perform(get("/insects/families/papilionidae")).andExpect(status().isOk());
+        mockMvc.perform(get("/insects/battus-philenor/life-stages")).andExpect(status().isOk());
+
+        assertThat(violated("InsectsController.detail")).isZero();
+        assertThat(violated("InsectsController.speciesPage")).isZero();
+        assertThat(violated("InsectsController.familyDetail")).isZero();
+        assertThat(violated("InsectsController.familyPage")).isZero();
+        assertThat(violated("InsectsController.lifeStages")).isZero();
+        assertThat(violated("InsectsController.lifeStagesPage")).isZero();
     }
 
     @Test
@@ -104,6 +141,7 @@ class InsectsNamedValueEdgeWebMvcTest {
                 .andExpect(redirectedUrl("/insects/species?error=name"));
 
         assertThat(violated("InsectsController.observe.name")).isEqualTo(1.0);
+        assertThat(levelOf("InsectsController.observe.name")).isEqualTo("info");
         assertThat(violated("InsectSightingCommandImpl.record")).as("the command was never called").isZero();
         mockMvc.perform(get("/insects/species?error=name"))
                 .andExpect(status().isOk())
@@ -155,6 +193,7 @@ class InsectsNamedValueEdgeWebMvcTest {
                 .andExpect(redirectedUrl("/insects/battus-philenor?error=observation"));
 
         assertThat(violated("InsectsController.updateNotes.observationId")).isEqualTo(1.0);
+        assertThat(levelOf("InsectsController.updateNotes.observationId")).isEqualTo("info");
         assertThat(violated("InsectSightingCommandImpl.updateNotes")).as("the command was never called").isZero();
     }
 
@@ -169,10 +208,22 @@ class InsectsNamedValueEdgeWebMvcTest {
                 .andExpect(status().isOk());
     }
 
-    /** Every violated check under {@code prefix}, summed: a refusal is tagged with the rule it broke. */
-    private double violated(String prefix) {
+    /** The {@code level} tag the violated check {@code check} was counted under. */
+    private String levelOf(String check) {
+        return meters.find("naturalist.invariant.check").tag("name", check).tag("outcome", "violated")
+                .counter().getId().getTag("level");
+    }
+
+    /**
+     * Every violated check named {@code check} or nested under it ({@code check.<rule>}), summed: a refusal is tagged
+     * with the rule it broke. Segment-bounded, so {@code detail.name} does not count {@code detail.nameFound}.
+     */
+    private double violated(String check) {
         return meters.find("naturalist.invariant.check").tag("outcome", "violated").counters().stream()
-                .filter(counter -> String.valueOf(counter.getId().getTag("name")).startsWith(prefix))
+                .filter(counter -> {
+                    String name = String.valueOf(counter.getId().getTag("name"));
+                    return name.equals(check) || name.startsWith(check + ".");
+                })
                 .mapToDouble(Counter::count)
                 .sum();
     }

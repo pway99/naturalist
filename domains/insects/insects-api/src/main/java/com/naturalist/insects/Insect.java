@@ -138,6 +138,29 @@ public record Insect(
         return order == null ? Optional.empty() : Optional.of(order.name());
     }
 
+    /** True when this read model carries its order rung: every rank page resolves through it. */
+    public boolean hasOrder() {
+        return order != null;
+    }
+
+    /** True when this read model carries its family rung. */
+    public boolean hasFamily() {
+        return family != null;
+    }
+
+    /** True when this read model carries its genus rung. */
+    public boolean hasGenus() {
+        return genus != null;
+    }
+
+    /**
+     * True when this read model carries its species rung. {@link #invariants()} walks a rank only when it is
+     * present, so a consumer that needs the rank checks this rather than walking the rank a second time.
+     */
+    public boolean hasSpecies() {
+        return species != null;
+    }
+
     /** The family's name, if the read model carries a family. */
     public Optional<InsectFamilyName> familyName() {
         return family == null ? Optional.empty() : Optional.of(family.name());
