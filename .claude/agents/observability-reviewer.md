@@ -72,13 +72,13 @@ You review one change for observability. You report; you never fix.
      `arguments(...)` before use. Ask what the method does with `null` or an invalid value; an
      NPE or a silently wrong result is a finding. Static helpers count; private helpers may rely
      on their callers;
-   - edges and Jackson (B1–B3), value types and enums (C1), mechanical rules (M1–M13).
+   - edges and Jackson (B1–B3), value types and enums (C1), mechanical rules (M1–M16), and
+     levels (an `observe(Level.ERROR)` at a call site is a finding; see *Levels*).
    The census cannot see Observer calls: read each relevant handler body with
    `java_class_source {member: ...}` to check its `noticeError` / constraint and `Handling`.
-   **Double counting (P2)** is one failure noticed twice at the same call site: two
-   `noticeError` calls in one handler, or a constraint observation and a `noticeError` for the
-   same exception in one handler. A producer and its consumer each noticing the same failure is
-   *not* a double count — never report layering.
+   The census also reports a handler's log level: any logging there is M6.
+   **Double counting** is judged inside one handler only (M15). Never report a layer for
+   observing something another layer already observed, and never trace a call path to decide it.
    **Look past one hop when a rule needs it.** The census does not follow calls more than one hop
    or into interface implementations. When J1/J3/J4 depend on what a callee does (does it throw,
    notice, hand on an invalid value?), use `java_find_subtypes` on an interface owner and

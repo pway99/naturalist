@@ -1,6 +1,7 @@
 # Observability standards
 
-**Status:** draft, 2026-11-15. Not yet linked from `CLAUDE.md`.
+**Status:** in use since 2026-11-15; linked from `CLAUDE.md`. Decision history:
+[`notes/observability-decisions.md`](notes/observability-decisions.md) (not part of the rubric).
 
 This document says how naturalist code observes, and why. It is the rubric the code reviewer
 applies. [ADR-017](adr/ADR-017-observability-monitoring-and-validation.md) keeps the mechanics:
@@ -27,25 +28,31 @@ carries values never throws on construction. An exception from a DTO constructor
 `Enum.valueOf` knows only its own value. It cannot say which operation failed or whether the value
 mattered, and without logs nobody can work that out.
 
+Observation is also how the code keeps learning. Every object's state is observed as it moves
+through the system, so a change that breaks an invariant nobody expected shows up as a count
+during a rolling deployment, not in a manual QA cycle or a user's report. That is why guards stay
+(J5) and why a value is observed again by each consumer (P2): together they are the confidence a
+refactor needs.
+
+## Levels
+
+The `level` tag says who has to act. `Level`'s Javadoc carries the same rules.
+
+| Level | Means | Who sets it |
+|---|---|---|
+| `ERROR` | An exception was thrown: `throwWhenInvalid()`, or `noticeError`. | The framework only. A call site never passes `ERROR` to `observe(...)`; a count with no throw is a contradiction. |
+| `WARN` | Something is wrong: invalid data, broken logic, a business rule saying no (J2), a value our own code produced that fails its invariants. The maintainer triages. | The call site, with `observe(Level.WARN)`. |
+| `INFO` | Signal, not a problem: what callers ask for that we lack (B1), a restricted path in use (J5). No action needed. | The call site, with `observe(Level.INFO)`. |
+
 ## Principles
 
 - **P1. Resilient by default.** No 500s, and the maintainer never needs a log. Every rule below
   serves this.
-- **P2. Every exception is noticed at the point that knows what failed and why, once per call
-  site.** A double count is one failure noticed twice at the same call site: two `noticeError`
-  calls in one handler, a constraint observation and a `noticeError` for the same exception in
-  one handler, or nested handlers in one method that share its `MethodObserver`. There, an outer
-  catch lets an exception an inner catch or a callee already noticed pass through unnoticed, and
-  notices only what its own wrapper throws (a timeout, a full bulkhead). A producer that notices a
-  failure it hands on, and a consumer that notices it again, is not a double count: each
-  observation names its own layer, and the metrics are read together.
-
-  *Why.* Within one method a second count adds nothing: the first already says the failure left
-  the method (`WRAPPED`, `RETHROWN`), and Prometheus cannot tell one failure counted twice from two
-  failures. With one count per failure per method, each series is one cause and the total is
-  their sum, which is what alerts, dashboards and incident analysis add up. Across methods the
-  extra count is context, the path the failure took, so layering stays. What breaks sums is
-  inconsistency, so every method follows the same rule. Pat, 2026-11-17.
+- **P2. Every exception is noticed at the point that knows what failed and why.** Observe
+  wherever a value or failure is consumed, however often it was observed upstream: each layer's
+  observation names its own layer, and the metrics are read together. The one limit is inside a
+  single handler: a `catch` notices its exception once (M15). Judge each handler on its own;
+  never trace the call path to decide whether a layer may observe.
 - **P3. Bad input from outside is rejected at the edge.** An edge is an inbound adapter: a
   `@RestController` or a message handler. Jackson deserializes the request there, before anything
   is submitted to a core module, so an inbound deserialization error never reaches domain or
@@ -62,6 +69,8 @@ mattered, and without logs nobody can work that out.
 - **P7. Each edge has a backstop.** A last-resort handler at every web and bus edge notices any
   exception nobody noticed and returns a defined response. Each time the backstop fires, an
   observation is missing nearer the cause, and fixing that is a defect to fix at the source.
+- **P8. Production teaches.** Observe state as it moves, so an unexpected invariant break is
+  counted during a rolling deployment instead of waiting for manual QA.
 
 ## How these standards are enforced
 
@@ -94,7 +103,9 @@ kinds, and each rule below is tagged with its kind.
 The author (human or agent) applies the same tests while writing. Each test is worded so that
 the author and the reviewer reach the same answer.
 
-The reviewer is the read-only `observability-reviewer` project agent; see *Decided*.
+The reviewer is the read-only `observability-reviewer` project agent
+(`.claude/agents/observability-reviewer.md`). The session that wrote a change dispatches it
+before declaring the task done; Pat runs it with `/observability-review [PR# | branch | path]`.
 
 ### The reviewer uses the Kaname Engine
 
@@ -152,8 +163,7 @@ one of three ways:
 
 **Test.** For each `throw`, `orElseThrow()`, `catch` and call that can fail: *if this happens a
 thousand times tonight, which count goes up, and does its name say what happened?* If no count
-goes up, it is a finding. If a count goes up but a layer further out also counts the same
-failure, that is also a finding (counted twice).
+goes up, it is a finding.
 
 Right: a caught failure is noticed, then wrapped with its cause.
 
@@ -201,10 +211,9 @@ if (!decision.violations().isEmpty()) {
 ```
 
 **The decider observes.** The method that applies the rule observes it, even when a caller
-catches the refusal and translates it. A caller that translates a refusal that was already
-observed does not observe it again. That protects every future caller and keeps one count
-per refusal, which the budget alerts rely on (this is about decisions, not caught failures; P2's
-layering does not apply).
+catches the refusal and translates it, so every future caller is covered. A caller that
+translates the refusal may observe it too (P2), under its own name, never the decider's: an
+alert keyed on the decider's name then fires once per refusal.
 
 Wrong: `UsageCommandImpl.reserve` throws `BudgetExceededException` when
 `cu.used() >= rule.limit()` and observes nothing. Today its caller,
@@ -226,8 +235,7 @@ matching the catch's next statement:
 A failure the catch turns into a decision (a `WARN` refusal, an `INFO` signal) stays a constraint
 instead (J2). Never write `state(s -> s.isTrue(false, "<name>"))` for a caught failure.
 
-**Test.** *Read the catch's last statement. Does the `Handling` describe it? Has an inner layer
-already noticed this same exception (then this layer must not)?*
+**Test.** *Read the catch's last statement. Does the `Handling` describe it?*
 
 Right:
 
@@ -352,6 +360,12 @@ every parameter it uses before using it: `arguments(...)` with the kind's constr
 Without the check, a `null` throws an NPE nobody counts (J1), and an invalid value produces a
 silently wrong result. A private helper may rely on its caller's check, when every caller checks the
 value it passes. A constructor is covered by M5.
+
+**A missing value must be able to arrive as null.** A parameter or record component typed as a
+primitive (`int`, `long`, `boolean`) cannot say "missing": an absent JSON field or unset column
+silently becomes `0` or `false`, and a null `Integer` passed to an `int` throws an unboxing NPE at
+the call site, before any check runs. Use the `java.lang` wrapper (`Integer`, `Long`, `Boolean`),
+so `notNull(count, "count")` counts the missing value under a name (M16).
 
 Example: `PlantMatch.genusOf(PlantSpeciesName species)` read `species.value()` unchecked. It now
 opens with `observer.arguments("genusOf", i -> i.entityName(species, "species")).throwWhenInvalid()`.
@@ -506,6 +520,8 @@ reviewer checks it.
 | M12 | A `catch` never observes with `isTrue(false, ...)` unless the catch turns the failure into a decision (J2, J3). |
 | M13 | The class's `Observer` field is named `observer` (not `OBSERVER`). A method's `MethodObserver` local is named `methodObserver` (not `m`, and not the method's name). A helper's `MethodObserver` parameter is named `methodObserver` too. |
 | M14 | A value of a framework kind is observed with its kind's constraint, which checks null and the type's `invariants()`: `valueObject`, `identifier`, `entityName`, `entityId`, `namedValue`, `observable`, `aggregate`, `readModel` (and their `OrNull` / collection forms). A `NamedValue` (`FileName`, `EmailAddress`) is one of these kinds: `namedValue(name, "name")` checks null and `isValid()`. Not a bare `notNull`, and never a hand-written `== null` check that skips or returns. Example: `DomainId` is a `ValueObject`, so `recordSlug` observes `valueObject(domain, "domain")` instead of `if (domain == null) return;`. |
+| M15 | A `catch` calls `noticeError` at most once, and never pairs it with a constraint observation for the same exception (P2). Judged inside the one handler; layers elsewhere do not matter. |
+| M16 | Parameters and record components use `java.lang` wrapper types (`Integer`, `Long`, `Boolean`, ...), not primitives, so a missing value arrives as null and the argument observation counts it (J7). |
 
 ## Known gaps today
 
@@ -521,8 +537,8 @@ changed method under *existing code*, and does not repeat them when it meets the
   these standards are agreed. `PlantsEntityRefResolver` is one remaining example.
 - **Decision observed by the consumer, not the decider (J2).** `UsageCommandImpl.reserve` must
   observe the budget refusal itself. When it does, `InsectIdentificationCommandImpl`'s
-  `refusal(naturalist, "withinBudget", …)` would count the same refusal a second time, so its
-  observation for that case goes. The `IdentificationBudgetSpent` alert in
+  `refusal(naturalist, "withinBudget", …)` may stay but takes its own name (not `withinBudget`),
+  so the alert does not page twice for one refusal. The `IdentificationBudgetSpent` alert in
   `deploy/prometheus/alerts.yml` matches `name=~".*\\.withinBudget"`, so the decider names its
   constraint `withinBudget` to keep the alert firing.
 - **Caught failures observed as constraints (M12).** `FilesystemImageStore.store` observes its
@@ -532,70 +548,10 @@ changed method under *existing code*, and does not repeat them when it meets the
   `MethodObserver` locals are named `m` or after their method. A tool can rename them all; until
   then, the reviewer reports M13 only inside changed methods.
 
+- **Primitive parameters and record components (M16).** Added 2026-11-27; existing code has not
+  been swept. The reviewer reports M16 only inside changed methods and on record components a
+  change adds or edits.
+
 ## Open questions
 
 None.
-
-## Decided
-
-- A decision is observed by the decider, not by a caller that translates it (J2). Pat,
-  2026-11-15.
-- A lookup from a string (enum, sealed value type, `@JsonCreator`) returns null for an
-  unrecognised value; no type gets an `UNRECOGNISED` member (C1). Supersedes the earlier
-  `UNRECOGNISED` decision. Pat, 2026-11-15.
-- Variable names: `observer` for the class's `Observer`, `methodObserver` for a method's
-  `MethodObserver` (M13). Pat, 2026-11-15.
-- The reviewer is a read-only project agent, `.claude/agents/observability-reviewer.md`. The
-  session that wrote a change dispatches it before declaring the task done (CLAUDE.md,
-  *Completeness verification*); Pat runs it on demand with `/observability-review [PR# | branch]`.
-  A Stop hook that forces the review is deferred. Design:
-  [`docs/plans/2026-11-15-observability-reviewer-design.md`](plans/2026-11-15-observability-reviewer-design.md).
-  Pat, 2026-11-15.
-- An edge is an inbound adapter (`@RestController`, message handler); Jackson errors on inbound
-  input are raised and handled there, before core (P3, B2). A reply to our own call is noticed
-  by the code that parses it (J3). Pat, 2026-11-15.
-- A double count is one failure noticed twice at the same call site. A producer and its consumer
-  each noticing the same failure is fine; the metrics are read together (P2). Pat, 2026-11-15.
-- Reviewer scope: everything inside a changed method, old lines included; callers whose data or
-  control flow the change alters; and, reported separately for awareness, concerns met in
-  existing code. Pat, 2026-11-15.
-- M8 is checked on every class a change touches. A helper uses its own method name unless it is
-  shared to avoid duplication, when it may take the caller's `MethodObserver` (M4). Pat,
-  2026-11-15.
-- A custom Jackson deserializer we write observes the `JsonNode`'s fields as arguments
-  (`notBlank`, `kebabFormat`) before using them (B2). Pat, 2026-11-15.
-- Startup assembly code (composition roots, `*Assembly.from`, startup registry validation) is
-  exempt from J1. Pat, 2026-11-15.
-- A redirect or fallback page in answer to bad input is a refusal, noticed at the edge (B1).
-  Pat, 2026-11-15.
-- A value a method calculates, even from its parameters alone, is state, not an argument (M2).
-  Pat, 2026-11-15.
-- A value of a framework kind (ValueObject, EntityName, …) is observed with its kind's
-  constraint, not just null-checked (M14). Pat, 2026-11-15.
-- An interface's static method may build its Observer inline (M8). Pat, 2026-11-15.
-- An edge observes a refusal it answers (rather than throws) with `arguments(...).observe(...)`;
-  a request for one thing tells the caller it was invalid, a request for a list returns what is
-  possible (B1, M1). Pat, 2026-11-15. The level was refined 2026-11-27, below.
-- A command observes the aggregate it builds before the transaction, with cleanup covering the
-  refusal (J4); a rule a change adds about an entity's field is declared in that entity's
-  `invariants()` (J5). Pat, 2026-11-15.
-- The author fixes only what the change added, edited or broke; everything else the reviewer
-  sees is reported as existing code for the maintainer, who reviews existing code separately in
-  chunks. Pat, 2026-11-15.
-- Terminate as early as possible: an edge that can detect an invalid request checks it, observes
-  the refusal and answers before calling core; the command still validates (B1). A failed cleanup
-  (a delete attached with `addSuppressed`) is noticed: leftover files fill the disk (J3). Pat,
-  2026-11-16.
-- An edge orders its checks cheapest first: parameters, then reading the body, then decoding
-  (B1). Pat, 2026-11-17.
-- A constraint that can never fail is still kept when, under `ALWAYS`, it sits inside a restricted
-  branch and counts entries to it (the config-admin login): a critical non-error signal for the
-  maintainer (J5). Pat, 2026-11-25.
-- A constraint that can't fail today only because other code keeps a contract is a guard, kept
-  and named after the contract it guards. Only a constraint that can never fail by construction is
-  a finding (J5). Removing guards lowers the confidence a refactor needs. Pat, 2026-11-26.
-- A method another class can call observes every parameter it uses before using it; only a
-  private helper may rely on its caller's check (J7). Pat, 2026-11-26.
-- An edge refusal of what the caller sent (an invalid or unknown name, a lookup that finds
-  nothing) is observed at `INFO`; a value our own code handed the edge that fails its invariants
-  is observed at `WARN` (B1, M1). Taken from the plants console. Pat, 2026-11-27.
