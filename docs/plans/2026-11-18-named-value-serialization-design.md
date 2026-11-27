@@ -189,8 +189,8 @@ Where the body used the String (`"redirect:/insects/" + name`), it uses `name.va
   Every refusal is the not-found page. Each check is inline, labelled after its parameter or value: a little
   repetition, easier to read. `InvariantObservation.isNotValid`, `whenNotValid(...).otherwise(...)` and
   `whenValid(onValid, onNotValid)` were added to the framework for it. Pat moved the INFO-for-caller-input,
-  WARN-for-our-own-state split into the standards (B1, M1) on 2026-11-27. Insects still uses its helper form at
-  WARN (`invalidName`, `unknownName`, `nameFound`) and now owes a diff to follow the rule.
+  WARN-for-our-own-state split into the standards (B1, M1) on 2026-11-27, and insects follows it the same way:
+  each handler checks `name` and `nameFound` inline at INFO, then a page method checks its read model at WARN.
 
 ## Left to the builder
 
