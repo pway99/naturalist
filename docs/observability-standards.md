@@ -382,16 +382,28 @@ control and knows the context. It answers resiliently, by what was asked:
 - **A request for a list:** return what is possible. Invalid entries are left out and observed
   where they were found (C1, J4); the request itself is not refused.
 
-A refusal the edge answers instead of throwing ends its check in `observe(Level.WARN)`, and the
-answer follows. The check is `arguments(...)` on the caller's input as given, and `state(...)` on
+A refusal the edge answers instead of throwing ends its check in `observe(...)`, and the answer
+follows. The check is `arguments(...)` on the caller's input as given, and `state(...)` on
 anything the edge computed from it (M2): a lookup result, or a value object built from two
-parameters such as `GridCell.of(lat, lon)`:
+parameters such as `GridCell.of(lat, lon)`.
+
+The level says who has something to fix:
+
+- **`INFO` for what the caller sent.** An invalid or unknown name in a URL, or a lookup of it that
+  finds nothing, is expected traffic: a stale link, a record not added yet, someone probing URLs.
+  Nothing in our code is wrong, but the count still shows what visitors ask for that we lack.
+- **`WARN` for what our own code handed the edge.** A stored record or read model that fails its
+  invariants is a state for the maintainer to fix, even though a request surfaced it.
 
 ```java
 observer.state("cladeDetail", i -> i
                 .isTrue(Clade.find(slug).isPresent(), "knownSlug"))
-        .observe(Level.WARN);
+        .observe(Level.INFO);
 ```
+
+The plants console is the reference (`PlantsController`): the handler observes its argument and
+whether the lookup found anything at `INFO`, then hands the found value to its page method, which
+observes it at `WARN` (`readModel(plant, "plant")`).
 
 This is the one exception to M1 (and the matching exception for a `state(...)` check).
 
@@ -480,7 +492,7 @@ reviewer checks it.
 
 | ID | Rule |
 |---|---|
-| M1 | `arguments(...)` always ends in `throwWhenInvalid()`, except at an edge that answers a refusal instead of throwing, which ends its check (`arguments(...)` or `state(...)`) in `observe(Level.WARN)` (B1). |
+| M1 | `arguments(...)` always ends in `throwWhenInvalid()`, except at an edge that answers a refusal instead of throwing, which ends its check (`arguments(...)` or `state(...)`) in `observe(Level.INFO)` for the caller's input and its lookup, or `observe(Level.WARN)` for a value our own code handed the edge (B1). |
 | M2 | An `arguments(...)` lambda references only the method's parameters (or elements of them). Anything the method acquired goes through `state(...)`, and so does anything it calculated, even from its parameters alone (a map lookup, a `putIfAbsent` result, a value object built from several parameters such as `GridCell.of(lat, lon)`): observing a calculated value as an argument would be misleading. This holds when the check is a refusal too: where the value came from decides the kind, not what the check does with it (`state(i -> i.isTrue(spaceWithinRoot(space), "spaceWithinRoot")).throwWhenInvalid()`). |
 | M3 | Checks made at the same point are one chained call, one constraint per line. Split only when a later check needs a value the earlier one guarantees. |
 | M4 | A method that observes once calls `observer.arguments("method", ...)` / `observer.state("method", ...)` / `observer.noticeError("method", ...)` directly. A method that observes two or more times gets one `MethodObserver methodObserver = observer.forMethod("method")` and routes everything through it. A helper that observes on its own behalf uses its own method name. A helper shared to avoid duplication (DRY) may instead take the caller's `MethodObserver` as a parameter, so each observation is tagged with the caller's name; it never takes a method-name string. |
@@ -561,9 +573,9 @@ None.
 - A value of a framework kind (ValueObject, EntityName, …) is observed with its kind's
   constraint, not just null-checked (M14). Pat, 2026-11-15.
 - An interface's static method may build its Observer inline (M8). Pat, 2026-11-15.
-- An edge observes a refusal it answers (rather than throws) with `arguments(...).observe(WARN)`;
+- An edge observes a refusal it answers (rather than throws) with `arguments(...).observe(...)`;
   a request for one thing tells the caller it was invalid, a request for a list returns what is
-  possible (B1, M1). Pat, 2026-11-15.
+  possible (B1, M1). Pat, 2026-11-15. The level was refined 2026-11-27, below.
 - A command observes the aggregate it builds before the transaction, with cleanup covering the
   refusal (J4); a rule a change adds about an entity's field is declared in that entity's
   `invariants()` (J5). Pat, 2026-11-15.
@@ -584,3 +596,6 @@ None.
   a finding (J5). Removing guards lowers the confidence a refactor needs. Pat, 2026-11-26.
 - A method another class can call observes every parameter it uses before using it; only a
   private helper may rely on its caller's check (J7). Pat, 2026-11-26.
+- An edge refusal of what the caller sent (an invalid or unknown name, a lookup that finds
+  nothing) is observed at `INFO`; a value our own code handed the edge that fails its invariants
+  is observed at `WARN` (B1, M1). Taken from the plants console. Pat, 2026-11-27.

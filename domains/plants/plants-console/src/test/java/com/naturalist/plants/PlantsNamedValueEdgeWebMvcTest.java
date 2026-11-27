@@ -160,6 +160,36 @@ class PlantsNamedValueEdgeWebMvcTest {
         assertUnknown("/plants/phytochemistry/unobtainium-oxide", "constituentDetail", "constituent");
     }
 
+    @Test
+    void cladeDetail_unknownSlug_isNotFound_andIsCounted() throws Exception {
+        mockMvc.perform(get("/plants/clades/unobtainium-clade"))
+                .andExpect(status().isNotFound())
+                .andExpect(content().string(containsString("unobtainium-clade")))
+                .andExpect(content().string(containsString("href=\"/plants/orders\"")));
+
+        assertThat(violated("PlantsController.cladeDetail.clade")).isEqualTo(1.0);
+        assertThat(levelOf("PlantsController.cladeDetail.clade")).as("a stale clade link is a signal, not a fault")
+                .isEqualTo("info");
+    }
+
+    @Test
+    void cladeDetail_plantClade_rendersThePage_andCountsNothing() throws Exception {
+        mockMvc.perform(get("/plants/clades/angiosperms"))
+                .andExpect(status().isOk());
+
+        assertThat(violated("PlantsController.cladeDetail.clade")).isZero();
+        assertThat(violated("PlantsController.stepsFor.cladeView")).isZero();
+    }
+
+    @Test
+    void cladeDetail_animalClade_redirectsToInsects() throws Exception {
+        mockMvc.perform(get("/plants/clades/arthropoda"))
+                .andExpect(status().isFound())
+                .andExpect(redirectedUrl("/insects/clades/arthropoda"));
+
+        assertThat(violated("PlantsController.cladeDetail.clade")).isZero();
+    }
+
     private void assertRefused(String path, String endpoint, String found, String back) throws Exception {
         mockMvc.perform(get(path))
                 .andExpect(status().isNotFound())

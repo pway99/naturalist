@@ -212,10 +212,19 @@ public class PlantsController {
         return stepsFor(sharedAncestor == null ? new Plantae() : sharedAncestor);
     }
 
-    /** Root→subject clade steps for a clade, sourced from the shared library read model. */
+    /**
+     * Root→subject clade steps for a clade, sourced from the shared library read model. A clade the library holds
+     * no view for is our own data out of step, counted to fix; the page still renders, without its Tree of Life row.
+     */
     private List<CladeStep> stepsFor(Clade clade) {
-        CladeView view = cladeQuery.getBySlug(clade.slug()).orElseThrow(
-                () -> new IllegalStateException("no clade view for slug " + clade.slug()));
+        Optional<CladeView> found = cladeQuery.getBySlug(clade.slug());
+        if (observer.state("stepsFor", c -> c
+                .isPresent(found, "cladeView"))
+                .observe(Level.WARN)
+                .isNotValid()) {
+            return List.of();
+        }
+        CladeView view = found.get();
         ArrayList<CladeStep> steps = new ArrayList<CladeStep>(view.ancestry());
         steps.add(view.subject());
         return steps;
@@ -225,9 +234,9 @@ public class PlantsController {
      * The deepest clade shared by every clade in {@code clades} — their lowest common
      * ancestor — or {@code null} when the set is empty. Walks the first clade's ancestry
      * from the node upward and returns the first ancestor present in every clade's
-     * lineage. Package-private for test.
+     * lineage. Private: its one caller builds {@code clades} itself, with no null element.
      */
-    static Clade lowestCommonAncestor(List<Clade> clades) {
+    private static @Nullable Clade lowestCommonAncestor(List<Clade> clades) {
         if (clades.isEmpty()) {
             return null;
         }
@@ -260,9 +269,12 @@ public class PlantsController {
      * The taxonomic breadcrumb for a resolved {@link Plant}, read straight off its rank
      * chain — Plantae root, a link per ancestor, the subject rank as the current segment.
      * Replaces the former per-rank re-query helpers now that the read model carries the
-     * ancestry. A missing ancestor (null view) shortens the trail rather than failing.
+     * ancestry. A missing ancestor (null view) shortens the trail rather than failing. Package-private for test.
      */
     static List<BreadcrumbSegment> breadcrumbFor(Plant plant) {
+        observer.arguments("breadcrumbFor", c -> c
+                .readModel(plant, "plant"))
+                .throwWhenInvalid();
         List<BreadcrumbSegment> segments = plantaeRoot();
         boolean speciesSubject = plant.species() != null;
         boolean genusSubject = !speciesSubject && plant.genus() != null;
@@ -367,13 +379,17 @@ public class PlantsController {
      * the plants-domain counterpart to the shared {@code /clades/{slug}} tree-of-life
      * page — where that one lists child clades, this one lists plant orders — so the
      * Tree of Life breadcrumb navigates plant records and never leaves the console.
-     * Non-plant clades (and unknown slugs) redirect back to the order catalog.
+     * Animal clades redirect to the insects console. A slug that names no clade is the not-found page, counted at
+     * INFO: a stale link or a probe, nothing of ours to fix (standards B1).
      */
     @GetMapping("/clades/{slug}")
-    String cladeDetail(@PathVariable String slug, Model model) {
+    String cladeDetail(@PathVariable String slug, HttpServletResponse response, Model model) {
         Optional<Clade> found = Clade.find(slug);
-        if (found.isEmpty()) {
-            return "redirect:/plants/orders";
+        if (observer.state("cladeDetail", c -> c
+                .isPresent(found, "clade"))
+                .observe(Level.INFO)
+                .isNotValid()) {
+            return notInCatalog(response, model, slug, "/plants/orders");
         }
         Clade clade = found.get();
         if (PlantCladeTree.isAnimal(clade)) {
@@ -496,8 +512,8 @@ public class PlantsController {
         if (missing != null) {
             model.addAttribute("missing", missing);
         }
-        model.addAttribute("family",
-                plant.family() == null ? null : plant.family().family());
+        // Plant.invariants() requires the family whenever the genus is present, and genusPage has checked them
+        model.addAttribute("family", plant.family().family());
         model.addAttribute("children", plant.children());
         model.addAttribute("features", plant.features());
         model.addAttribute("images", plant.images().stream().toList());
@@ -729,8 +745,13 @@ public class PlantsController {
      * the list {@code back}. The caller has already observed why (invalid slug or unknown name).
      */
     private static String notInCatalog(HttpServletResponse response, Model model, EntityName name, String back) {
+        return notInCatalog(response, model, name.value(), back);
+    }
+
+    /** {@link #notInCatalog(HttpServletResponse, Model, EntityName, String)} for a slug that is not a named value. */
+    private static String notInCatalog(HttpServletResponse response, Model model, String name, String back) {
         response.setStatus(HttpServletResponse.SC_NOT_FOUND);
-        model.addAttribute("name", name.value());
+        model.addAttribute("name", name);
         model.addAttribute("back", back);
         return "plants/not-found";
     }

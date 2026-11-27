@@ -31,7 +31,7 @@ work comes first; the paused engineering threads follow.
 | 7b | **Pre-launch, no account needed: small fixes**: the egress-proxy fix-forwards and the ADR-028 minors (small backlog); a test per Anthropic adapter pinning the v3 request shape and `Authorization: Bearer` header; rewrite the forged-address check to carry a browser's clearance (prep for 4.3); `cache: maven` on CI's `setup-java` (Maven Central 429s, 2026-11-26) | Claude | S each | Cheap now; each one otherwise surfaces in phase 4 |
 | 8  | **Launch phases 2–3: outside accounts and production** (vendor workspace + spend limit, Cloudflare zone, email + SPF/DKIM, heartbeat, DigitalOcean VM, secrets, tunnel, backups) | Pat (+ Claude for 3.3, 3.5) | M–L | Host decided; phase 3 needs 2.2, 2.4 and 2.5. **Paused 2026-11-26:** Pat is not ready to open the DigitalOcean account and returns to application work first |
 | 9  | **Launch phase 4: prove it unannounced** (real widget, edge checks, Secure cookie, real identification, email, rotation rehearsal, restore) | Both | M | Needs #8 |
-| 10 | **Named values step 3**: plants controller (8 markers) → chemistry 4 → garden 3 → soil / glossary / concepts / registration 1 each; then `TypedPathVariable` joins `EnforceArchitecture` | Claude | M | Paused 2026-11-22 mid-sweep; four Pat decisions listed below |
+| 10 | **Named values step 3**: ~~plants (PR #19, merged 2026-11-27)~~ → insects edge levels to the B1 INFO/WARN split → chemistry 4 → garden 3 → soil / glossary / concepts / registration 1 each; then `TypedPathVariable` joins `EnforceArchitecture` | Claude | M | Edge rule moved into the standards 2026-11-27 (B1, M1) |
 | 11 | **Observability: resume the sweep**: path-mode reviews (plants, insects-console); slices 4–8, plus the 5 catch sites PL-19 unblocks | Pat → Claude | L | Slices 1–3 on main (PR #3 merged 2026-11-25); on hold until Pat finishes reviewing the rules |
 | 12 | **Small backlog** (see the table below) | Claude | S each | Fill-in work |
 
@@ -61,7 +61,6 @@ settled 2026-11-25.
 **Named values / observability:**
 - A second `MethodObserver` per method (always-mode `refusals` in `identify` / `reserveStoreAndCatalogue`): name it or drop it.
 - Group A request records for `InsectPhotoCommandImpl.add` / `InsectIdentificationCommandImpl.identify`.
-- Whether the standards gain a named-value-edge rule.
 - The deferred `InsectsController.addImage` diff.
 - Existing-code rows in `InsectIdentificationCommandImpl`: J2, M4, M8, M11.
 - Existing-code rows in both Anthropic adapters (from the PR #12 review): the missing-`tool_use` throws and `messages().create` failures go uncounted (J1/J3), `buildTool` / `serializeInput` catches wrap without `noticeError` (J3), constructors use `Objects.requireNonNull` (M5).
