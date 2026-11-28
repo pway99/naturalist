@@ -1,13 +1,14 @@
 package com.naturalist.insects.lifestage;
 
 import com.naturalist.habitat.HabitatZone;
+import com.naturalist.ddd.Enums;
 import com.naturalist.observability.Constraints;
+import com.naturalist.observability.Level;
 import com.naturalist.observability.Observer;
 import com.naturalist.persistence.Dbo;
 import com.naturalist.persistence.DboSchema;
 import com.naturalist.persistence.Fk;
 
-import java.util.Arrays;
 import java.util.function.Consumer;
 
 /** Child row for one {@link HabitatZone} of a life stage's habitat profile. Carries the life stage NAME. */
@@ -32,7 +33,8 @@ final class InsectLifeStageHabitatZoneDbo implements Dbo {
     }
 
     HabitatZone toZone() {
-        return Arrays.stream(HabitatZone.values()).filter(z -> z.name().equals(zone)).findFirst().orElse(null);
+        observer.state("toZone", s -> s.observable(this, "row")).observe(Level.WARN);
+        return Enums.named(HabitatZone.class, zone);
     }
 
     @Override
@@ -41,11 +43,7 @@ final class InsectLifeStageHabitatZoneDbo implements Dbo {
                 .kebabFormat(lifeStageName, "lifeStageName")
                 .notBlank(zone, "zone")
                 .maxLength(zone, 24, "zone")
-                .isTrue(isHabitatZone(zone), "isHabitatZone");
+                .enumValue(zone, HabitatZone.class, "zone");
     }
 
-    /** Whether {@code value} is the name of a {@link HabitatZone} constant; null is not. */
-    private static boolean isHabitatZone(String value) {
-        return value != null && Arrays.stream(HabitatZone.values()).anyMatch(v -> v.name().equals(value));
-    }
 }

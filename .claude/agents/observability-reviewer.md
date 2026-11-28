@@ -70,8 +70,10 @@ You review one change for observability. You report; you never fix.
      contract it guards;
    - every non-private method's parameters (J7): each parameter it uses is checked with
      `arguments(...)` before use. Ask what the method does with `null` or an invalid value; an
-     NPE or a silently wrong result is a finding. Static helpers count; private helpers may rely
-     on their callers;
+     NPE or a silently wrong result is a finding. Static helpers count. Private helpers may rely
+     on their callers, and so may a protected hook whose only caller is a `final` method of its
+     abstract base that checks those arguments first (`AbstractEntityRepository.getByName` →
+     `doGetByName`); confirm both with `jvm_find_method`;
    - edges and Jackson (B1–B3), value types and enums (C1), mechanical rules (M1–M17), and
      levels (an `observe(Level.ERROR)` at a call site is a finding; see *Levels*).
    The census cannot see Observer calls: read each relevant handler body with

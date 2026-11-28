@@ -1,13 +1,14 @@
 package com.naturalist.insects.lifestage;
 
 import com.naturalist.habitat.VerticalLayer;
+import com.naturalist.ddd.Enums;
 import com.naturalist.observability.Constraints;
+import com.naturalist.observability.Level;
 import com.naturalist.observability.Observer;
 import com.naturalist.persistence.Dbo;
 import com.naturalist.persistence.DboSchema;
 import com.naturalist.persistence.Fk;
 
-import java.util.Arrays;
 import java.util.function.Consumer;
 
 /** Child row for one {@link VerticalLayer} of a life stage's habitat profile. Carries the life stage NAME. */
@@ -32,7 +33,8 @@ final class InsectLifeStageHabitatLayerDbo implements Dbo {
     }
 
     VerticalLayer toLayer() {
-        return Arrays.stream(VerticalLayer.values()).filter(l -> l.name().equals(layer)).findFirst().orElse(null);
+        observer.state("toLayer", s -> s.observable(this, "row")).observe(Level.WARN);
+        return Enums.named(VerticalLayer.class, layer);
     }
 
     @Override
@@ -41,11 +43,7 @@ final class InsectLifeStageHabitatLayerDbo implements Dbo {
                 .kebabFormat(lifeStageName, "lifeStageName")
                 .notBlank(layer, "layer")
                 .maxLength(layer, 24, "layer")
-                .isTrue(isVerticalLayer(layer), "isVerticalLayer");
+                .enumValue(layer, VerticalLayer.class, "layer");
     }
 
-    /** Whether {@code value} is the name of a {@link VerticalLayer} constant; null is not. */
-    private static boolean isVerticalLayer(String value) {
-        return value != null && Arrays.stream(VerticalLayer.values()).anyMatch(v -> v.name().equals(value));
-    }
 }

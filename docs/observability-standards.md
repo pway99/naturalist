@@ -298,7 +298,11 @@ Example: `*Dbo.from(entity)` observes `entity` as its argument and returns the D
 `to*` methods throw on nothing they read: an unrecognised column maps to null (C1), a name is
 built as stored, and the consumer observes the result. Their arguments are checked only for
 presence (`notNull`, `throwWhenInvalid()`), since a missing collection would throw here; what the
-collections hold is handed on unchecked. The one exception is a value with no entity to build at all, such as an unknown
+collections hold is handed on unchecked. Each one observes its own row at `WARN` first
+(`state(s -> s.observable(this, "row")).observe(Level.WARN)`), so a stored value the code no longer
+recognises, such as a renamed enum constant, is counted under the Dbo, the method and the column
+(`InsectLifeStageDbo.toEntity.row.habitatMoisture`). The repository contract tests guard the
+mapping; only this observation sees bad data already stored. The one exception is a value with no entity to build at all, such as an unknown
 `stageKind` with no permit to switch to (the example above). Example:
 `InsectLifeStageDbo.toEntity`.
 
@@ -381,7 +385,9 @@ every parameter it uses before using it: `arguments(...)` with the kind's constr
 `throwWhenInvalid()` (M1) or, at an edge that answers instead of throwing, in `observe(...)` (B1).
 Without the check, a `null` throws an NPE nobody counts (J1), and an invalid value produces a
 silently wrong result. A private helper may rely on its caller's check, when every caller checks the
-value it passes. A constructor is covered by M5.
+value it passes. So may a protected hook whose only caller is a `final` method of its abstract base
+that checks those arguments first (`AbstractEntityRepository.getByName` checks `identifier(name, …)`
+before calling `doGetByName`). A constructor is covered by M5.
 
 **A missing value must be able to arrive as null.** A parameter or record component typed as a
 primitive (`int`, `long`, `boolean`) cannot say "missing": an absent JSON field or unset column
@@ -493,14 +499,17 @@ unnoticed.
 DTOs, records read from storage or JSON, and value types hold what they were given and declare
 `invariants()` (P6). A lookup that maps a string to an enum or a sealed value type (a
 `@JsonCreator`, an `of(String)`, a `fromValue`) returns **null** for a value it does not
-recognise, null and blank included, instead of throwing. It has several consumers and cannot
+recognise, null and blank included, instead of throwing. For an enum, use
+`com.naturalist.ddd.Enums.named(Type.class, value)`, never `valueOf`. It has several consumers and cannot
 know what each needs. No type gets a made-up `UNRECOGNISED` member: the value sets are often
 biological, and a fake member would sit among the real ones.
 
 The signal comes from the layers around the lookup. On the read path from the database:
 
 1. MyBatis maps the column into the Dbo as stored.
-2. The Dbo is observable; its constraint check fires on the bad column and names it.
+2. The Dbo's mapping observes its own row at `WARN` (J4); its constraint check fires on the bad
+   column and names it. An enum column is declared `enumValue(column, Type.class, "column")`: blank
+   passes, any other value must be a constant's name. Add `notBlank` when the column is required.
 3. The Dbo's factory maps to the entity; the lookup returns null, so the entity is invalid.
 4. The repository hands the invalid entity on (J4).
 5. The consumer observes the invalid entity and decides: skip it so the rest still shows (a
@@ -551,6 +560,9 @@ reviewer checks it.
 These are where the code does not meet the standards yet. The reviewer reports them inside a
 changed method under *existing code*, and does not repeat them when it meets them elsewhere.
 
+- **Dbos do not observe their row on read (J4, C1).** Outside `insects` lifestage, no Dbo's mapping
+  to the entity observes `observable(this, "row")` at `WARN`, so a stored value the code no longer
+  recognises in a nullable column is counted nowhere. Reference: `InsectLifeStageDbo.toEntity`.
 - **`noticeError` names in the past tense (J3).** Names written before 2026-11-27 name a result
   (`readable`, `catalogued`, `stored`, `conformed`, `serialized`) instead of the call that failed. A
   later sweep renames them; the examples in this document that still use them predate the rule.

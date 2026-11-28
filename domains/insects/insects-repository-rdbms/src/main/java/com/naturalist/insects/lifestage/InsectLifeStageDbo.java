@@ -12,7 +12,9 @@ import com.naturalist.insects.InsectRankName;
 import com.naturalist.insects.InsectSpeciesName;
 import com.naturalist.insects.InsectSubspeciesName;
 import com.naturalist.insects.LifeStageName;
+import com.naturalist.ddd.Enums;
 import com.naturalist.observability.Constraints;
+import com.naturalist.observability.Level;
 import com.naturalist.observability.MethodObserver;
 import com.naturalist.observability.Observer;
 import com.naturalist.persistence.Dbo;
@@ -167,18 +169,19 @@ final class InsectLifeStageDbo implements Dbo {
         methodObserver.state(s -> s
                 .isTrue(isStageKind(stageKind), "isStageKind"))
                 .throwWhenInvalid();
+        methodObserver.state(s -> s.observable(this, "row")).observe(Level.WARN);
 
         LifeStageName lsName = LifeStageName.of(name);
         InsectRankName parent = parentRankName();
         StagePhenology phenology = new StagePhenology(windows, phenologyNotes);
         HabitatProfile profile = new HabitatProfile(
                 zones,
-                constantNamed(MoistureRegime.values(), habitatMoisture),
-                constantNamed(LightRegime.values(), habitatLight),
+                Enums.named(MoistureRegime.class, habitatMoisture),
+                Enums.named(LightRegime.class, habitatLight),
                 layers.isEmpty() ? null : layers);
         StageHabitat habitat = new StageHabitat(profile, habitatSubstrate, habitatMicroclimate, habitatSpatialNotes);
         StageChemistryRole chem = chemistryRole == null ? null
-                : new StageChemistryRole(constantNamed(StageChemistryRole.Role.values(), chemistryRole), chemistryNotes);
+                : new StageChemistryRole(Enums.named(StageChemistryRole.Role.class, chemistryRole), chemistryNotes);
         Description description = new Description(
                 descriptionPreschool, descriptionElementary, descriptionSecondary, descriptionUniversity);
 
@@ -186,12 +189,12 @@ final class InsectLifeStageDbo implements Dbo {
             case "EGG" -> new EggStage(lsName, parent, phenology, habitat, chem, description,
                     eggColorProgression, eggLayingPattern, eggAdaptiveSignificance);
             case "LARVA" -> new LarvaStage(lsName, parent, phenology, habitat, chem, description,
-                    constantNamed(LarvaStage.FeedingStrategy.values(), larvaFeedingStrategy),
+                    Enums.named(LarvaStage.FeedingStrategy.class, larvaFeedingStrategy),
                     hostPlants, parasitoidHosts, larvaRemarkableBehavior, larvaInstarProgression);
             case "PUPA" -> new PupaStage(lsName, parent, phenology, habitat, chem, description,
                     pupaAppearance, diapauseRegulation(), pupaAdaptiveSignificance);
             case "ADULT" -> new AdultStage(lsName, parent, phenology, habitat, chem, description,
-                    constantNamed(AdultStage.FeedingHabit.values(), adultFeedingHabit),
+                    Enums.named(AdultStage.FeedingHabit.class, adultFeedingHabit),
                     nectarSources, adultEcologicalRole, adultLifespan);
             default -> throw new IllegalStateException("unreachable: " + stageKind);
         };
@@ -202,7 +205,7 @@ final class InsectLifeStageDbo implements Dbo {
      * Never throws: an invalid slug is handed on inside the name for the consumer to observe.
      */
     private InsectRankName parentRankName() {
-        LinealRank rank = constantNamed(LinealRank.values(), parentRank);
+        LinealRank rank = Enums.named(LinealRank.class, parentRank);
         if (rank == null) return null;
         return switch (rank) {
             case ORDER -> InsectOrderName.of(parentName);
@@ -240,11 +243,11 @@ final class InsectLifeStageDbo implements Dbo {
                 .notBlank(parentRank, "parentRank")
                 .maxLength(parentRank, 16, "parentRank")
                 .isTrue(isInsectRank(parentRank), "isInsectRank")
-                .whenNotNull(habitatMoisture, m -> m.isTrue(isMoistureRegime(habitatMoisture), "isMoistureRegime"))
-                .whenNotNull(habitatLight, l -> l.isTrue(isLightRegime(habitatLight), "isLightRegime"))
-                .whenNotNull(chemistryRole, r -> r.isTrue(isChemistryRole(chemistryRole), "isChemistryRole"))
-                .whenNotNull(larvaFeedingStrategy, f -> f.isTrue(isFeedingStrategy(larvaFeedingStrategy), "isFeedingStrategy"))
-                .whenNotNull(adultFeedingHabit, f -> f.isTrue(isFeedingHabit(adultFeedingHabit), "isFeedingHabit"))
+                .enumValue(habitatMoisture, MoistureRegime.class, "habitatMoisture")
+                .enumValue(habitatLight, LightRegime.class, "habitatLight")
+                .enumValue(chemistryRole, StageChemistryRole.Role.class, "chemistryRole")
+                .enumValue(larvaFeedingStrategy, LarvaStage.FeedingStrategy.class, "larvaFeedingStrategy")
+                .enumValue(adultFeedingHabit, AdultStage.FeedingHabit.class, "adultFeedingHabit")
                 .kebabFormat(parentName, "parentName")
                 .maxLength(parentName, 96, "parentName")
                 .notBlank(descriptionPreschool, "descriptionPreschool")
@@ -271,9 +274,7 @@ final class InsectLifeStageDbo implements Dbo {
 
     /** Whether {@code value} names one of the five ranks {@link InsectRankName} accepts; null does not. */
     private static boolean isInsectRank(String value) {
-        return Arrays.stream(LinealRank.values())
-                .filter(rank -> rank.name().equals(value))
-                .anyMatch(InsectRankName::isInsectRank);
+        return InsectRankName.isInsectRank(Enums.named(LinealRank.class, value));
     }
 
     /**
@@ -314,33 +315,5 @@ final class InsectLifeStageDbo implements Dbo {
         return Arrays.stream(columns).anyMatch(Objects::nonNull);
     }
 
-    private static boolean isMoistureRegime(String value) {
-        return namesConstant(MoistureRegime.values(), value);
-    }
 
-    private static boolean isLightRegime(String value) {
-        return namesConstant(LightRegime.values(), value);
-    }
-
-    private static boolean isChemistryRole(String value) {
-        return namesConstant(StageChemistryRole.Role.values(), value);
-    }
-
-    private static boolean isFeedingStrategy(String value) {
-        return namesConstant(LarvaStage.FeedingStrategy.values(), value);
-    }
-
-    private static boolean isFeedingHabit(String value) {
-        return namesConstant(AdultStage.FeedingHabit.values(), value);
-    }
-
-    /** Whether {@code value} is the name of one of {@code constants}; null is not. */
-    private static boolean namesConstant(Enum<?>[] constants, String value) {
-        return constantNamed(constants, value) != null;
-    }
-
-    /** The constant of {@code constants} named {@code value}, or null when none is; null names none. Never throws. */
-    private static <E extends Enum<?>> E constantNamed(E[] constants, String value) {
-        return Arrays.stream(constants).filter(e -> e.name().equals(value)).findFirst().orElse(null);
-    }
 }

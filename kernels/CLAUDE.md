@@ -338,6 +338,8 @@ field (when `this` is the enclosing record):
 - `notNull(value, name)` — general null check
 - `notBlank(value, name)` — rejects null, empty, and whitespace-only Strings (`StringUtils.isNotBlank`)
 - `entityName(e, name)` — validates `EntityName`
+- `enumValue(value, Type.class, name)` — a string naming an enum constant (an enum column, a request
+  value): blank passes, anything else must be exactly a constant's `name()`; pair with `notBlank` when required
 - `inRange(value, min, max, name)`, `atLeast`, `atMost`, `greaterThan` (exclusive) — a present `Comparable`
   within the bound; null fails. `inRangeOrNull` / `atLeastOrNull` / `atMostOrNull` / `greaterThanOrNull` pass null.
   Never spell a range or sign check as an `isTrue` expression

@@ -95,3 +95,12 @@ The standards doc is the rubric; this file records when and why each rule was de
   (`InsectLifeStageTransaction.insert`). Pat, 2026-11-27.
 - A `noticeError` name is the call that failed (`sqlInsert`, `fileWrite`, `jsonSerialize`), not a
   past-tense result (`inserted` reads as a success count). Pat, 2026-11-27.
+- A protected hook whose only caller is a `final` method of its abstract base that checks the
+  arguments first may rely on that check, like a private helper (J7). Pat, 2026-11-27.
+- A Dbo's mapping to the entity observes its own row at WARN before mapping
+  (`observable(this, "row")`): the contract tests catch mapping bugs, but only this sees stored data
+  the code no longer recognises (a renamed enum constant), and the tag names table and column. Not in
+  the enum lookup, which cannot say where it was called from. Pat, 2026-11-27.
+- Enum columns are checked with the framework's `enumValue(value, Type.class, name)` (blank passes,
+  otherwise must name a constant), not a per-enum `isX` helper in each Dbo, and mapped with `Enums.named(Type.class, value)`, which
+  returns null instead of throwing. Pat, 2026-11-27.

@@ -14,6 +14,7 @@ import com.naturalist.ddd.ValueObject;
 import com.naturalist.observability.constraints.AggregateOrNullConstraint;
 import com.naturalist.observability.constraints.EmailFormatConstraint;
 import com.naturalist.observability.constraints.EntityIdConstraints;
+import com.naturalist.observability.constraints.EnumValueConstraint;
 import com.naturalist.observability.constraints.EntityNameConstraints;
 import com.naturalist.observability.constraints.IdentifierConstraints;
 import com.naturalist.observability.constraints.InRangeConstraint;
@@ -297,6 +298,15 @@ public class Constraints {
 
     public <O, V extends NamedValue<?>> Constraints namedValueOrNull(O o, Function<O, V> valueFunction, String name) {
         return add(new NamedValueConstraints.NamedValueOrNullConstraint<>(o, valueFunction, name));
+    }
+
+    /**
+     * A string naming a constant of {@code type}, such as an enum column read from storage: a blank
+     * value passes (absent), a non-blank one must be exactly a constant's {@link Enum#name()}. Pair
+     * with {@link #notBlank} when the value is required.
+     */
+    public <E extends Enum<E>> Constraints enumValue(String value, Class<E> type, String name) {
+        return add(new EnumValueConstraint<>(value, type, name));
     }
 
     public Constraints notBlank(String value, String name) {

@@ -2,6 +2,7 @@ package com.naturalist.insects.lifestage;
 
 import com.naturalist.insects.InsectSpeciesName;
 import com.naturalist.observability.Constraints;
+import com.naturalist.observability.Level;
 import com.naturalist.observability.Observer;
 import com.naturalist.persistence.Dbo;
 import com.naturalist.persistence.DboSchema;
@@ -34,6 +35,7 @@ final class InsectLifeStageParasitoidHostDbo implements Dbo {
     }
 
     InsectSpeciesName toName() {
+        observer.state("toName", s -> s.observable(this, "row")).observe(Level.WARN);
         return InsectSpeciesName.of(speciesName);
     }
 

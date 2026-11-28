@@ -1,6 +1,7 @@
 package com.naturalist.insects.lifestage;
 
 import com.naturalist.observability.Constraints;
+import com.naturalist.observability.Level;
 import com.naturalist.observability.Observer;
 import com.naturalist.persistence.Dbo;
 import com.naturalist.persistence.DboSchema;
@@ -50,6 +51,7 @@ final class InsectLifeStageWindowDbo implements Dbo {
     }
 
     StagePhenology.ActivityWindow toWindow() {
+        observer.state("toWindow", s -> s.observable(this, "row")).observe(Level.WARN);
         return new StagePhenology.ActivityWindow(
                 monthDayOrNull(onset),
                 monthDayOrNull(peak),
