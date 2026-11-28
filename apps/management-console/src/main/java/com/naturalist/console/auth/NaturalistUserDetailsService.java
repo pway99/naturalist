@@ -31,12 +31,12 @@ import java.util.Optional;
  * in {@link Observer.MonitoringMode#ALWAYS} and every resolution decision is a named
  * constraint, each case counted under one name. What the caller sent is signal, observed at
  * {@link Level#INFO} (B1): {@code username} (a non-email login, refused as not found),
- * {@code accountKnown} (a typo or email guessing), {@code accountActive} (an attempt on a
- * suspended account) and {@code isConfigAdmin}. One attempt asks nothing of anyone; an attack
- * shows as their rate, which an alert reads whatever the level. What we stored is the
- * maintainer's, observed at {@link Level#WARN} once the account is known: {@code account} and
- * {@code naturalist} (a stored row that fails its own invariants) and {@code naturalistLinked}
- * (an orphaned account — a data-integrity hole). A login without {@code accountKnown} or
+ * {@code accountKnown} (a typo or email guessing) and {@code isConfigAdmin}. One attempt asks
+ * nothing of anyone; an attack shows as their rate, which an alert reads whatever the level.
+ * Once the account is known, {@link Level#WARN}: {@code account} and {@code naturalist} (a stored
+ * row that fails its own invariants), {@code naturalistLinked} (an orphaned account — a
+ * data-integrity hole) and {@code accountActive} (a suspended account trying to get back in,
+ * worth a look by whoever suspended it). A login without {@code accountKnown} or
  * {@code naturalistLinked} is refused as not found.
  * Spring's {@code DaoAuthenticationProvider} hides "user not found"
  * from the caller as bad credentials; these metrics are where the distinction survives, so an
@@ -94,19 +94,18 @@ class NaturalistUserDetailsService implements UserDetailsService {
         Optional<Account> found = accountQuery.getByEmail(email.value());
         Optional<Naturalist> naturalist = found.flatMap(a -> naturalistQuery.byAccount(a.name()));
 
-        // One name per case: the account's own checks run only when there is an account.
         // What the caller sent is signal, counted at INFO (B1); an attack shows as its rate.
         methodObserver
-                .state(i -> i
-                        .isPresent(found, "accountKnown")
-                        .when(found.isPresent(), c -> c
-                                .isTrue(found.get().isActive(), "accountActive")))
+                .state(i -> i.isPresent(found, "accountKnown"))
                 .observe(Level.INFO);
-        // What we stored is the maintainer's: a broken row or link is counted at WARN.
+        // One name per case: the account's own checks run only when there is an account. A broken
+        // row or link is the maintainer's, and a suspended account trying to get back in is worth
+        // a look: both are counted at WARN.
         methodObserver
                 .state(i -> i
                         .when(found.isPresent(), c -> c
                                 .namedEntity(found.get(), "account")
+                                .isTrue(found.get().isActive(), "accountActive")
                                 .isPresent(naturalist, "naturalistLinked")
                                 .namedEntityOrNull(naturalist.orElse(null), "naturalist")))
                 .observe(Level.WARN);
