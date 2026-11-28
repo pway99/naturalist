@@ -5,8 +5,6 @@ import com.naturalist.data.Page;
 import com.naturalist.data.PageRequest;
 import com.naturalist.infrastructure.DomainService;
 import com.naturalist.naturalist.NaturalistName;
-import com.naturalist.observability.Level;
-import com.naturalist.observability.MethodObserver;
 import com.naturalist.observation.Identification;
 import com.naturalist.observation.OrganismObservation;
 
@@ -95,27 +93,23 @@ class PlantObservationEntityRepositoryRdbms
 
     @Override
     public List<OrganismObservation<PlantObservationId, PlantRankName>> getByNaturalist(NaturalistName observedBy) {
-        MethodObserver getByNaturalist = observer().forMethod("getByNaturalist");
-        getByNaturalist.arguments(i -> i.identifier(observedBy, "observedBy"))
+        observer().arguments("getByNaturalist", i -> i.identifier(observedBy, "observedBy"))
                 .throwWhenInvalid();
-        List<OrganismObservation<PlantObservationId, PlantRankName>> result = assemble(mapper.selectByNaturalist(observedBy.value()));
-        getByNaturalist.state(s -> s.observableCollection(result, "result")).observe(Level.WARN);
-        return result;
+        return assemble(mapper.selectByNaturalist(observedBy.value()));
     }
 
     @Override
     public List<OrganismObservation<PlantObservationId, PlantRankName>> getByNaturalistAndSubjects(
             NaturalistName observedBy, Set<PlantRankName> subjects) {
-        MethodObserver getByNaturalistAndSubjects = observer().forMethod("getByNaturalistAndSubjects");
-        getByNaturalistAndSubjects.arguments(i -> i.identifier(observedBy, "observedBy"))
+        observer().arguments("getByNaturalistAndSubjects", i -> i
+                .identifier(observedBy, "observedBy")
+                .identifierSet(subjects, "subjects"))
                 .throwWhenInvalid();
         if (subjects.isEmpty()) return List.of();
         List<ObservationSubjectKey> keys = subjects.stream()
                 .map(s -> new ObservationSubjectKey(s.rank().name(), s.value()))
                 .toList();
-        List<OrganismObservation<PlantObservationId, PlantRankName>> result = assemble(mapper.selectByNaturalistAndSubjects(observedBy.value(), keys));
-        getByNaturalistAndSubjects.state(s -> s.observableCollection(result, "result")).observe(Level.WARN);
-        return result;
+        return assemble(mapper.selectByNaturalistAndSubjects(observedBy.value(), keys));
     }
 
     /** Assemble observations from parent rows + one batched candidate load, grouped/ordered by ordinal. */

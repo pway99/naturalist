@@ -6,8 +6,6 @@ import com.naturalist.data.PageRequest;
 import com.naturalist.exception.EntityNotFoundException;
 import com.naturalist.exception.PrimaryKeyConstraintException;
 import com.naturalist.infrastructure.DomainService;
-import com.naturalist.observability.Level;
-import com.naturalist.observability.MethodObserver;
 import com.naturalist.persistence.RdbmsExceptions;
 import com.naturalist.soil.SoilProfileName;
 
@@ -89,12 +87,9 @@ class LabAnalysisInfoEntityRepositoryRdbms
 
     @Override
     public List<LabAnalysisInfo> getBySoilProfileName(SoilProfileName soilProfileName) {
-        MethodObserver getBySoilProfileName = observer().forMethod("getBySoilProfileName");
-        getBySoilProfileName.arguments(i -> i.entityName(soilProfileName, "soilProfileName"))
+        observer().arguments("getBySoilProfileName", i -> i.entityName(soilProfileName, "soilProfileName"))
                 .throwWhenInvalid();
-        List<LabAnalysisInfo> result = mapper.selectBySoilProfileName(soilProfileName.value()).stream()
+        return mapper.selectBySoilProfileName(soilProfileName.value()).stream()
                 .map(LabAnalysisInfoDbo::toEntity).toList();
-        getBySoilProfileName.state(s -> s.observableCollection(result, "result")).observe(Level.WARN);
-        return result;
     }
 }

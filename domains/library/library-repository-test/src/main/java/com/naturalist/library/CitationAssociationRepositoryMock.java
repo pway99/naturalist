@@ -5,8 +5,6 @@ import com.naturalist.catalog.EntityRef;
 import com.naturalist.data.AbstractTestEntityRepository;
 import com.naturalist.data.MockDomainService;
 import com.naturalist.data.NaturalistDatabase;
-import com.naturalist.observability.Level;
-import com.naturalist.observability.MethodObserver;
 
 import java.util.List;
 import java.util.Set;
@@ -22,37 +20,28 @@ class CitationAssociationRepositoryMock
 
     @Override
     public List<CitationAssociation> getByCitationName(CitationName citationName) {
-        MethodObserver getByCitationName = observer().forMethod("getByCitationName");
-        getByCitationName.arguments(i -> i.entityName(citationName, "citationName"))
+        observer().arguments("getByCitationName", i -> i.entityName(citationName, "citationName"))
                 .throwWhenInvalid();
-        List<CitationAssociation> result = testEntitySource().entityStream()
+        return testEntitySource().entityStream()
                 .filter(a -> a.citationName().equals(citationName))
                 .toList();
-        getByCitationName.state(s -> s.observableCollection(result, "result")).observe(Level.WARN);
-        return result;
     }
 
     @Override
     public List<CitationAssociation> getBySubject(EntityRef subject) {
-        MethodObserver getBySubject = observer().forMethod("getBySubject");
-        getBySubject.arguments(i -> i.valueObject(subject, "subject"))
+        observer().arguments("getBySubject", i -> i.valueObject(subject, "subject"))
                 .throwWhenInvalid();
-        List<CitationAssociation> result = testEntitySource().entityStream()
+        return testEntitySource().entityStream()
                 .filter(a -> a.subject().equals(subject))
                 .toList();
-        getBySubject.state(s -> s.observableCollection(result, "result")).observe(Level.WARN);
-        return result;
     }
 
     @Override
     public List<CitationAssociation> getBySubjects(Set<EntityRef> subjects) {
-        MethodObserver getBySubjects = observer().forMethod("getBySubjects");
-        getBySubjects.arguments(i -> i.observableCollection(subjects, "subjects"))
+        observer().arguments("getBySubjects", i -> i.observableCollection(subjects, "subjects"))
                 .throwWhenInvalid();
-        List<CitationAssociation> result = testEntitySource().entityStream()
+        return testEntitySource().entityStream()
                 .filter(a -> subjects.contains(a.subject()))
                 .toList();
-        getBySubjects.state(s -> s.observableCollection(result, "result")).observe(Level.WARN);
-        return result;
     }
 }

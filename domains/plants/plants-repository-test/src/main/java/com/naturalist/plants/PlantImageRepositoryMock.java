@@ -3,8 +3,6 @@ package com.naturalist.plants;
 import com.naturalist.data.AbstractTestEntityRepository;
 import com.naturalist.data.MockDomainService;
 import com.naturalist.data.NaturalistDatabase;
-import com.naturalist.observability.Level;
-import com.naturalist.observability.MethodObserver;
 import com.naturalist.observation.OrganismImage;
 
 import java.util.List;
@@ -20,13 +18,10 @@ class PlantImageRepositoryMock
 
     @Override
     public List<OrganismImage<PlantImageId, PlantObservationId, PlantRankName>> getByParentName(PlantRankName parentName) {
-        MethodObserver getByParentName = observer().forMethod("getByParentName");
-        getByParentName.arguments(i -> i.identifier(parentName, "parentName"))
+        observer().arguments("getByParentName", i -> i.identifier(parentName, "parentName"))
                 .throwWhenInvalid();
-        List<OrganismImage<PlantImageId, PlantObservationId, PlantRankName>> result = testEntitySource().entityStream()
+        return testEntitySource().entityStream()
                 .filter(image -> image.parentName().equals(parentName))
                 .toList();
-        getByParentName.state(s -> s.observableCollection(result, "result")).observe(Level.WARN);
-        return result;
     }
 }

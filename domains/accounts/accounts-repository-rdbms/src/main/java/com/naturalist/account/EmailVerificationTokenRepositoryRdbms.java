@@ -6,8 +6,6 @@ import com.naturalist.data.PageRequest;
 import com.naturalist.exception.EntityNotFoundException;
 import com.naturalist.exception.PrimaryKeyConstraintException;
 import com.naturalist.infrastructure.DomainService;
-import com.naturalist.observability.Level;
-import com.naturalist.observability.MethodObserver;
 import com.naturalist.persistence.RdbmsExceptions;
 
 import java.util.List;
@@ -94,12 +92,9 @@ class EmailVerificationTokenRepositoryRdbms
 
     @Override
     public Optional<EmailVerificationToken> getByTokenHash(String tokenHash) {
-        MethodObserver getByTokenHash = observer().forMethod("getByTokenHash");
-        getByTokenHash.arguments(i -> i.notBlank(tokenHash, "tokenHash"))
+        observer().arguments("getByTokenHash", i -> i.notBlank(tokenHash, "tokenHash"))
                 .throwWhenInvalid();
-        Optional<EmailVerificationToken> result = Optional.ofNullable(mapper.selectByTokenHash(tokenHash)).map(EmailVerificationTokenDbo::toEntity);
-        getByTokenHash.state(s -> s.namedEntityOrNull(result.orElse(null), "result")).observe(Level.WARN);
-        return result;
+        return Optional.ofNullable(mapper.selectByTokenHash(tokenHash)).map(EmailVerificationTokenDbo::toEntity);
     }
 
     @Override

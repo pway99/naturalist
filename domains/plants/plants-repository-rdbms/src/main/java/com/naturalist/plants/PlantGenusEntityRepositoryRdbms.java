@@ -6,8 +6,6 @@ import com.naturalist.data.PageRequest;
 import com.naturalist.exception.EntityNotFoundException;
 import com.naturalist.fieldnotes.CommonName;
 import com.naturalist.infrastructure.DomainService;
-import com.naturalist.observability.Level;
-import com.naturalist.observability.MethodObserver;
 
 import java.util.List;
 import java.util.Map;
@@ -92,14 +90,11 @@ class PlantGenusEntityRepositoryRdbms
 
     @Override
     public List<PlantGenus> getByFamilyName(PlantFamilyName familyName) {
-        MethodObserver getByFamilyName = observer().forMethod("getByFamilyName");
-        getByFamilyName.arguments(i -> i.entityName(familyName, "familyName"))
+        observer().arguments("getByFamilyName", i -> i.entityName(familyName, "familyName"))
                 .throwWhenInvalid();
         List<PlantGenusDbo> parents = mapper.selectByFamilyName(familyName.value());
         Set<String> names = parents.stream().map(p -> p.name).collect(Collectors.toSet());
-        List<PlantGenus> result = assemble(parents, names);
-        getByFamilyName.state(s -> s.observableCollection(result, "result")).observe(Level.WARN);
-        return result;
+        return assemble(parents, names);
     }
 
     /** Assemble records from parent rows + one batched common-name load. */

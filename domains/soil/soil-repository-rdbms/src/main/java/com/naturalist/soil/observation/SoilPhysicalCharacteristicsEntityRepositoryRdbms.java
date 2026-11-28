@@ -6,8 +6,6 @@ import com.naturalist.data.PageRequest;
 import com.naturalist.exception.EntityNotFoundException;
 import com.naturalist.exception.PrimaryKeyConstraintException;
 import com.naturalist.infrastructure.DomainService;
-import com.naturalist.observability.Level;
-import com.naturalist.observability.MethodObserver;
 import com.naturalist.persistence.RdbmsExceptions;
 
 import java.util.List;
@@ -91,24 +89,18 @@ class SoilPhysicalCharacteristicsEntityRepositoryRdbms
 
     @Override
     public Optional<SoilPhysicalCharacteristics> getByLabAnalysisId(LabAnalysisId labAnalysisId) {
-        MethodObserver getByLabAnalysisId = observer().forMethod("getByLabAnalysisId");
-        getByLabAnalysisId.arguments(i -> i.identifier(labAnalysisId, "labAnalysisId"))
+        observer().arguments("getByLabAnalysisId", i -> i.identifier(labAnalysisId, "labAnalysisId"))
                 .throwWhenInvalid();
-        Optional<SoilPhysicalCharacteristics> result = Optional.ofNullable(mapper.selectByLabAnalysisId(labAnalysisId.value().toString()))
+        return Optional.ofNullable(mapper.selectByLabAnalysisId(labAnalysisId.value().toString()))
                 .map(SoilPhysicalCharacteristicsDbo::toEntity);
-        getByLabAnalysisId.state(s -> s.namedEntityOrNull(result.orElse(null), "result")).observe(Level.WARN);
-        return result;
     }
 
     @Override
     public List<SoilPhysicalCharacteristics> getByLabAnalysisIds(Set<LabAnalysisId> labAnalysisIds) {
-        MethodObserver getByLabAnalysisIds = observer().forMethod("getByLabAnalysisIds");
-        getByLabAnalysisIds.arguments(i -> i.identifierSet(labAnalysisIds, "labAnalysisIds"))
+        observer().arguments("getByLabAnalysisIds", i -> i.identifierSet(labAnalysisIds, "labAnalysisIds"))
                 .throwWhenInvalid();
         if (labAnalysisIds.isEmpty()) return List.of();
         List<String> ids = labAnalysisIds.stream().map(id -> id.value().toString()).toList();
-        List<SoilPhysicalCharacteristics> result = mapper.selectByLabAnalysisIds(ids).stream().map(SoilPhysicalCharacteristicsDbo::toEntity).toList();
-        getByLabAnalysisIds.state(s -> s.observableCollection(result, "result")).observe(Level.WARN);
-        return result;
+        return mapper.selectByLabAnalysisIds(ids).stream().map(SoilPhysicalCharacteristicsDbo::toEntity).toList();
     }
 }

@@ -6,8 +6,6 @@ import com.naturalist.data.PageRequest;
 import com.naturalist.exception.EntityNotFoundException;
 import com.naturalist.fieldnotes.CommonName;
 import com.naturalist.infrastructure.DomainService;
-import com.naturalist.observability.Level;
-import com.naturalist.observability.MethodObserver;
 
 import java.util.List;
 import java.util.Map;
@@ -95,28 +93,22 @@ class InsectFamilyEntityRepositoryRdbms
 
     @Override
     public List<InsectFamilyInfo> getByOrderName(InsectOrderName orderName) {
-        MethodObserver getByOrderName = observer().forMethod("getByOrderName");
-        getByOrderName.arguments(i -> i.entityName(orderName, "orderName"))
+        observer().arguments("getByOrderName", i -> i.entityName(orderName, "orderName"))
                 .throwWhenInvalid();
         List<InsectFamilyDbo> parents = mapper.selectByOrderName(orderName.value());
         Set<String> names = parents.stream().map(p -> p.name).collect(Collectors.toSet());
-        List<InsectFamilyInfo> result = assemble(parents, names);
-        getByOrderName.state(s -> s.observableCollection(result, "result")).observe(Level.WARN);
-        return result;
+        return assemble(parents, names);
     }
 
     @Override
     public List<InsectFamilyInfo> getByOrderNames(Set<InsectOrderName> orderNames) {
-        MethodObserver getByOrderNames = observer().forMethod("getByOrderNames");
-        getByOrderNames.arguments(i -> i.entityNameCollection(orderNames, "orderNames"))
+        observer().arguments("getByOrderNames", i -> i.entityNameCollection(orderNames, "orderNames"))
                 .throwWhenInvalid();
         if (orderNames.isEmpty()) return List.of();
         Set<String> orderSlugs = orderNames.stream().map(InsectOrderName::value).collect(Collectors.toSet());
         List<InsectFamilyDbo> parents = mapper.selectByOrderNameSet(orderSlugs);
         Set<String> names = parents.stream().map(p -> p.name).collect(Collectors.toSet());
-        List<InsectFamilyInfo> result = assemble(parents, names);
-        getByOrderNames.state(s -> s.observableCollection(result, "result")).observe(Level.WARN);
-        return result;
+        return assemble(parents, names);
     }
 
     /** Assemble records from parent rows + one batched common-name load. */

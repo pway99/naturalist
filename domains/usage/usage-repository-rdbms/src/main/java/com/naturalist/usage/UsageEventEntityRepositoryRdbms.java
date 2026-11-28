@@ -7,8 +7,6 @@ import com.naturalist.exception.EntityNotFoundException;
 import com.naturalist.exception.PrimaryKeyConstraintException;
 import com.naturalist.infrastructure.DomainService;
 import com.naturalist.naturalist.NaturalistName;
-import com.naturalist.observability.Level;
-import com.naturalist.observability.MethodObserver;
 import com.naturalist.persistence.RdbmsExceptions;
 import org.jspecify.annotations.Nullable;
 
@@ -90,12 +88,11 @@ class UsageEventEntityRepositoryRdbms
 
     @Override
     public List<UsageEvent> findByCounterSince(UsageCounterName counter, @Nullable NaturalistName naturalist, Instant since) {
-        MethodObserver findByCounterSince = observer().forMethod("findByCounterSince");
-        findByCounterSince.arguments(i -> i.identifier(counter, "counter").notNull(since, "since"))
+        observer().arguments("findByCounterSince", i -> i
+                .identifier(counter, "counter")
+                .notNull(since, "since"))
                 .throwWhenInvalid();
-        List<UsageEvent> result = mapper.findByCounterSince(counter.value(), naturalist == null ? null : naturalist.value(), since)
+        return mapper.findByCounterSince(counter.value(), naturalist == null ? null : naturalist.value(), since)
                 .stream().map(UsageEventDbo::toEntity).toList();
-        findByCounterSince.state(s -> s.observableCollection(result, "result")).observe(Level.WARN);
-        return result;
     }
 }

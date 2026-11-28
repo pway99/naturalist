@@ -5,8 +5,6 @@ import com.naturalist.data.AbstractEntityRepository;
 import com.naturalist.data.Page;
 import com.naturalist.data.PageRequest;
 import com.naturalist.infrastructure.DomainService;
-import com.naturalist.observability.Level;
-import com.naturalist.observability.MethodObserver;
 
 import java.util.List;
 import java.util.Map;
@@ -90,14 +88,11 @@ class ProductEntityRepositoryRdbms
 
     @Override
     public List<Product> getByCompoundName(CompoundName compoundName) {
-        MethodObserver getByCompoundName = observer().forMethod("getByCompoundName");
-        getByCompoundName.arguments(i -> i.identifier(compoundName, "compoundName"))
+        observer().arguments("getByCompoundName", i -> i.identifier(compoundName, "compoundName"))
                 .throwWhenInvalid();
         List<String> productNames = mapper.selectProductNamesByCompoundName(compoundName.value());
         if (productNames.isEmpty()) return List.of();
-        List<Product> result = assemble(mapper.selectByNameSet(productNames), Set.copyOf(productNames));
-        getByCompoundName.state(s -> s.observableCollection(result, "result")).observe(Level.WARN);
-        return result;
+        return assemble(mapper.selectByNameSet(productNames), Set.copyOf(productNames));
     }
 
     private List<Product> assemble(List<ProductDbo> parents, Set<String> names) {

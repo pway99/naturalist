@@ -6,8 +6,6 @@ import com.naturalist.data.PageRequest;
 import com.naturalist.exception.EntityNotFoundException;
 import com.naturalist.exception.PrimaryKeyConstraintException;
 import com.naturalist.infrastructure.DomainService;
-import com.naturalist.observability.Level;
-import com.naturalist.observability.MethodObserver;
 import com.naturalist.persistence.RdbmsExceptions;
 import com.naturalist.plants.PlantSpeciesName;
 
@@ -93,11 +91,8 @@ class CultivarEntityRepositoryRdbms
 
     @Override
     public List<Cultivar> getByPlantName(PlantSpeciesName plantSpeciesName) {
-        MethodObserver getByPlantName = observer().forMethod("getByPlantName");
-        getByPlantName.arguments(i -> i.entityName(plantSpeciesName, "plantName"))
+        observer().arguments("getByPlantName", i -> i.entityName(plantSpeciesName, "plantName"))
                 .throwWhenInvalid();
-        List<Cultivar> result = mapper.selectByPlantName(plantSpeciesName.value()).stream().map(CultivarDbo::toEntity).toList();
-        getByPlantName.state(s -> s.observableCollection(result, "result")).observe(Level.WARN);
-        return result;
+        return mapper.selectByPlantName(plantSpeciesName.value()).stream().map(CultivarDbo::toEntity).toList();
     }
 }

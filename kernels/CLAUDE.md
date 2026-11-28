@@ -405,7 +405,7 @@ argument-validation site: the producer refuses bad input at its boundary. For me
 state, the producer uses `.observe()` (metrics only) and hands the value to the consumer, which chooses the terminal
 operation. See ADR-017's *Producer vs. consumer* section. Repository reads are the canonical producer: they check
 their arguments and return what they read without observing it, and the consumer observes it (`domains/CLAUDE.md`,
-Repository Architecture; decided 2026-11-27, with the inherited reads' old result observation still to be removed). Use `@Nullable` from JSpecify (`org.jspecify`) for nullable
+Repository Architecture; decided 2026-11-27). Use `@Nullable` from JSpecify (`org.jspecify`) for nullable
 field documentation.
 
 ## Testing Observables

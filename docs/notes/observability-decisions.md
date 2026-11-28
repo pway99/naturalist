@@ -82,12 +82,11 @@ The standards doc is the rubric; this file records when and why each rule was de
   Supersedes the 2026-11-03 "Dbo.from throws on the write path" example. Pat, 2026-11-27.
 - A Dbo's mapping to the entity (`toEntity`, child `to*`) is a read and is permissive: its
   arguments are checked only with `notNull`, and it throws on nothing it read; unrecognised columns map to null (C1) and the
-  repository read and its consumer observe the result (J4, M1). Settles "bad stored value on read"
+  consumer observes the result (J4, M1). Settles "bad stored value on read"
   as hand-it-on. Pat, 2026-11-27.
 - A repository read checks its arguments and returns what it read without observing it; the
-  consumer observes (J4). Supersedes "a read observes what it returns at WARN". The inherited
-  `AbstractEntityRepository` reads and most domain reads still observe; a separate sweep removes
-  them. Pat, 2026-11-27.
+  consumer observes (J4). Supersedes "a read observes what it returns at WARN". Applied across
+  the reactor, `AbstractEntityRepository`'s inherited reads included. Pat, 2026-11-27.
 - A `*Transaction` observes its arguments and notices its errors, even where
   `AbstractEntityRepository` observes the same call: metrics are tagged by class and method, so the
   double count is fine (P2). An rdbms insert catch notices `"sqlInsert"` as `WRAPPED` before throwing

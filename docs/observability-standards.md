@@ -577,11 +577,6 @@ changed method under *existing code*, and does not repeat them when it meets the
   and rethrow anything else, with no `noticeError`. Each path notices it once:
   `noticeError("sqlInsert", e, Handling.WRAPPED)` before the translated throw, `Handling.RETHROWN`
   before `throw e`. Reference: `InsectLifeStageTransaction.insert`.
-- **Repository reads still observe what they read (J4).** About 68 files, `AbstractEntityRepository`'s
-  inherited `getByName` / `getByEntityNameSet` / `getPage` among them, end a read in
-  `state(s -> s.observableCollection(result, "result")).observe(Level.WARN)` (or `namedEntityOrNull`,
-  `entityNameCollection`). The rule is now that the read returns what it read unobserved and the
-  consumer observes it; a separate sweep removes these.
 - **No edge handler or backstop (B1, B3).** There is no `@ControllerAdvice` or error controller in
   the code. Unexpected exceptions become Spring's default 500. There is no message bus yet.
 - **Enums mapped with `valueOf` (C1).** `AccountDbo`, `EmailVerificationTokenDbo`, `CompoundDbo`,

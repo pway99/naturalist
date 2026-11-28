@@ -3,6 +3,7 @@ package com.naturalist.data;
 import com.naturalist.ddd.EntityName;
 import com.naturalist.ddd.NamedEntity;
 import com.naturalist.observability.Constraints;
+import com.naturalist.exception.InvariantViolationException;
 import io.micrometer.core.instrument.Counter;
 import io.micrometer.core.instrument.Metrics;
 import io.micrometer.core.instrument.simple.SimpleMeterRegistry;
@@ -18,12 +19,13 @@ import java.util.Set;
 import java.util.function.Consumer;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.catchThrowable;
 
 /**
- * A repository read is a producer (ADR-017): an invalid entity read from storage is observed
- * at WARN under {@code kind=state} and handed to the consumer, never thrown. The observation is
- * scoped to the concrete repository, so the {@code class} tag names the adapter that read it,
- * not {@link AbstractEntityRepository}.
+ * A repository read is a producer (ADR-017): it checks its arguments and hands on what it read,
+ * unobserved and never thrown on (J4). An invalid entity read from storage reaches the consumer,
+ * which observes it and decides whether its invalid aspects matter; the read records no
+ * {@code kind=state} observation of its own.
  *
  * <p>No consumer exercises this edge: every {@code TestEntitySource} validates on insert, so an
  * invalid stored entity only reaches a read through the rdbms adapters' real tables.
@@ -50,48 +52,45 @@ class AbstractEntityRepositoryReadObservationTest {
         Metrics.removeRegistry(meters);
     }
 
-    private double violations(String method) {
+    private double stateObservations(String method) {
+        return observations(method, "state");
+    }
+
+    private double observations(String method, String kind) {
         return meters.find(CHECK)
                 .tag("class", "SpecimenRepository")
                 .tag("method", method)
-                .tag("kind", "state")
-                .tag("outcome", "violated")
-                .tag("level", "warn")
+                .tag("kind", kind)
                 .counters().stream()
                 .mapToDouble(Counter::count)
                 .sum();
     }
 
     @Test
-    void getByName_returnsTheInvalidEntityAndObservesIt() {
+    void getByName_handsOnTheInvalidEntityUnobserved() {
         assertThat(repository.getByName(INVALID.name())).contains(INVALID);
-        assertThat(violations("getByName")).isEqualTo(1);
+        assertThat(stateObservations("getByName")).isZero();
     }
 
     @Test
-    void getByName_validEntityRecordsNoViolation() {
-        assertThat(repository.getByName(VALID.name())).contains(VALID);
-        assertThat(violations("getByName")).isZero();
-    }
-
-    @Test
-    void getByName_absentEntityRecordsNoViolation() {
-        assertThat(repository.getByName(new SpecimenName("absent"))).isEmpty();
-        assertThat(violations("getByName")).isZero();
-    }
-
-    @Test
-    void getByEntityNameSet_returnsTheInvalidEntityAndObservesIt() {
+    void getByEntityNameSet_handsOnTheInvalidEntityUnobserved() {
         assertThat(repository.getByEntityNameSet(Set.of(VALID.name(), INVALID.name())))
                 .containsExactlyInAnyOrder(VALID, INVALID);
-        assertThat(violations("getByEntityNameSet")).isEqualTo(1);
+        assertThat(stateObservations("getByEntityNameSet")).isZero();
     }
 
     @Test
-    void getPage_returnsTheInvalidEntityAndObservesIt() {
+    void getPage_handsOnTheInvalidEntityUnobserved() {
         assertThat(repository.getPage(PageRequest.first(10)).content())
                 .containsExactly(VALID, INVALID);
-        assertThat(violations("getPage")).isEqualTo(1);
+        assertThat(stateObservations("getPage")).isZero();
+    }
+
+    @Test
+    void getByName_nullNameIsRefusedAndObservedUnderTheConcreteRepository() {
+        assertThat(catchThrowable(() -> repository.getByName(null)))
+                .isInstanceOf(InvariantViolationException.class);
+        assertThat(observations("getByName", "argument")).isPositive();
     }
 
     static final class SpecimenName extends EntityName {

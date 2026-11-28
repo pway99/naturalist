@@ -6,8 +6,6 @@ import com.naturalist.data.PageRequest;
 import com.naturalist.exception.EntityNotFoundException;
 import com.naturalist.exception.PrimaryKeyConstraintException;
 import com.naturalist.infrastructure.DomainService;
-import com.naturalist.observability.Level;
-import com.naturalist.observability.MethodObserver;
 import com.naturalist.persistence.RdbmsExceptions;
 
 import java.util.List;
@@ -87,11 +85,8 @@ class UsageCounterEntityRepositoryRdbms
 
     @Override
     public List<UsageCounter> findByCounterName(UsageCounterName counterName) {
-        MethodObserver findByCounterName = observer().forMethod("findByCounterName");
-        findByCounterName.arguments(i -> i.identifier(counterName, "counterName"))
+        observer().arguments("findByCounterName", i -> i.identifier(counterName, "counterName"))
                 .throwWhenInvalid();
-        List<UsageCounter> result = mapper.selectByCounterName(counterName.value()).stream().map(UsageCounterDbo::toEntity).toList();
-        findByCounterName.state(s -> s.observableCollection(result, "result")).observe(Level.WARN);
-        return result;
+        return mapper.selectByCounterName(counterName.value()).stream().map(UsageCounterDbo::toEntity).toList();
     }
 }

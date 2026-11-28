@@ -7,8 +7,6 @@ import com.naturalist.naturalist.NaturalistName;
 
 import java.util.List;
 import java.util.Set;
-import com.naturalist.observability.Level;
-import com.naturalist.observability.MethodObserver;
 import com.naturalist.observation.OrganismObservation;
 
 @MockDomainService
@@ -22,27 +20,21 @@ class InsectObservationRepositoryMock
 
     @Override
     public List<OrganismObservation<InsectObservationId, InsectRankName>> getByNaturalist(NaturalistName observedBy) {
-        MethodObserver getByNaturalist = observer().forMethod("getByNaturalist");
-        getByNaturalist.arguments(i -> i.identifier(observedBy, "observedBy"))
+        observer().arguments("getByNaturalist", i -> i.identifier(observedBy, "observedBy"))
                 .throwWhenInvalid();
-        List<OrganismObservation<InsectObservationId, InsectRankName>> result = testEntitySource().entityStream()
+        return testEntitySource().entityStream()
                 .filter(o -> o.observedBy().equals(observedBy))
                 .toList();
-        getByNaturalist.state(s -> s.observableCollection(result, "result")).observe(Level.WARN);
-        return result;
     }
 
     @Override
     public List<OrganismObservation<InsectObservationId, InsectRankName>> getByNaturalistAndSubjects(NaturalistName observedBy, Set<InsectRankName> subjects) {
-        MethodObserver getByNaturalistAndSubjects = observer().forMethod("getByNaturalistAndSubjects");
-        getByNaturalistAndSubjects.arguments(i -> i
+        observer().arguments("getByNaturalistAndSubjects", i -> i
                 .identifier(observedBy, "observedBy")
                 .identifierSet(subjects, "subjects"))
                 .throwWhenInvalid();
-        List<OrganismObservation<InsectObservationId, InsectRankName>> result = testEntitySource().entityStream()
+        return testEntitySource().entityStream()
                 .filter(o -> o.observedBy().equals(observedBy) && subjects.contains(o.subject()))
                 .toList();
-        getByNaturalistAndSubjects.state(s -> s.observableCollection(result, "result")).observe(Level.WARN);
-        return result;
     }
 }

@@ -31,9 +31,9 @@ processing. Structural, not cross-cutting.
 
 - **Arguments throw.** Producer refuses invalid input — `throwWhenInvalid()` always.
 - **Output observes.** Producer emits metrics via `observe()` and returns the value; consumer decides.
-  A repository read is the canonical case: an invalid entity read from storage is observed
-  (`kind=state`, `WARN`, scoped to the concrete adapter and the read method) and returned — the
-  consumer may proceed when the invalid aspects are not involved in its process.
+  A repository read is the canonical case: it checks its arguments and returns what it read
+  without observing it. An invalid entity read from storage reaches the consumer, which observes
+  it and may proceed when the invalid aspects are not involved in its process (Pat, 2026-11-27).
 - **Received state is the consumer's call.** Method observing a received `Observable` *is*
   the consumer; choose terminal op accordingly.
 

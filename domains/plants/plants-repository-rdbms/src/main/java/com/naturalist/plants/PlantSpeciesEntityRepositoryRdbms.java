@@ -7,8 +7,6 @@ import com.naturalist.data.PageRequest;
 import com.naturalist.exception.EntityNotFoundException;
 import com.naturalist.fieldnotes.CommonName;
 import com.naturalist.infrastructure.DomainService;
-import com.naturalist.observability.Level;
-import com.naturalist.observability.MethodObserver;
 
 import java.util.List;
 import java.util.Map;
@@ -95,28 +93,22 @@ class PlantSpeciesEntityRepositoryRdbms
 
     @Override
     public List<PlantSpecies> getByGenusName(PlantGenusName genusName) {
-        MethodObserver getByGenusName = observer().forMethod("getByGenusName");
-        getByGenusName.arguments(i -> i.entityName(genusName, "genusName"))
+        observer().arguments("getByGenusName", i -> i.entityName(genusName, "genusName"))
                 .throwWhenInvalid();
         List<PlantSpeciesDbo> parents = mapper.selectByGenusName(genusName.value());
         Set<String> names = parents.stream().map(p -> p.name).collect(Collectors.toSet());
-        List<PlantSpecies> result = assemble(parents, names);
-        getByGenusName.state(s -> s.observableCollection(result, "result")).observe(Level.WARN);
-        return result;
+        return assemble(parents, names);
     }
 
     @Override
     public List<PlantSpecies> getByGenusNames(Set<PlantGenusName> genusNames) {
-        MethodObserver getByGenusNames = observer().forMethod("getByGenusNames");
-        getByGenusNames.arguments(i -> i.entityNameCollection(genusNames, "genusNames"))
+        observer().arguments("getByGenusNames", i -> i.entityNameCollection(genusNames, "genusNames"))
                 .throwWhenInvalid();
         if (genusNames.isEmpty()) return List.of();
         Set<String> genusSlugs = genusNames.stream().map(PlantGenusName::value).collect(Collectors.toSet());
         List<PlantSpeciesDbo> parents = mapper.selectByGenusNames(genusSlugs);
         Set<String> names = parents.stream().map(p -> p.name).collect(Collectors.toSet());
-        List<PlantSpecies> result = assemble(parents, names);
-        getByGenusNames.state(s -> s.observableCollection(result, "result")).observe(Level.WARN);
-        return result;
+        return assemble(parents, names);
     }
 
     /** Assemble records from parent rows + one batched load per child table. */

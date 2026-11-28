@@ -6,8 +6,6 @@ import com.naturalist.data.PageRequest;
 import com.naturalist.exception.EntityNotFoundException;
 import com.naturalist.exception.PrimaryKeyConstraintException;
 import com.naturalist.infrastructure.DomainService;
-import com.naturalist.observability.Level;
-import com.naturalist.observability.MethodObserver;
 import com.naturalist.persistence.RdbmsExceptions;
 
 import java.time.Instant;
@@ -93,18 +91,14 @@ class AccountEntityRepositoryRdbms
 
     @Override
     public Optional<Account> getByEmail(String email) {
-        MethodObserver getByEmail = observer().forMethod("getByEmail");
-        getByEmail.arguments(i -> i.email(email, "email"))
+        observer().arguments("getByEmail", i -> i.email(email, "email"))
                 .throwWhenInvalid();
-        Optional<Account> result = Optional.ofNullable(mapper.selectByEmail(email)).map(AccountDbo::toEntity);
-        getByEmail.state(s -> s.namedEntityOrNull(result.orElse(null), "result")).observe(Level.WARN);
-        return result;
+        return Optional.ofNullable(mapper.selectByEmail(email)).map(AccountDbo::toEntity);
     }
 
     @Override
     public Page<Account> getLapsedRegistrations(Instant now, PageRequest pageRequest) {
-        MethodObserver methodObserver = observer().forMethod("getLapsedRegistrations");
-        methodObserver.arguments(i -> i
+        observer().arguments("getLapsedRegistrations", i -> i
                 .notNull(now, "now")
                 .valueObject(pageRequest, "pageRequest"))
                 .throwWhenInvalid();
@@ -123,9 +117,7 @@ class AccountEntityRepositoryRdbms
         } else if (pageRequest.lookahead() > 0) {
             moreBeyondLookahead = false;
         }
-        Page<Account> page = new Page<>(content, pageRequest.pageNumber(), pageSize, pagesAheadKnown, moreBeyondLookahead);
-        methodObserver.state(s -> s.observableCollection(page.content(), "result")).observe(Level.WARN);
-        return page;
+        return new Page<>(content, pageRequest.pageNumber(), pageSize, pagesAheadKnown, moreBeyondLookahead);
     }
 
     @Override

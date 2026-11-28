@@ -5,8 +5,6 @@ import com.naturalist.data.MockDomainService;
 import com.naturalist.data.NaturalistDatabase;
 import com.naturalist.data.Page;
 import com.naturalist.data.PageRequest;
-import com.naturalist.observability.Level;
-import com.naturalist.observability.MethodObserver;
 
 import java.time.Instant;
 import java.util.Comparator;
@@ -35,20 +33,16 @@ class AccountRepositoryMock
 
     @Override
     public Optional<Account> getByEmail(String email) {
-        MethodObserver getByEmail = observer().forMethod("getByEmail");
-        getByEmail.arguments(i -> i.email(email, "email"))
+        observer().arguments("getByEmail", i -> i.email(email, "email"))
                 .throwWhenInvalid();
-        Optional<Account> result = testEntitySource().entityStream()
+        return testEntitySource().entityStream()
                 .filter(account -> email.equals(account.email()))
                 .findFirst();
-        getByEmail.state(s -> s.namedEntityOrNull(result.orElse(null), "result")).observe(Level.WARN);
-        return result;
     }
 
     @Override
     public Page<Account> getLapsedRegistrations(Instant now, PageRequest pageRequest) {
-        MethodObserver methodObserver = observer().forMethod("getLapsedRegistrations");
-        methodObserver.arguments(i -> i
+        observer().arguments("getLapsedRegistrations", i -> i
                 .notNull(now, "now")
                 .valueObject(pageRequest, "pageRequest"))
                 .throwWhenInvalid();
@@ -67,9 +61,7 @@ class AccountRepositoryMock
                 .filter(account -> Boolean.FALSE.equals(anyLive.get(account.name())))
                 .sorted(Comparator.comparing(account -> account.name().value()))
                 .toList();
-        Page<Account> page = pageOf(lapsed, pageRequest);
-        methodObserver.state(s -> s.observableCollection(page.content(), "result")).observe(Level.WARN);
-        return page;
+        return pageOf(lapsed, pageRequest);
     }
 
     @Override

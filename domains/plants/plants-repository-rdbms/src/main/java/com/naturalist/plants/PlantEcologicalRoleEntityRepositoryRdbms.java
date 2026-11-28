@@ -5,8 +5,6 @@ import com.naturalist.data.Page;
 import com.naturalist.data.PageRequest;
 import com.naturalist.exception.PrimaryKeyConstraintException;
 import com.naturalist.infrastructure.DomainService;
-import com.naturalist.observability.Level;
-import com.naturalist.observability.MethodObserver;
 
 import java.util.List;
 import java.util.Map;
@@ -92,14 +90,11 @@ class PlantEcologicalRoleEntityRepositoryRdbms
 
     @Override
     public Optional<PlantEcologicalRole> getByPlantName(PlantRankName plantName) {
-        MethodObserver getByPlantName = observer().forMethod("getByPlantName");
-        getByPlantName.arguments(i -> i.identifier(plantName, "plantName"))
+        observer().arguments("getByPlantName", i -> i.identifier(plantName, "plantName"))
                 .throwWhenInvalid();
         PlantEcologicalRoleDbo parent = mapper.selectByPlantName(plantName.rank().name(), plantName.value());
         if (parent == null) return Optional.empty();
-        Optional<PlantEcologicalRole> result = Optional.of(assemble(List.of(parent)).get(0));
-        getByPlantName.state(s -> s.namedEntityOrNull(result.orElse(null), "result")).observe(Level.WARN);
-        return result;
+        return Optional.of(assemble(List.of(parent)).get(0));
     }
 
     /** Assemble entities from parent rows + one batched load of their role rows (grouped by id). */

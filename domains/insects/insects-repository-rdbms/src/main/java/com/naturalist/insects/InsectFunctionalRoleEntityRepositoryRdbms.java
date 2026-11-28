@@ -5,8 +5,6 @@ import com.naturalist.data.Page;
 import com.naturalist.data.PageRequest;
 import com.naturalist.exception.PrimaryKeyConstraintException;
 import com.naturalist.infrastructure.DomainService;
-import com.naturalist.observability.Level;
-import com.naturalist.observability.MethodObserver;
 
 import java.util.List;
 import java.util.Map;
@@ -93,38 +91,29 @@ class InsectFunctionalRoleEntityRepositoryRdbms
 
     @Override
     public List<InsectFunctionalRole> getByGuild(FunctionalGuild guild) {
-        MethodObserver getByGuild = observer().forMethod("getByGuild");
-        getByGuild.arguments(i -> i.notNull(guild, "guild"))
+        observer().arguments("getByGuild", i -> i.notNull(guild, "guild"))
                 .throwWhenInvalid();
-        List<InsectFunctionalRole> result = assemble(mapper.selectByGuild(guild.name()));
-        getByGuild.state(s -> s.observableCollection(result, "result")).observe(Level.WARN);
-        return result;
+        return assemble(mapper.selectByGuild(guild.name()));
     }
 
     @Override
     public Optional<InsectFunctionalRole> getByParentName(InsectRankName parentName) {
-        MethodObserver getByParentName = observer().forMethod("getByParentName");
-        getByParentName.arguments(i -> i.identifier(parentName, "parentName"))
+        observer().arguments("getByParentName", i -> i.identifier(parentName, "parentName"))
                 .throwWhenInvalid();
         InsectFunctionalRoleDbo parent = mapper.selectByParentName(parentName.rank().name(), parentName.value());
         if (parent == null) return Optional.empty();
-        Optional<InsectFunctionalRole> result = Optional.of(assemble(List.of(parent)).get(0));
-        getByParentName.state(s -> s.namedEntityOrNull(result.orElse(null), "result")).observe(Level.WARN);
-        return result;
+        return Optional.of(assemble(List.of(parent)).get(0));
     }
 
     @Override
     public List<InsectFunctionalRole> getByParentNames(Set<InsectRankName> parentNames) {
-        MethodObserver getByParentNames = observer().forMethod("getByParentNames");
-        getByParentNames.arguments(i -> i.observableCollection(parentNames, "parentNames"))
+        observer().arguments("getByParentNames", i -> i.observableCollection(parentNames, "parentNames"))
                 .throwWhenInvalid();
         if (parentNames.isEmpty()) return List.of();
         List<InsectRankKey> keys = parentNames.stream()
                 .map(r -> new InsectRankKey(r.rank().name(), r.value()))
                 .toList();
-        List<InsectFunctionalRole> result = assemble(mapper.selectByParentNames(keys));
-        getByParentNames.state(s -> s.observableCollection(result, "result")).observe(Level.WARN);
-        return result;
+        return assemble(mapper.selectByParentNames(keys));
     }
 
     /** Assemble entities from parent rows + one batched load of their guild rows (grouped by id). */

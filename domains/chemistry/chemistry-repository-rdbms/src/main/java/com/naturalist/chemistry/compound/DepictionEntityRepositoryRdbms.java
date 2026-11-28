@@ -6,8 +6,6 @@ import com.naturalist.data.PageRequest;
 import com.naturalist.exception.EntityNotFoundException;
 import com.naturalist.exception.PrimaryKeyConstraintException;
 import com.naturalist.infrastructure.DomainService;
-import com.naturalist.observability.Level;
-import com.naturalist.observability.MethodObserver;
 import com.naturalist.persistence.RdbmsExceptions;
 
 import java.util.List;
@@ -92,20 +90,14 @@ class DepictionEntityRepositoryRdbms
 
     @Override
     public Optional<CompoundDepiction> getByCompoundName(CompoundName compoundName) {
-        MethodObserver getByCompoundName = observer().forMethod("getByCompoundName");
-        getByCompoundName.arguments(i -> i.identifier(compoundName, "compoundName"))
+        observer().arguments("getByCompoundName", i -> i.identifier(compoundName, "compoundName"))
                 .throwWhenInvalid();
-        Optional<CompoundDepiction> result = Optional.ofNullable(mapper.selectByCompoundName(compoundName.value()))
+        return Optional.ofNullable(mapper.selectByCompoundName(compoundName.value()))
                 .map(CompoundDepictionDbo::toEntity);
-        getByCompoundName.state(s -> s.namedEntityOrNull(result.orElse(null), "result")).observe(Level.WARN);
-        return result;
     }
 
     @Override
     public List<CompoundName> getAllDepictedCompoundNames() {
-        MethodObserver getAllDepictedCompoundNames = observer().forMethod("getAllDepictedCompoundNames");
-        List<CompoundName> result = mapper.selectAllDepictedCompoundNames().stream().map(CompoundName::of).toList();
-        getAllDepictedCompoundNames.state(s -> s.entityNameCollection(result, "result")).observe(Level.WARN);
-        return result;
+        return mapper.selectAllDepictedCompoundNames().stream().map(CompoundName::of).toList();
     }
 }

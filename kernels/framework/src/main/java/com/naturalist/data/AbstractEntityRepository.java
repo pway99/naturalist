@@ -2,7 +2,6 @@ package com.naturalist.data;
 
 import com.naturalist.ddd.Named;
 import com.naturalist.observability.Handling;
-import com.naturalist.observability.Level;
 import com.naturalist.observability.MethodObserver;
 import com.naturalist.observability.Observer;
 
@@ -63,29 +62,20 @@ public abstract class AbstractEntityRepository<
 
     @Override
     public final Optional<ENTITY> getByName(NAME name) {
-        MethodObserver getByName = observer.forMethod("getByName");
-        getByName.arguments(i -> i.identifier(name, "name")).throwWhenInvalid();
-        Optional<ENTITY> result = doGetByName(name);
-        getByName.state(s -> s.namedEntityOrNull(result.orElse(null), "result")).observe(Level.WARN);
-        return result;
+        observer.arguments("getByName", i -> i.identifier(name, "name")).throwWhenInvalid();
+        return doGetByName(name);
     }
 
     @Override
     public final List<ENTITY> getByEntityNameSet(Set<NAME> nameSet) {
-        MethodObserver getByEntityNameSet = observer.forMethod("getByEntityNameSet");
-        getByEntityNameSet.arguments(i -> i.identifierSet(nameSet, "nameSet")).throwWhenInvalid();
-        List<ENTITY> result = doGetByNameSet(nameSet);
-        getByEntityNameSet.state(s -> s.observableCollection(result, "result")).observe(Level.WARN);
-        return result;
+        observer.arguments("getByEntityNameSet", i -> i.identifierSet(nameSet, "nameSet")).throwWhenInvalid();
+        return doGetByNameSet(nameSet);
     }
 
     @Override
     public final Page<ENTITY> getPage(PageRequest pageRequest) {
-        MethodObserver getPage = observer.forMethod("getPage");
-        getPage.arguments(i -> i.valueObject(pageRequest, "pageRequest")).throwWhenInvalid();
-        Page<ENTITY> result = doGetPage(pageRequest);
-        getPage.state(s -> s.observableCollection(result.content(), "result")).observe(Level.WARN);
-        return result;
+        observer.arguments("getPage", i -> i.valueObject(pageRequest, "pageRequest")).throwWhenInvalid();
+        return doGetPage(pageRequest);
     }
 
     @Override

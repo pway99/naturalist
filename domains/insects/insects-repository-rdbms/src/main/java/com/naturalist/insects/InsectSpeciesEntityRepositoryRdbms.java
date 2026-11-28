@@ -8,8 +8,6 @@ import com.naturalist.fieldnotes.CommonName;
 import com.naturalist.habitat.HabitatZone;
 import com.naturalist.habitat.VerticalLayer;
 import com.naturalist.infrastructure.DomainService;
-import com.naturalist.observability.Level;
-import com.naturalist.observability.MethodObserver;
 
 import java.util.List;
 import java.util.Map;
@@ -98,28 +96,22 @@ class InsectSpeciesEntityRepositoryRdbms
 
     @Override
     public List<InsectSpeciesInfo> getByGenusName(InsectGenusName genusName) {
-        MethodObserver getByGenusName = observer().forMethod("getByGenusName");
-        getByGenusName.arguments(i -> i.entityName(genusName, "genusName"))
+        observer().arguments("getByGenusName", i -> i.entityName(genusName, "genusName"))
                 .throwWhenInvalid();
         List<InsectSpeciesDbo> parents = mapper.selectByGenusName(genusName.value());
         Set<String> names = parents.stream().map(p -> p.name).collect(Collectors.toSet());
-        List<InsectSpeciesInfo> result = assemble(parents, names);
-        getByGenusName.state(s -> s.observableCollection(result, "result")).observe(Level.WARN);
-        return result;
+        return assemble(parents, names);
     }
 
     @Override
     public List<InsectSpeciesInfo> getByGenusNames(Set<InsectGenusName> genusNames) {
-        MethodObserver getByGenusNames = observer().forMethod("getByGenusNames");
-        getByGenusNames.arguments(i -> i.entityNameCollection(genusNames, "genusNames"))
+        observer().arguments("getByGenusNames", i -> i.entityNameCollection(genusNames, "genusNames"))
                 .throwWhenInvalid();
         if (genusNames.isEmpty()) return List.of();
         Set<String> genusSlugs = genusNames.stream().map(InsectGenusName::value).collect(Collectors.toSet());
         List<InsectSpeciesDbo> parents = mapper.selectByGenusNames(genusSlugs);
         Set<String> names = parents.stream().map(p -> p.name).collect(Collectors.toSet());
-        List<InsectSpeciesInfo> result = assemble(parents, names);
-        getByGenusNames.state(s -> s.observableCollection(result, "result")).observe(Level.WARN);
-        return result;
+        return assemble(parents, names);
     }
 
     /** Assemble aggregates from parent rows + one batched load per child table. */

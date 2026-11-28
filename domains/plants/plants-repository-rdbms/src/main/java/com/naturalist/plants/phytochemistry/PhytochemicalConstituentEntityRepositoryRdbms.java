@@ -5,8 +5,6 @@ import com.naturalist.data.AbstractEntityRepository;
 import com.naturalist.data.Page;
 import com.naturalist.data.PageRequest;
 import com.naturalist.infrastructure.DomainService;
-import com.naturalist.observability.Level;
-import com.naturalist.observability.MethodObserver;
 import com.naturalist.plants.PlantRankName;
 import com.naturalist.plants.phytochemistry.role.PhytochemicalRole;
 
@@ -96,24 +94,18 @@ class PhytochemicalConstituentEntityRepositoryRdbms
 
     @Override
     public List<PhytochemicalConstituent> getByPlantName(PlantRankName plantName) {
-        MethodObserver getByPlantName = observer().forMethod("getByPlantName");
-        getByPlantName.arguments(i -> i.identifier(plantName, "plantName")).throwWhenInvalid();
+        observer().arguments("getByPlantName", i -> i.identifier(plantName, "plantName")).throwWhenInvalid();
         List<String> names = mapper.selectNamesByPlant(plantName.rank().name(), plantName.value());
         if (names.isEmpty()) return List.of();
-        List<PhytochemicalConstituent> result = assemble(mapper.selectByNameSet(names), Set.copyOf(names));
-        getByPlantName.state(s -> s.observableCollection(result, "result")).observe(Level.WARN);
-        return result;
+        return assemble(mapper.selectByNameSet(names), Set.copyOf(names));
     }
 
     @Override
     public List<PhytochemicalConstituent> getByCompoundName(CompoundName compoundName) {
-        MethodObserver getByCompoundName = observer().forMethod("getByCompoundName");
-        getByCompoundName.arguments(i -> i.entityName(compoundName, "compoundName")).throwWhenInvalid();
+        observer().arguments("getByCompoundName", i -> i.entityName(compoundName, "compoundName")).throwWhenInvalid();
         List<String> names = mapper.selectNamesByCompound(compoundName.value());
         if (names.isEmpty()) return List.of();
-        List<PhytochemicalConstituent> result = assemble(mapper.selectByNameSet(names), Set.copyOf(names));
-        getByCompoundName.state(s -> s.observableCollection(result, "result")).observe(Level.WARN);
-        return result;
+        return assemble(mapper.selectByNameSet(names), Set.copyOf(names));
     }
 
     /** Assemble entities from parent rows + one batched load per child table. */

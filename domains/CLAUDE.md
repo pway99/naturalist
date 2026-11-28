@@ -253,9 +253,7 @@ Quick-reference constraints:
   consumer, which observes it and decides whether the invalid aspects matter to it (J4 in
   `docs/observability-standards.md`). Each domain-specific read checks its arguments with
   `observer().arguments("getByX", ...).throwWhenInvalid()` and returns the result. Reference:
-  `InsectLifeStageEntityRepositoryRdbms.getByParentName`. Decided 2026-11-27; the older reads
-  that still end in `state(... "result").observe(Level.WARN)` (`AbstractEntityRepository`'s
-  inherited reads and most domain reads) are removed in a separate sweep.
+  `InsectLifeStageEntityRepositoryRdbms.getByParentName`. Decided 2026-11-27.
 - **Fan-out must batch — never per-element in a loop.** Calling a repository or query once
   per element of a prior result (`for` / `stream().map` / `computeIfAbsent` / recursive
   descent) is an N+1 that scales with catalog size and degrades production; it passes on

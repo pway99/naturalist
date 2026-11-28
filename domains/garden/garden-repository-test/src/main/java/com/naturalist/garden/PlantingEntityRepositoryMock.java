@@ -3,8 +3,6 @@ package com.naturalist.garden;
 import com.naturalist.data.AbstractTestEntityRepository;
 import com.naturalist.data.MockDomainService;
 import com.naturalist.data.NaturalistDatabase;
-import com.naturalist.observability.Level;
-import com.naturalist.observability.MethodObserver;
 import com.naturalist.plants.PlantRankName;
 import com.naturalist.zone.ZoneName;
 import com.naturalist.zone.subzone.SubZoneName;
@@ -25,37 +23,28 @@ class PlantingEntityRepositoryMock
 
     @Override
     public List<Planting> getByZoneName(ZoneName zoneName) {
-        MethodObserver getByZoneName = observer().forMethod("getByZoneName");
-        getByZoneName.arguments(i -> i.entityName(zoneName, "zoneName"))
+        observer().arguments("getByZoneName", i -> i.entityName(zoneName, "zoneName"))
                 .throwWhenInvalid();
-        List<Planting> result = testEntitySource().entityStream()
+        return testEntitySource().entityStream()
                 .filter(planting -> zoneName.equals(planting.zoneName()))
                 .toList();
-        getByZoneName.state(s -> s.observableCollection(result, "result")).observe(Level.WARN);
-        return result;
     }
 
     @Override
     public List<Planting> getBySubZoneName(SubZoneName subZoneName) {
-        MethodObserver getBySubZoneName = observer().forMethod("getBySubZoneName");
-        getBySubZoneName.arguments(i -> i.entityName(subZoneName, "subZoneName"))
+        observer().arguments("getBySubZoneName", i -> i.entityName(subZoneName, "subZoneName"))
                 .throwWhenInvalid();
-        List<Planting> result = testEntitySource().entityStream()
+        return testEntitySource().entityStream()
                 .filter(planting -> subZoneName.equals(planting.subZoneName()))
                 .toList();
-        getBySubZoneName.state(s -> s.observableCollection(result, "result")).observe(Level.WARN);
-        return result;
     }
 
     @Override
     public List<Planting> getByPlantName(PlantRankName plantName) {
-        MethodObserver getByPlantName = observer().forMethod("getByPlantName");
-        getByPlantName.arguments(i -> i.identifier(plantName, "plantName"))
+        observer().arguments("getByPlantName", i -> i.identifier(plantName, "plantName"))
                 .throwWhenInvalid();
-        List<Planting> result = testEntitySource().entityStream()
+        return testEntitySource().entityStream()
                 .filter(planting -> plantName.equals(planting.plantName()))
                 .toList();
-        getByPlantName.state(s -> s.observableCollection(result, "result")).observe(Level.WARN);
-        return result;
     }
 }
