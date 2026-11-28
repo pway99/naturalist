@@ -24,6 +24,7 @@ class UsageEventRepositoryMock
                                                Instant since) {
         observer().arguments("findByCounterSince", i -> i
                 .identifier(counter, "counter")
+                .identifierOrNull(naturalist, "naturalist")
                 .notNull(since, "since"))
                 .throwWhenInvalid();
         return testEntitySource().entityStream()

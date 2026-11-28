@@ -90,6 +90,7 @@ class UsageEventEntityRepositoryRdbms
     public List<UsageEvent> findByCounterSince(UsageCounterName counter, @Nullable NaturalistName naturalist, Instant since) {
         observer().arguments("findByCounterSince", i -> i
                 .identifier(counter, "counter")
+                .identifierOrNull(naturalist, "naturalist")
                 .notNull(since, "since"))
                 .throwWhenInvalid();
         return mapper.findByCounterSince(counter.value(), naturalist == null ? null : naturalist.value(), since)

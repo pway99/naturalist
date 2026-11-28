@@ -110,6 +110,16 @@ interface UsageEventRepositoryTest extends EntityRepositoryTest<UsageEventId, Us
     }
 
     @Test
+    default void findByCounterSince_invalidNaturalist_throwsInvariantViolationException() {
+        assertThatThrownBy(() -> repository().findByCounterSince(
+                TestUsageIdentifiers.UsageCounters.Identification,
+                NaturalistName.of("Not A Slug"),
+                Instant.parse("2026-08-25T00:00:00Z")))
+                .isInstanceOf(InvariantViolationException.class)
+                .hasMessageContaining("naturalist");
+    }
+
+    @Test
     default void findByCounterSince_beforeWindow_returnsEmpty() {
         List<UsageEvent> result = repository().findByCounterSince(
                 TestUsageIdentifiers.UsageCounters.Identification,
