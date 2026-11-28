@@ -22,9 +22,7 @@ import com.naturalist.persistence.DboSchema;
 import com.naturalist.plants.PlantSpeciesName;
 import com.naturalist.taxonomy.LinealRank;
 
-import java.util.Arrays;
 import java.util.List;
-import java.util.Objects;
 import java.util.Set;
 import java.util.function.Consumer;
 
@@ -312,7 +310,10 @@ final class InsectLifeStageDbo implements Dbo {
     }
 
     private static boolean anySet(String... columns) {
-        return Arrays.stream(columns).anyMatch(Objects::nonNull);
+        for (String column : columns) {
+            if (column != null) return true;
+        }
+        return false;
     }
 
 

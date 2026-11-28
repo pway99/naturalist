@@ -389,6 +389,12 @@ value it passes. So may a protected hook whose only caller is a `final` method o
 that checks those arguments first (`AbstractEntityRepository.getByName` checks `identifier(name, …)`
 before calling `doGetByName`). A constructor is covered by M5.
 
+**Framework exemptions.** Two kinds of framework method do not observe their parameters: the
+`Constraints` builder methods (`notBlank`, `enumValue`, ...), which are the observation machinery
+and cannot check themselves without recursing, and `Enums.named`, a hot-path lookup whose `type` is
+always a class literal at the call site. Both take a null only from a caller that passes one on
+purpose.
+
 **A missing value must be able to arrive as null.** A parameter or record component typed as a
 primitive (`int`, `long`, `boolean`) cannot say "missing": an absent JSON field or unset column
 silently becomes `0` or `false`, and a null `Integer` passed to an `int` throws an unboxing NPE at

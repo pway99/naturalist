@@ -104,3 +104,6 @@ The standards doc is the rubric; this file records when and why each rule was de
 - Enum columns are checked with the framework's `enumValue(value, Type.class, name)` (blank passes,
   otherwise must name a constant), not a per-enum `isX` helper in each Dbo, and mapped with `Enums.named(Type.class, value)`, which
   returns null instead of throwing. Pat, 2026-11-27.
+- J7 exempts the `Constraints` builder methods (the observation machinery, which cannot check
+  itself) and `Enums.named` (hot path, `type` always a class literal). `Enums.named` caches each
+  enum's name map in a `ClassValue`: one map read per lookup, no allocation. Pat, 2026-11-27.
