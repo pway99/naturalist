@@ -6,7 +6,6 @@ import com.naturalist.account.AccountQuery;
 import com.naturalist.account.AccountStatus;
 import com.naturalist.console.admin.AdminProperties;
 import com.naturalist.ddd.EmailAddress;
-import com.naturalist.exception.InvariantViolationException;
 import com.naturalist.naturalist.Naturalist;
 import com.naturalist.naturalist.NaturalistQuery;
 import com.naturalist.observability.Level;
@@ -30,10 +29,13 @@ import java.util.Optional;
  *
  * <p><strong>Observability.</strong> Login is the attack surface, so the {@link Observer} runs
  * in {@link Observer.MonitoringMode#ALWAYS} and every resolution decision is a predicate-named
- * constraint observed at {@link Level#WARN}: {@code usernameWellFormed} (a non-email login),
- * {@code accountKnown} (email guessing), {@code naturalistLinked} (an orphaned account — a
- * data-integrity hole), {@code accountActive} (an attempt on a suspended account),
- * {@code isConfigAdmin}. Spring's {@code DaoAuthenticationProvider} hides "user not found"
+ * constraint observed at {@link Level#WARN}: {@code username} (a non-email login, refused as
+ * not found), {@code accountKnown} (email guessing), and only once the account is known
+ * {@code account} (a stored account that fails its own invariants), {@code naturalistLinked}
+ * (an orphaned account — a data-integrity hole) and {@code accountActive} (an attempt on a
+ * suspended account), so each case is counted under one name; and {@code isConfigAdmin}.
+ * A login without {@code accountKnown} or {@code naturalistLinked} is refused as not found.
+ * Spring's {@code DaoAuthenticationProvider} hides "user not found"
  * from the caller as bad credentials; these metrics are where the distinction survives, so an
  * operator can tell email enumeration from password guessing. The downstream outcome of the
  * attempt itself (bad password, locked) is observed by {@link AuthenticationEventObserver}.
@@ -62,9 +64,13 @@ class NaturalistUserDetailsService implements UserDetailsService {
         this.accountQuery = accountQuery;
     }
 
+    //TODO: We need to revisit userName since an email is rqueired, I bleieve there is a work item for this in the todo docs
     @Override
     public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
         MethodObserver methodObserver = observer.forMethod("loadUserByUsername");
+        methodObserver.arguments(c -> c
+                .notNull(username, "username"))
+                .throwWhenInvalid();
         boolean isConfigAdmin = admin.username().equals(username);
         if (isConfigAdmin) {
             methodObserver
@@ -76,27 +82,27 @@ class NaturalistUserDetailsService implements UserDetailsService {
                     .build();
         }
 
-        Optional<Account> account = Optional.empty();
-        boolean wellFormed = true;
-        try {
-            // Canonical form — registration stored the address through the same EmailAddress.of.
-            account = accountQuery.getByEmail(EmailAddress.of(username).value());
-        } catch (InvariantViolationException malformedEmail) {
-            wellFormed = false;   // a malformed login is "not found", not a 500
-        }
-        Optional<Naturalist> naturalist = account.flatMap(a -> naturalistQuery.byAccount(a.name()));
+        // Canonical form — registration stored the address through the same EmailAddress.of.
+        EmailAddress email = EmailAddress.of(username);
+        // A malformed login is "not found", not a 500: Spring Security takes the answer as an exception.
+        methodObserver
+                .state(i -> i.emailAddress(email, "username"))
+                .throwWhenInvalid(Level.WARN, () -> new UsernameNotFoundException(username));
+        Optional<Account> found = accountQuery.getByEmail(email.value());
+        Optional<Naturalist> naturalist = found.flatMap(a -> naturalistQuery.byAccount(a.name()));
 
-        final Optional<Account> found = account;
-        final boolean usernameWellFormed = wellFormed;
+        // One name per case: the account's own checks run only when there is an account.
         methodObserver
                 .state(i -> i
-                        .isTrue(usernameWellFormed, "usernameWellFormed")
-                        .isTrue(found.isPresent(), "accountKnown")
-                        .isTrue(naturalist.isPresent(), "naturalistLinked")
-                        .isTrue(found.map(a -> a.status() == AccountStatus.ACTIVE).orElse(true), "accountActive"))
+                        .isPresent(found, "accountKnown")
+                        .when(found.isPresent(), c -> c
+                                .namedEntity(found.get(), "account")
+                                .isPresent(naturalist, "naturalistLinked")
+                                .namedEntityOrNull(naturalist.orElse(null), "naturalist")
+                                .isTrue(found.get().isActive(), "accountActive")))
                 .observe(Level.WARN);
 
-        if (found.isEmpty() || naturalist.isEmpty()) {
+        if (!resolvesToNaturalist(found, naturalist)) {
             throw new UsernameNotFoundException(username);
         }
         Account resolved = found.get();
@@ -108,5 +114,10 @@ class NaturalistUserDetailsService implements UserDetailsService {
                 resolved.access() == AccessLevel.VISION,
                 resolved.emailVerified(),
                 resolved.status() != AccountStatus.SUSPENDED);
+    }
+
+    /** A login resolves to a principal only through a known account linked to a naturalist. */
+    private static boolean resolvesToNaturalist(Optional<Account> found, Optional<Naturalist> naturalist) {
+        return found.isPresent() && naturalist.isPresent();
     }
 }

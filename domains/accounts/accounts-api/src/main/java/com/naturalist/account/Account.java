@@ -39,6 +39,10 @@ public record Account(
         return new Account(name, email, passwordHash, emailVerified, access, status);
     }
 
+    public boolean isActive() {
+        return status == AccountStatus.ACTIVE;
+    }
+
     @Override
     public Consumer<? extends Constraints> invariants() {
         return i -> i

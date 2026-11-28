@@ -186,7 +186,9 @@ class AccountCommandImpl implements AccountCommand {
         // The caller answers identically either way (no enumeration through the response);
         // the metric is the only place an unknown email is distinguishable — which is the point.
         InvariantObservation decision = beginPasswordReset
-                .state(i -> i.isTrue(account.isPresent(), "emailRegistered"))
+                .state(i -> i
+                        .isTrue(account.isPresent(), "emailRegistered")
+                        .namedEntityOrNull(account.orElse(null), "account"))
                 .observe(Level.WARN);
         if (!decision.violations().isEmpty()) {
             return Optional.empty();
@@ -259,17 +261,24 @@ class AccountCommandImpl implements AccountCommand {
 
     /**
      * Resolves a raw token to one that may be redeemed for {@code purpose} now, observing the
-     * four ways it can fail under four names — {@code tokenKnown}, {@code hasPurpose},
-     * {@code isConsumed}, {@code isExpired} — while throwing the one unchanged
-     * {@link InvalidTokenException} message, so the caller learns nothing the metrics do.
+     * five ways it can fail under five names — {@code tokenKnown}, {@code token} (a stored token
+     * that fails its own invariants), {@code hasPurpose}, {@code isConsumed}, {@code isExpired} —
+     * while throwing the one unchanged {@link InvalidTokenException} message, so the caller learns
+     * nothing the metrics do.
      */
-    private EmailVerificationToken redeemableToken(MethodObserver method, String rawToken,
+    private EmailVerificationToken redeemableToken(MethodObserver methodObserver, String rawToken,
                                                    TokenPurpose purpose, Instant now) {
+        methodObserver.arguments(c -> c
+                .notBlank(rawToken, "rawToken")
+                .notNull(purpose, "purpose")
+                .notNull(now, "now"))
+                .throwWhenInvalid();
         Optional<EmailVerificationToken> found = tokens.getByTokenHash(secureTokens.hash(rawToken));
         EmailVerificationToken token = found.orElse(null);
-        InvariantObservation decision = method
+        InvariantObservation decision = methodObserver
                 .state(i -> i
                         .isTrue(found.isPresent(), "tokenKnown")
+                        .namedEntityOrNull(token, "token")
                         .whenNotNull(token, c -> c
                                 .isTrue(token.hasPurpose(purpose), "hasPurpose")
                                 .isFalse(token.isConsumed(), "isConsumed")

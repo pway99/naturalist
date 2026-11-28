@@ -540,6 +540,28 @@ public class Constraints {
         return this;
     }
 
+    /**
+     * Conditional constraint guard — runs the block only when {@code condition} holds, the
+     * general form of {@link #whenNotNull}. Constraints added inside the block are appended to
+     * the same builder (flat, not nested). Use it to check a value's own facts only once the
+     * check before it says the value is there, so each case is counted under one name:
+     *
+     * <pre>{@code
+     * .isTrue(found.isPresent(), "accountKnown")
+     * .when(found.isPresent(), c -> c
+     *         .isTrue(naturalist.isPresent(), "naturalistLinked"))
+     * }</pre>
+     *
+     * <p>Not a constraint type — no {@link Constraint} is created. This is pure
+     * control flow over the builder.
+     */
+    public Constraints when(boolean condition, Consumer<Constraints> block) {
+        if (condition) {
+            block.accept(this);
+        }
+        return this;
+    }
+
     public List<Constraint<?>> collected() {
         return Collections.unmodifiableList(constraints);
     }

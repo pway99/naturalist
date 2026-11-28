@@ -102,6 +102,31 @@ class InvariantObservationMetricsTest {
     }
 
     @Test
+    void throwWhenInvalidWithLevel_throwsTheSuppliedExceptionAndTagsViolatedAtTheCallSiteLevel() {
+        String method = "throwWhenInvalidWithLevel_throwsTheSuppliedExceptionAndTagsViolatedAtTheCallSiteLevel";
+        assertThatThrownBy(() -> oneHeldOneViolated(Observer.MonitoringMode.ALWAYS, method)
+                .throwWhenInvalid(Level.WARN, () -> new IllegalStateException("refused")))
+                .isExactlyInstanceOf(IllegalStateException.class)
+                .hasMessage("refused");
+
+        Counter violated = check(checkName(method, "absent"), "violated");
+        assertThat(violated.count()).isEqualTo(1);
+        assertThat(violated.getId().getTag("level")).isEqualTo("warn");
+        assertThat(check(checkName(method, "present"), "held").getId().getTag("level")).isEqualTo("info");
+    }
+
+    @Test
+    void throwWhenInvalidWithLevel_withoutARefusal_throwsInvariantViolationException() {
+        String method = "throwWhenInvalidWithLevel_withoutARefusal_throwsInvariantViolationException";
+        assertThatThrownBy(() -> oneHeldOneViolated(Observer.MonitoringMode.ON_FAILURE, method)
+                .throwWhenInvalid(Level.WARN, null))
+                .isInstanceOf(InvariantViolationException.class);
+        assertThatThrownBy(() -> oneHeldOneViolated(Observer.MonitoringMode.ON_FAILURE, method)
+                .throwWhenInvalid(Level.WARN, () -> null))
+                .isInstanceOf(InvariantViolationException.class);
+    }
+
+    @Test
     void arguments_tagsKindArgument() {
         oneHeldOneViolated(Observer.MonitoringMode.ALWAYS, "arguments_tagsKindArgument").observe(Level.WARN);
 

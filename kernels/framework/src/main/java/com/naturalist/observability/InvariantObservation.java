@@ -108,6 +108,29 @@ public class InvariantObservation {
     }
 
     /**
+     * Emit metrics at the call site's {@code level} and throw {@code refusal}'s exception if any invariant is
+     * violated: for an edge whose framework takes its answer as an exception (Spring Security's
+     * {@code UsernameNotFoundException} from a {@code UserDetailsService}). The exception is the framework's
+     * control flow, not a failure, so its violations are counted as {@link #observe(Level)} counts them, at
+     * {@code level}, once; held checks under {@link Observer.MonitoringMode#ALWAYS} are tagged {@link Level#INFO}.
+     * A null {@code level} is {@link Level#INFO}, as in {@link #observe(Level)}. The supplier runs only on a
+     * violation; a null supplier, or one that supplies null, throws {@link InvariantViolationException} instead,
+     * so a refusal is never lost:
+     *
+     * <pre>{@code
+     * methodObserver.state(i -> i.emailAddress(email, "username"))
+     *         .throwWhenInvalid(Level.WARN, () -> new UsernameNotFoundException(username));
+     * }</pre>
+     */
+    public void throwWhenInvalid(Level level, Supplier<? extends RuntimeException> refusal) {
+        observe(level);
+        if (isNotValid()) {
+            RuntimeException thrown = refusal == null ? null : refusal.get();
+            throw thrown != null ? thrown : new InvariantViolationException(scope, violations());
+        }
+    }
+
+    /**
      * Emit metrics without throwing. Every violated check carries {@code level} as its
      * {@code level} tag — only the call site knows whether this observation is informational or a
      * warning, so the call site supplies it. Under {@link Observer.MonitoringMode#ALWAYS} the
