@@ -300,8 +300,8 @@ class AccountCommandImpl implements AccountCommand {
     /**
      * The token's owner, which must exist and be {@code ACTIVE} to redeem it — a suspended
      * account may not verify its way into VISION or reset its way back in. Observed as
-     * {@code accountKnown} and {@code accountActive}; either failing is the same unchanged
-     * {@link InvalidTokenException} to the caller.
+     * {@code accountKnown}, {@code account} and {@code accountActive}; a missing or inactive
+     * account is the same unchanged {@link InvalidTokenException} to the caller.
      */
     private Account activeAccount(MethodObserver methodObserver, AccountName name) {
         Account account = knownAccount(methodObserver, name)
@@ -315,10 +315,18 @@ class AccountCommandImpl implements AccountCommand {
         return account;
     }
 
-    /** Looks an account up by name, observing a miss as {@code accountKnown}; the caller picks the exception. */
+    /**
+     * Looks an account up by name, observing a miss as {@code accountKnown} and the account read
+     * as {@code account} (J4: the consumer observes what the repository hands on); the caller
+     * picks the exception.
+     */
     private Optional<Account> knownAccount(MethodObserver methodObserver, AccountName name) {
         Optional<Account> account = accounts.getByName(name);
-        methodObserver.state(i -> i.isTrue(account.isPresent(), "accountKnown")).observe(Level.WARN);
+        methodObserver
+                .state(i -> i
+                        .isTrue(account.isPresent(), "accountKnown")
+                        .namedEntityOrNull(account.orElse(null), "account"))
+                .observe(Level.WARN);
         return account;
     }
 }
