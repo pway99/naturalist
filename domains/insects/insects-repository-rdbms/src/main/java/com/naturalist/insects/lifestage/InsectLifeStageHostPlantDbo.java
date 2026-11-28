@@ -45,6 +45,6 @@ final class InsectLifeStageHostPlantDbo implements Dbo {
                 .kebabFormat(lifeStageName, "lifeStageName")
                 .atLeast(ordinal, 0, "ordinal")
                 .kebabFormat(plantName, "plantName")
-                .maxLength(plantName, 96, "plantName");
+                .maxLength(plantName, 64, "plantName");
     }
 }

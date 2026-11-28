@@ -550,7 +550,7 @@ reviewer checks it.
 | M5 | No `Objects.requireNonNull` or hand-written null check that throws. Constructors validate through `observer.arguments("constructor", ...)`. |
 | M6 | No logging in domain or kernel code. The maintainer does not read logs, so a log line informs nobody. |
 | M7 | Only `com.naturalist.observability.Metric` touches `io.micrometer`. |
-| M8 | `Observer` fields are `static final`. Checked on every class the change touches. An interface cannot hold a private field, so an interface's static method may build its Observer inline: `Observer.forClass(Clade.class).forMethod("of")`. |
+| M8 | `Observer` fields are `static final`. Checked on every class the change touches. An interface cannot hold a private field, so an interface's static method may build its Observer inline: `Observer.forClass(Clade.class).forMethod("of")`. An abstract base class whose observations must be tagged with the concrete subclass holds an instance field, `private final Observer observer = Observer.forClass(getClass());`, and hands it to subclasses through a `protected observer()` accessor; its subclasses use `observer()` and declare no Observer of their own (`AbstractEntityRepository`). |
 | M9 | Range and sign checks use `atLeast` / `atMost` / `greaterThan` / `inRange`, never `isTrue(x >= n, ...)`. |
 | M10 | Inside `invariants()`, use the direct-value form (`notNull(bar, "bar")`), not the by-function form on `this`. |
 | M11 | `accounts-core`, console authentication and registration construct their `Observer` with `MonitoringMode.ALWAYS`; everything else uses the default `ON_FAILURE`. |

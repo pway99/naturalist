@@ -107,3 +107,9 @@ The standards doc is the rubric; this file records when and why each rule was de
 - J7 exempts the `Constraints` builder methods (the observation machinery, which cannot check
   itself) and `Enums.named` (hot path, `type` always a class literal). `Enums.named` caches each
   enum's name map in a `ClassValue`: one map read per lookup, no allocation. Pat, 2026-11-27.
+- M8 allows an abstract base class an instance `Observer` scoped with `getClass()`, exposed to
+  subclasses through `observer()`, so its observations are tagged with the concrete subclass
+  (`AbstractEntityRepository`). Pat, 2026-11-27.
+- A Dbo's `maxLength` follows the domain type it maps to, not a wider column: the child lifestage
+  Dbos check plant and species names at 64 (`PlantSpeciesName`, `InsectSpeciesName`), though the
+  columns are `VARCHAR(96)`, so the row observation counts a name the code cannot use. Pat, 2026-11-27.
