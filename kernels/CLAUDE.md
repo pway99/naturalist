@@ -382,9 +382,10 @@ the failures the system absorbed (`handling="swallowed"`) from the ones that sti
 `wrapped`). Pass the `Handling` that matches the catch's next statement: `SWALLOWED` when it returns a fallback, skips
 the step or does nothing; `RETHROWN` when it throws `e` itself (after any cleanup); `WRAPPED` when it throws a new
 exception carrying `e` as the cause. It never throws, so the catch keeps its own behaviour and its cause:
-`m.noticeError("serialized", e, Handling.WRAPPED); throw new IllegalStateException("...", e);`,
-`m.noticeError("inserted", e, Handling.RETHROWN); throw e;` or
-`m.noticeError("enriched", e, Handling.SWALLOWED); return FALLBACK;`. Never write `state(s -> s.isTrue(false, "<name>"))` in a catch: it
+`m.noticeError("jsonSerialize", e, Handling.WRAPPED); throw new IllegalStateException("...", e);`,
+`m.noticeError("sqlInsert", e, Handling.RETHROWN); throw e;` or
+`m.noticeError("httpGet", e, Handling.SWALLOWED); return FALLBACK;`. The name is the call that failed, never a
+past-tense result (`docs/observability-standards.md`, J3). Never write `state(s -> s.isTrue(false, "<name>"))` in a catch: it
 reads as a check that can never hold, and `throwWhenInvalid()` there drops the caught exception (it takes no cause).
 A constraint stays right when the catch turns the failure into a *decision* observed below `ERROR` (a WARN refusal,
 an INFO signal such as `ImageMetadataSegments`); `noticeError` is always `ERROR`.

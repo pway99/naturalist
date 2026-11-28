@@ -88,3 +88,10 @@ The standards doc is the rubric; this file records when and why each rule was de
   consumer observes (J4). Supersedes "a read observes what it returns at WARN". The inherited
   `AbstractEntityRepository` reads and most domain reads still observe; a separate sweep removes
   them. Pat, 2026-11-27.
+- A `*Transaction` observes its arguments and notices its errors, even where
+  `AbstractEntityRepository` observes the same call: metrics are tagged by class and method, so the
+  double count is fine (P2). An rdbms insert catch notices `"sqlInsert"` as `WRAPPED` before throwing
+  `PrimaryKeyConstraintException` on a unique violation, `RETHROWN` before `throw e` otherwise
+  (`InsectLifeStageTransaction.insert`). Pat, 2026-11-27.
+- A `noticeError` name is the call that failed (`sqlInsert`, `fileWrite`, `jsonSerialize`), not a
+  past-tense result (`inserted` reads as a success count). Pat, 2026-11-27.

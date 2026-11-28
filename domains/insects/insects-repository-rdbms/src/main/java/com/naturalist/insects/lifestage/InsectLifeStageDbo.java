@@ -234,6 +234,8 @@ final class InsectLifeStageDbo implements Dbo {
                 .maxLength(stageKind, 16, "stageKind")
                 .isTrue(isStageKind(stageKind), "isStageKind")
                 .isTrue(permitColumnsMatchStageKind(), "permitColumnsMatchStageKind")
+                .isTrue(chemistryNotesHaveRole(), "chemistryNotesHaveRole")
+                .isTrue(diapauseFieldsMatchKind(), "diapauseFieldsMatchKind")
                 .whenNotNull(diapauseKind, k -> k.isTrue(isDiapauseKind(diapauseKind), "isDiapauseKind"))
                 .notBlank(parentRank, "parentRank")
                 .maxLength(parentRank, 16, "parentRank")
@@ -289,6 +291,23 @@ final class InsectLifeStageDbo implements Dbo {
                 && (!larva || "LARVA".equals(stageKind))
                 && (!pupa || "PUPA".equals(stageKind))
                 && (!adult || "ADULT".equals(stageKind));
+    }
+
+    /**
+     * Whether {@code chemistryNotes} has the {@code chemistryRole} it describes: {@link #toEntity}
+     * builds no {@link StageChemistryRole} without a role, so notes without one would be dropped.
+     */
+    private boolean chemistryNotesHaveRole() {
+        return chemistryNotes == null || chemistryRole != null;
+    }
+
+    /**
+     * Whether the generic diapause columns are set only for a kind that carries them: every kind but
+     * {@code NON_DIAPAUSING}. {@link #diapauseRegulation} ignores them for any other row.
+     */
+    private boolean diapauseFieldsMatchKind() {
+        return !anySet(diapauseFieldA, diapauseFieldB)
+                || (isDiapauseKind(diapauseKind) && !"NON_DIAPAUSING".equals(diapauseKind));
     }
 
     private static boolean anySet(String... columns) {

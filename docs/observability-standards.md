@@ -52,7 +52,9 @@ The `level` tag says who has to act. `Level`'s Javadoc carries the same rules.
   wherever a value or failure is consumed, however often it was observed upstream: each layer's
   observation names its own layer, and the metrics are read together. The one limit is inside a
   single handler: a `catch` notices its exception once (M15). Judge each handler on its own;
-  never trace the call path to decide whether a layer may observe.
+  never trace the call path to decide whether a layer may observe. Example: a failed insert is
+  noticed in `InsectLifeStageTransaction.insert` and again in `AbstractEntityRepository.insert`;
+  metrics are tagged by class and method, so the two counts stay apart.
 - **P3. Bad input from outside is rejected at the edge.** An edge is an inbound adapter: a
   `@RestController` or a message handler. Jackson deserializes the request there, before anything
   is submitted to a core module, so an inbound deserialization error never reaches domain or
@@ -231,6 +233,11 @@ matching the catch's next statement:
 - `SWALLOWED`: it returns a fallback, skips the step, or does nothing;
 - `RETHROWN`: it throws `e` itself, after any cleanup;
 - `WRAPPED`: it throws a new exception with `e` as the cause.
+
+The name is the call that failed: the kind of call, then what it does (`sqlInsert`, `sqlUpdate`,
+`fileWrite`, `httpPost`, `jsonSerialize`). Never a past-tense result such as `inserted`: on a
+dashboard it reads as a count of successes. When one handler covers two calls of the same kind,
+add what each one touches (`sqlInsertParent`). Every path through one catch uses the same name.
 
 A failure the catch turns into a decision (a `WARN` refusal, an `INFO` signal) stays a constraint
 instead (J2). Never write `state(s -> s.isTrue(false, "<name>"))` for a caught failure.
@@ -544,6 +551,14 @@ reviewer checks it.
 These are where the code does not meet the standards yet. The reviewer reports them inside a
 changed method under *existing code*, and does not repeat them when it meets them elsewhere.
 
+- **`noticeError` names in the past tense (J3).** Names written before 2026-11-27 name a result
+  (`readable`, `catalogued`, `stored`, `conformed`, `serialized`) instead of the call that failed. A
+  later sweep renames them; the examples in this document that still use them predate the rule.
+- **Rdbms insert catches do not notice (P2, M15).** Most `*Transaction` and `*EntityRepositoryRdbms`
+  inserts catch the mapper's exception, turn a unique violation into `PrimaryKeyConstraintException`
+  and rethrow anything else, with no `noticeError`. Each path notices it once:
+  `noticeError("sqlInsert", e, Handling.WRAPPED)` before the translated throw, `Handling.RETHROWN`
+  before `throw e`. Reference: `InsectLifeStageTransaction.insert`.
 - **Repository reads still observe what they read (J4).** About 68 files, `AbstractEntityRepository`'s
   inherited `getByName` / `getByEntityNameSet` / `getPage` among them, end a read in
   `state(s -> s.observableCollection(result, "result")).observe(Level.WARN)` (or `namedEntityOrNull`,

@@ -6,6 +6,7 @@ import com.naturalist.habitat.HabitatZone;
 import com.naturalist.habitat.VerticalLayer;
 import com.naturalist.infrastructure.DomainService;
 import com.naturalist.insects.InsectSpeciesName;
+import com.naturalist.observability.Handling;
 import com.naturalist.observability.InvariantObservation;
 import com.naturalist.observability.Level;
 import com.naturalist.observability.MethodObserver;
@@ -46,12 +47,17 @@ class InsectLifeStageTransaction {
     /** The parent row, then every child row. */
     @Transactional
     void insert(LifeStage entity) {
-        observer.arguments("insert", i -> i.namedEntity(entity, "entity")).throwWhenInvalid();
+        MethodObserver methodObserver = observer.forMethod("insert");
+        methodObserver.arguments(i -> i.namedEntity(entity, "entity")).throwWhenInvalid();
         InsectLifeStageDbo dbo = InsectLifeStageDbo.from(entity);
         try {
             mapper.insert(dbo);
         } catch (RuntimeException e) {
-            if (RdbmsExceptions.isUniqueViolation(e)) throw new PrimaryKeyConstraintException(entity);
+            if (RdbmsExceptions.isUniqueViolation(e)) {
+                methodObserver.noticeError("sqlInsert", e, Handling.WRAPPED);
+                throw new PrimaryKeyConstraintException(entity);
+            }
+            methodObserver.noticeError("sqlInsert", e, Handling.RETHROWN);
             throw e;
         }
         insertChildren(entity);
