@@ -28,13 +28,16 @@ import java.util.Optional;
  * turn a username into a naturalist identity (design: seam discipline).
  *
  * <p><strong>Observability.</strong> Login is the attack surface, so the {@link Observer} runs
- * in {@link Observer.MonitoringMode#ALWAYS} and every resolution decision is a predicate-named
- * constraint observed at {@link Level#WARN}: {@code username} (a non-email login, refused as
- * not found), {@code accountKnown} (email guessing), and only once the account is known
- * {@code account} (a stored account that fails its own invariants), {@code naturalistLinked}
- * (an orphaned account — a data-integrity hole) and {@code accountActive} (an attempt on a
- * suspended account), so each case is counted under one name; and {@code isConfigAdmin}.
- * A login without {@code accountKnown} or {@code naturalistLinked} is refused as not found.
+ * in {@link Observer.MonitoringMode#ALWAYS} and every resolution decision is a named
+ * constraint, each case counted under one name. What the caller sent is signal, observed at
+ * {@link Level#INFO} (B1): {@code username} (a non-email login, refused as not found),
+ * {@code accountKnown} (a typo or email guessing), {@code accountActive} (an attempt on a
+ * suspended account) and {@code isConfigAdmin}. One attempt asks nothing of anyone; an attack
+ * shows as their rate, which an alert reads whatever the level. What we stored is the
+ * maintainer's, observed at {@link Level#WARN} once the account is known: {@code account} and
+ * {@code naturalist} (a stored row that fails its own invariants) and {@code naturalistLinked}
+ * (an orphaned account — a data-integrity hole). A login without {@code accountKnown} or
+ * {@code naturalistLinked} is refused as not found.
  * Spring's {@code DaoAuthenticationProvider} hides "user not found"
  * from the caller as bad credentials; these metrics are where the distinction survives, so an
  * operator can tell email enumeration from password guessing. The downstream outcome of the
@@ -75,7 +78,7 @@ class NaturalistUserDetailsService implements UserDetailsService {
         if (isConfigAdmin) {
             methodObserver
                     .state(i -> i.isTrue(isConfigAdmin, "isConfigAdmin"))
-                    .observe(Level.WARN);
+                    .observe(Level.INFO);
             return User.withUsername(admin.username())
                     .password(adminPasswordHash)
                     .roles("ADMIN")
@@ -87,19 +90,25 @@ class NaturalistUserDetailsService implements UserDetailsService {
         // A malformed login is "not found", not a 500: Spring Security takes the answer as an exception.
         methodObserver
                 .state(i -> i.emailAddress(email, "username"))
-                .throwWhenInvalid(Level.WARN, () -> new UsernameNotFoundException(username));
+                .throwWhenInvalid(Level.INFO, () -> new UsernameNotFoundException(username));
         Optional<Account> found = accountQuery.getByEmail(email.value());
         Optional<Naturalist> naturalist = found.flatMap(a -> naturalistQuery.byAccount(a.name()));
 
         // One name per case: the account's own checks run only when there is an account.
+        // What the caller sent is signal, counted at INFO (B1); an attack shows as its rate.
         methodObserver
                 .state(i -> i
                         .isPresent(found, "accountKnown")
                         .when(found.isPresent(), c -> c
+                                .isTrue(found.get().isActive(), "accountActive")))
+                .observe(Level.INFO);
+        // What we stored is the maintainer's: a broken row or link is counted at WARN.
+        methodObserver
+                .state(i -> i
+                        .when(found.isPresent(), c -> c
                                 .namedEntity(found.get(), "account")
                                 .isPresent(naturalist, "naturalistLinked")
-                                .namedEntityOrNull(naturalist.orElse(null), "naturalist")
-                                .isTrue(found.get().isActive(), "accountActive")))
+                                .namedEntityOrNull(naturalist.orElse(null), "naturalist")))
                 .observe(Level.WARN);
 
         if (!resolvesToNaturalist(found, naturalist)) {

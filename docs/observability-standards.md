@@ -355,7 +355,7 @@ it is a guard. Pat, 2026-11-26.
 placed inside the branch it names counts every entry to that branch. That is a deliberate
 non-error signal, and it is not a finding when the branch is a restricted code path the maintainer
 must know is being used. Example: in `NaturalistUserDetailsService.loadUserByUsername`,
-`state(i -> i.isTrue(isConfigAdmin, "isConfigAdmin")).observe(Level.WARN)` inside
+`state(i -> i.isTrue(isConfigAdmin, "isConfigAdmin")).observe(Level.INFO)` inside
 `if (isConfigAdmin)` counts every config-admin login. The constraint is named after the branch
 condition. The exception never covers an `ON_FAILURE` observer, where the constraint counts
 nothing.
