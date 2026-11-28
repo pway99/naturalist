@@ -169,13 +169,13 @@ class InvariantObservationMetricsTest {
     }
 
     @Test
-    void observable_tagsKindObservable() {
+    void observable_tagsKindState() {
         Observer.forClass(InvariantObservationMetricsTest.class)
                 .observable(null, "fetched")
                 .observe(Level.WARN);
 
         Counter counter = check("InvariantObservationMetricsTest.fetched.fetched", "violated");
-        assertThat(counter.getId().getTag("kind")).isEqualTo("observable");
+        assertThat(counter.getId().getTag("kind")).isEqualTo("state");
     }
 
     /**

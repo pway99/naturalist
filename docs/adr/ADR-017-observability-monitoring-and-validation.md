@@ -66,8 +66,10 @@ to `io.micrometer.core.instrument.Metrics`.
 
 - `naturalist.invariant.check` — one increment per inspected constraint. Tags: `constraint`,
   `class`, `method`, `name`, `outcome` (`held` | `violated`), `level`, `kind` (`argument` |
-  `state` | `observable` — what was observed; split on it to tell a bad caller from a bad
-  dependency). The monitoring mode
+  `state` | `caught` — what was observed; split on it to tell a bad caller from a bad
+  dependency. An `Observable`'s own `invariants()`, walked by `namedEntity(...)` /
+  `observable(...)`, is `state`: a value the method acquired or built, whichever entry point
+  checks it. The separate `observable` kind was retired 2026-11-27). The monitoring mode
   selects which outcomes are emitted: `ON_FAILURE` emits `outcome=violated` only (low
   cardinality, always on); `ALWAYS` emits `outcome=held` too (high cardinality, opt-in).
   A violation is counted once, and an alert on `outcome=violated` reads the same in either

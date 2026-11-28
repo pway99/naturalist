@@ -31,7 +31,7 @@ import java.util.function.Consumer;
  *       observation over values the method acquired during its own run — an aggregate fetched
  *       from another api, a count, a looked-up value. Arguments are what the caller handed in;
  *       state is what the method obtained. Emissions are tagged {@code kind=state} (arguments
- *       {@code kind=argument}, observables {@code kind=observable}) on the one
+ *       {@code kind=argument}; an observable's own invariants are state too) on the one
  *       {@code naturalist.invariant.check} meter. The terminal operation is the consumer's
  *       choice.</li>
  *   <li><b>Realtime monitoring.</b> Constructing an observer with
@@ -204,13 +204,13 @@ public class Observer {
         if (observable == null) {
             Constraints accumulator = new Constraints();
             accumulator.notNull(this, ignored -> null, label);
-            return new InvariantObservation(scope, flatten(accumulator, scope + "."), monitoringMode, ObservationKind.OBSERVABLE);
+            return new InvariantObservation(scope, flatten(accumulator, scope + "."), monitoringMode, ObservationKind.STATE);
         }
         Constraints accumulator = new Constraints();
         @SuppressWarnings({"unchecked", "rawtypes"})
         Consumer<Constraints> consumer = (Consumer) observable.invariants();
         consumer.accept(accumulator);
-        return new InvariantObservation(scope, flatten(accumulator, scope + "."), monitoringMode, ObservationKind.OBSERVABLE);
+        return new InvariantObservation(scope, flatten(accumulator, scope + "."), monitoringMode, ObservationKind.STATE);
     }
 
     // ---------------------------------------------------------------------------------
@@ -226,7 +226,7 @@ public class Observer {
             String scope = referenceClass.getSimpleName() + ".<null>";
             Constraints accumulator = new Constraints();
             accumulator.notNull(this, ignored -> null, "observable");
-            return new InvariantObservation(scope, flatten(accumulator, scope + "."), monitoringMode, ObservationKind.OBSERVABLE);
+            return new InvariantObservation(scope, flatten(accumulator, scope + "."), monitoringMode, ObservationKind.STATE);
         }
         Constraints accumulator = new Constraints();
         @SuppressWarnings({"unchecked", "rawtypes"})
@@ -234,7 +234,7 @@ public class Observer {
         consumer.accept(accumulator);
 
         String scope = referenceClass.getSimpleName() + "." + observable.getClass().getSimpleName();
-        return new InvariantObservation(scope, flatten(accumulator, scope + "."), monitoringMode, ObservationKind.OBSERVABLE);
+        return new InvariantObservation(scope, flatten(accumulator, scope + "."), monitoringMode, ObservationKind.STATE);
     }
 
     /**

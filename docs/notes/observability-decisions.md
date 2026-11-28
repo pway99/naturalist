@@ -112,3 +112,6 @@ The standards doc is the rubric; this file records when and why each rule was de
 - A Dbo's `maxLength` follows the domain type it maps to, not a wider column: the child lifestage
   Dbos check plant and species names at 64 (`PlantSpeciesName`, `InsectSpeciesName`), though the
   columns are `VARCHAR(96)`, so the row observation counts a name the code cannot use. Pat, 2026-11-27.
+- The `observable` kind tag is retired: `namedEntity(...)` / `observable(...)` on an `Observer` or
+  `MethodObserver` tag `kind=state`, the same as the check written inside `state(...)`, so one check is
+  one kind whichever entry point makes it. Pat, 2026-11-27.

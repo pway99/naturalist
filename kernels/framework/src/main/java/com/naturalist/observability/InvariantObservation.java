@@ -59,7 +59,7 @@ public class InvariantObservation {
         this.scope = scope;
         this.constraints = constraints == null ? Set.of() : Set.copyOf(constraints);
         this.monitoringMode = monitoringMode == null ? Observer.MonitoringMode.ON_FAILURE : monitoringMode;
-        this.kind = kind == null ? ObservationKind.OBSERVABLE : kind;
+        this.kind = kind == null ? ObservationKind.STATE : kind;
     }
 
     /**

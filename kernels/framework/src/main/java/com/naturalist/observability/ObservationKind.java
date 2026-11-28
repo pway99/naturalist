@@ -12,12 +12,13 @@ import java.util.Locale;
  *       {@link Observer#arguments(String, java.util.function.Consumer)}. A violation points at
  *       the caller.</li>
  *   <li>{@link #STATE} — values the method acquired or computed during its own run: an
- *       aggregate fetched from another api, a count, a looked-up mapping. From
- *       {@link Observer#state(String, java.util.function.Consumer)}. A violation points at
- *       what the method consumed or derived, not at its caller.</li>
- *   <li>{@link #OBSERVABLE} — an {@link Observable}'s own declared {@code invariants()}, from
- *       {@link Observer#observable(Observable, String)}, {@link Observer#namedEntity}, and
- *       {@link Observer#observation(Observable)}.</li>
+ *       aggregate fetched from another api, a count, a looked-up mapping, an entity it built.
+ *       From {@link Observer#state(String, java.util.function.Consumer)}, and from
+ *       {@link Observer#observable(Observable, String)}, {@link Observer#observation(Observable)},
+ *       {@link MethodObserver#namedEntity} and {@link MethodObserver#observable}, which walk such
+ *       a value's own {@code invariants()}: the same check is the same kind whichever entry point
+ *       makes it. A violation points at what the method consumed or derived, not at its
+ *       caller.</li>
  *   <li>{@link #CAUGHT} — a failure a {@code catch} block caught, from
  *       {@link Observer#noticeError(String, String, Throwable, Handling)} and
  *       {@link MethodObserver#noticeError(String, Throwable, Handling)}. Nothing was checked: the
@@ -30,7 +31,6 @@ import java.util.Locale;
 public enum ObservationKind {
     ARGUMENT,
     STATE,
-    OBSERVABLE,
     CAUGHT;
 
     /**

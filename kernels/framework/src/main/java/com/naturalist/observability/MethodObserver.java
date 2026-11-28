@@ -56,7 +56,7 @@ public class MethodObserver {
         String scope = referenceClass.getSimpleName() + "." + methodName + "." + label;
         Constraints accumulator = new Constraints();
         accumulator.entityName(name, label);
-        return new InvariantObservation(scope, flatten(accumulator, scope + "."), monitoringMode, ObservationKind.OBSERVABLE);
+        return new InvariantObservation(scope, flatten(accumulator, scope + "."), monitoringMode, ObservationKind.STATE);
     }
 
     /**
@@ -75,13 +75,13 @@ public class MethodObserver {
         if (observable == null) {
             Constraints accumulator = new Constraints();
             accumulator.notNull(this, ignored -> null, label);
-            return new InvariantObservation(scope, flatten(accumulator, scope + "."), monitoringMode, ObservationKind.OBSERVABLE);
+            return new InvariantObservation(scope, flatten(accumulator, scope + "."), monitoringMode, ObservationKind.STATE);
         }
         Constraints accumulator = new Constraints();
         @SuppressWarnings({"unchecked", "rawtypes"})
         Consumer<Constraints> consumer = (Consumer) observable.invariants();
         consumer.accept(accumulator);
-        return new InvariantObservation(scope, flatten(accumulator, scope + "."), monitoringMode, ObservationKind.OBSERVABLE);
+        return new InvariantObservation(scope, flatten(accumulator, scope + "."), monitoringMode, ObservationKind.STATE);
     }
 
     /**

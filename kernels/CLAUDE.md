@@ -367,10 +367,11 @@ cross-field invariants and for an operation's *decisions*: observe the decision 
 **Arguments vs state.** `arguments(...)` is for values the *caller passed* — the method's boundary contract, always
 `throwWhenInvalid()`. `state(...)` takes the same constraint lambda for values the method *acquired or computed during
 its own run* — an aggregate fetched from another api, a count, a looked-up mapping, a decision — and the terminal
-operation is the consumer's choice. The two are told apart by the `kind` tag (`argument` | `state` | `observable`) on
+operation is the consumer's choice. The two are told apart by the `kind` tag (`argument` | `state` | `caught`) on
 `naturalist.invariant.check`, so a violation points at the caller or at what the method consumed. A value that is not
 one of the method's parameters (or an element of one) never goes through `arguments(...)`. To walk an acquired
-object's *own* `invariants()` rather than the facts this method depends on, use `observable(...)` / `namedEntity(...)`.
+object's *own* `invariants()` rather than the facts this method depends on, use `observable(...)` / `namedEntity(...)`; it is
+tagged `kind=state` too, since the object is something the method acquired or built.
 Security-critical classes (`accounts-core`, console authentication, registration) construct their `Observer` in
 `MonitoringMode.ALWAYS` so valid decisions are counted too (as the `INFO` baseline); everything else stays `ON_FAILURE`.
 
