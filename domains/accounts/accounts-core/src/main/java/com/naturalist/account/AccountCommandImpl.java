@@ -307,7 +307,7 @@ class AccountCommandImpl implements AccountCommand {
         Account account = knownAccount(methodObserver, name)
                 .orElseThrow(() -> new InvalidTokenException("invalid token"));
         InvariantObservation decision = methodObserver
-                .state(i -> i.isTrue(account.status() == AccountStatus.ACTIVE, "accountActive"))
+                .state(i -> i.isTrue(account.isActive(), "accountActive"))
                 .observe(Level.WARN);
         if (!decision.violations().isEmpty()) {
             throw new InvalidTokenException("invalid token");

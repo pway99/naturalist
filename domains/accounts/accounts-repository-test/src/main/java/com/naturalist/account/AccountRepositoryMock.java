@@ -57,7 +57,7 @@ class AccountRepositoryMock
         List<Account> lapsed = testEntitySource().entityStream()
                 .filter(account -> !account.emailVerified())
                 .filter(account -> account.access() == AccessLevel.BROWSE_ONLY)
-                .filter(account -> account.status() == AccountStatus.ACTIVE)
+                .filter(Account::isActive)
                 .filter(account -> Boolean.FALSE.equals(anyLive.get(account.name())))
                 .sorted(Comparator.comparing(account -> account.name().value()))
                 .toList();
