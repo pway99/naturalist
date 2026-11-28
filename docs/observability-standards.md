@@ -268,19 +268,34 @@ its exit, and never as a refusal. This is not B2: B2 covers only inbound request
 
 **Kind:** Judgment.
 
-A method that receives or acquires a value chooses the terminal operation by asking *can I, or the
-next thing I hand this to, proceed on the invalid value?*
+A method that receives or acquires a value chooses the terminal operation by asking *would the
+invalid value make this method throw?*
 
-- **No:** `throwWhenInvalid()`. Example: `*Dbo.from(domainObject)` on the write path throws,
-  because the INSERT cannot take a bad row.
-- **Yes, or it is someone else's call:** `observe(level)` and return it. Example: repository
-  reads observe what they read at `WARN` and return it, scoped to the concrete adapter.
+- **Yes:** `throwWhenInvalid()`, so the exception is counted under a name. Example:
+  `InsectLifeStageDbo.toEntity` checks `isStageKind(stageKind)` before switching on it, because an
+  unknown kind reaches the `default -> throw`.
+- **No, or it is someone else's call:** hand it on. A method whose own decision depends on the
+  value observes it (`observe(level)`); one that only passes it on observes nothing of it, because
+  the consumer that uses it observes it. Example: a repository read checks its arguments and
+  returns what it read without observing it; the query or command that uses the result observes
+  it.
 
 A producer never throws on a value only because it is invalid; it does not know whether its
-consumers care.
+consumers care. **Observe what you were given, not what you built.** A method's `arguments(...)`
+check covers its input; it does not then re-check the value it built from that input with a
+throwing `state(...)`, because that takes the decision away from the consumer that receives it.
+Example: `*Dbo.from(entity)` observes `entity` as its argument and returns the Dbo, with no
+`observable(dbo)` check after building it.
 
-**Test.** *Which parts of the value does this method (or its next consumer) use? Are the invalid
-parts among them?*
+**A Dbo's mapping to the entity is a read, and is permissive.** `toEntity` and the child Dbos'
+`to*` methods throw on nothing they read: an unrecognised column maps to null (C1), a name is
+built as stored, and the consumer observes the result. Their arguments are checked only for
+presence (`notNull`, `throwWhenInvalid()`), since a missing collection would throw here; what the
+collections hold is handed on unchecked. The one exception is a value with no entity to build at all, such as an unknown
+`stageKind` with no permit to switch to (the example above). Example:
+`InsectLifeStageDbo.toEntity`.
+
+**Test.** *Which parts of the value does this method use? Would an invalid one throw here?*
 
 **A command observes what it builds before handing it on.** An aggregate, entity or value a
 command instantiates is observed with its kind's constraint (`aggregate(...)`, `valueObject(...)`,
@@ -506,7 +521,7 @@ reviewer checks it.
 
 | ID | Rule |
 |---|---|
-| M1 | `arguments(...)` always ends in `throwWhenInvalid()`, except at an edge that answers a refusal instead of throwing, which ends its check (`arguments(...)` or `state(...)`) in `observe(Level.INFO)` for the caller's input and its lookup, or `observe(Level.WARN)` for a value our own code handed the edge (B1). |
+| M1 | `arguments(...)` always ends in `throwWhenInvalid()` (a Dbo's mapping to the entity checks its arguments only with `notNull`: J4), except at an edge that answers a refusal instead of throwing, which ends its check (`arguments(...)` or `state(...)`) in `observe(Level.INFO)` for the caller's input and its lookup, or `observe(Level.WARN)` for a value our own code handed the edge (B1). |
 | M2 | An `arguments(...)` lambda references only the method's parameters (or elements of them). Anything the method acquired goes through `state(...)`, and so does anything it calculated, even from its parameters alone (a map lookup, a `putIfAbsent` result, a value object built from several parameters such as `GridCell.of(lat, lon)`): observing a calculated value as an argument would be misleading. This holds when the check is a refusal too: where the value came from decides the kind, not what the check does with it (`state(i -> i.isTrue(spaceWithinRoot(space), "spaceWithinRoot")).throwWhenInvalid()`). |
 | M3 | Checks made at the same point are one chained call, one constraint per line. Split only when a later check needs a value the earlier one guarantees. |
 | M4 | A method that observes once calls `observer.arguments("method", ...)` / `observer.state("method", ...)` / `observer.noticeError("method", ...)` directly. A method that observes two or more times gets one `MethodObserver methodObserver = observer.forMethod("method")` and routes everything through it. A helper that observes on its own behalf uses its own method name. A helper shared to avoid duplication (DRY) may instead take the caller's `MethodObserver` as a parameter, so each observation is tagged with the caller's name; it never takes a method-name string. |
@@ -522,12 +537,18 @@ reviewer checks it.
 | M14 | A value of a framework kind is observed with its kind's constraint, which checks null and the type's `invariants()`: `valueObject`, `identifier`, `entityName`, `entityId`, `namedValue`, `observable`, `aggregate`, `readModel` (and their `OrNull` / collection forms). A `NamedValue` (`FileName`, `EmailAddress`) is one of these kinds: `namedValue(name, "name")` checks null and `isValid()`. Not a bare `notNull`, and never a hand-written `== null` check that skips or returns. Example: `DomainId` is a `ValueObject`, so `recordSlug` observes `valueObject(domain, "domain")` instead of `if (domain == null) return;`. |
 | M15 | A `catch` calls `noticeError` at most once, and never pairs it with a constraint observation for the same exception (P2). Judged inside the one handler; layers elsewhere do not matter. |
 | M16 | Parameters and record components use `java.lang` wrapper types (`Integer`, `Long`, `Boolean`, ...), not primitives, so a missing value arrives as null and the argument observation counts it (J7). |
+| M17 | No `notNull` on a value that another constraint in the same check already fails on null: `kebabFormat`, `notBlank`, `email`, `atLeast` / `atMost` / `inRange` / `greaterThan`, `isPresent`, and every M14 kind constraint. `maxLength` and the `OrNull` forms pass null, so pair them with `notNull` (or `notBlank`) when the value is required. |
 
 ## Known gaps today
 
 These are where the code does not meet the standards yet. The reviewer reports them inside a
 changed method under *existing code*, and does not repeat them when it meets them elsewhere.
 
+- **Repository reads still observe what they read (J4).** About 68 files, `AbstractEntityRepository`'s
+  inherited `getByName` / `getByEntityNameSet` / `getPage` among them, end a read in
+  `state(s -> s.observableCollection(result, "result")).observe(Level.WARN)` (or `namedEntityOrNull`,
+  `entityNameCollection`). The rule is now that the read returns what it read unobserved and the
+  consumer observes it; a separate sweep removes these.
 - **No edge handler or backstop (B1, B3).** There is no `@ControllerAdvice` or error controller in
   the code. Unexpected exceptions become Spring's default 500. There is no message bus yet.
 - **Enums mapped with `valueOf` (C1).** `AccountDbo`, `EmailVerificationTokenDbo`, `CompoundDbo`,
@@ -548,6 +569,9 @@ changed method under *existing code*, and does not repeat them when it meets the
   `MethodObserver` locals are named `m` or after their method. A tool can rename them all; until
   then, the reviewer reports M13 only inside changed methods.
 
+- **Dbos re-check what they built (J4).** Most `*Dbo.from(...)` factories end in
+  `state(i -> i.observable(d, "dbo")).throwWhenInvalid()`. The insects life-stage Dbos are fixed;
+  the rest are reported as existing code.
 - **Primitive parameters and record components (M16).** Added 2026-11-27; existing code has not
   been swept. The reviewer reports M16 only inside changed methods and on record components a
   change adds or edits.

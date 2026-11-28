@@ -6,6 +6,10 @@ import com.naturalist.habitat.HabitatZone;
 import com.naturalist.habitat.VerticalLayer;
 import com.naturalist.infrastructure.DomainService;
 import com.naturalist.insects.InsectSpeciesName;
+import com.naturalist.observability.InvariantObservation;
+import com.naturalist.observability.Level;
+import com.naturalist.observability.MethodObserver;
+import com.naturalist.observability.Observer;
 import com.naturalist.persistence.RdbmsExceptions;
 import com.naturalist.plants.PlantSpeciesName;
 import jakarta.transaction.Transactional;
@@ -30,15 +34,19 @@ import java.util.Set;
 @DomainService
 class InsectLifeStageTransaction {
 
+    private static final Observer observer = Observer.forClass(InsectLifeStageTransaction.class);
+
     private final InsectLifeStageMapper mapper;
 
     InsectLifeStageTransaction(InsectLifeStageMapper mapper) {
+        observer.arguments("constructor", i -> i.notNull(mapper, "mapper")).throwWhenInvalid();
         this.mapper = mapper;
     }
 
     /** The parent row, then every child row. */
     @Transactional
     void insert(LifeStage entity) {
+        observer.arguments("insert", i -> i.namedEntity(entity, "entity")).throwWhenInvalid();
         InsectLifeStageDbo dbo = InsectLifeStageDbo.from(entity);
         try {
             mapper.insert(dbo);
@@ -52,8 +60,14 @@ class InsectLifeStageTransaction {
     /** The parent row, then its child rows replaced wholesale. */
     @Transactional
     void update(LifeStage entity) {
+        MethodObserver methodObserver = observer.forMethod("update");
+        methodObserver.arguments(i -> i.namedEntity(entity, "entity")).throwWhenInvalid();
         InsectLifeStageDbo dbo = InsectLifeStageDbo.from(entity);
-        if (mapper.updateByName(dbo) == 0) throw new EntityNotFoundException(entity);
+        Integer updated = mapper.updateByName(dbo);
+        InvariantObservation rowUpdated = methodObserver
+                .state(i -> i.atLeast(updated, 1, "rowUpdated"))
+                .observe(Level.WARN);
+        if (!rowUpdated.violations().isEmpty()) throw new EntityNotFoundException(entity);
         String name = entity.name().value();
         mapper.deleteWindows(name);
         mapper.deleteHabitatZones(name);
@@ -67,6 +81,7 @@ class InsectLifeStageTransaction {
     /** The existence check and the write it chooses, in one transaction. */
     @Transactional
     void save(LifeStage entity) {
+        observer.arguments("save", i -> i.namedEntity(entity, "entity")).throwWhenInvalid();
         if (mapper.selectByName(entity.name().value()) != null) update(entity);
         else insert(entity);
     }

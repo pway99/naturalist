@@ -157,6 +157,15 @@ public class Constraints {
     }
 
     /**
+     * Direct-value form of {@link #valueObjectCollection(Object, Function, String)}: a collection a
+     * method was given, such as a parameter. Null fails, a null element fails, empty passes; each
+     * element's own invariants are descended into under {@code name[i]}.
+     */
+    public <V extends ValueObject> Constraints valueObjectCollection(Collection<V> valueObjects, String name) {
+        return valueObjectCollection(valueObjects, Function.identity(), name);
+    }
+
+    /**
      * Validate a non-null {@link Collection} of {@link Observable} elements and
      * descend into each element's own {@link Observable#invariants()}. Null
      * collection fails; empty collection passes — pair with {@link #notEmpty}

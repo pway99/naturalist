@@ -76,3 +76,15 @@ The standards doc is the rubric; this file records when and why each rule was de
   value is null and the argument observation counts it (J7, M16). Pat, 2026-11-27.
 - The levels (`ERROR` framework-only, `WARN`, `INFO`) are stated in the standards, not only in
   `Level`'s Javadoc, and P8 (production teaches) is a principle. Pat, 2026-11-27.
+- Observe and throw only where the invalid state would itself throw. A method observes what it was
+  given, not what it built: `*Dbo.from(entity)` checks `entity` as its argument and does not then
+  throw on the Dbo it built, because that takes the decision away from the consumer (J4).
+  Supersedes the 2026-11-03 "Dbo.from throws on the write path" example. Pat, 2026-11-27.
+- A Dbo's mapping to the entity (`toEntity`, child `to*`) is a read and is permissive: its
+  arguments are checked only with `notNull`, and it throws on nothing it read; unrecognised columns map to null (C1) and the
+  repository read and its consumer observe the result (J4, M1). Settles "bad stored value on read"
+  as hand-it-on. Pat, 2026-11-27.
+- A repository read checks its arguments and returns what it read without observing it; the
+  consumer observes (J4). Supersedes "a read observes what it returns at WARN". The inherited
+  `AbstractEntityRepository` reads and most domain reads still observe; a separate sweep removes
+  them. Pat, 2026-11-27.

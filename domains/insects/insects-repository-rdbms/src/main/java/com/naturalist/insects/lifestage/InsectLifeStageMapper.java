@@ -51,14 +51,14 @@ interface InsectLifeStageMapper {
     List<InsectLifeStageDbo> selectByNameSet(@Param("names") Collection<String> names);
 
     @Select("SELECT " + COLUMNS + " FROM insect_life_stage ORDER BY name LIMIT #{limit} OFFSET #{offset}")
-    List<InsectLifeStageDbo> selectPage(@Param("limit") int limit, @Param("offset") int offset);
+    List<InsectLifeStageDbo> selectPage(@Param("limit") Integer limit, @Param("offset") Integer offset);
 
     @Select("""
             SELECT count(*) FROM (
                 SELECT 1 FROM insect_life_stage ORDER BY name OFFSET #{skip} LIMIT #{window}
             ) t
             """)
-    int countInWindow(@Param("skip") int skip, @Param("window") int window);
+    int countInWindow(@Param("skip") Integer skip, @Param("window") Integer window);
 
     @Select("SELECT " + COLUMNS + " FROM insect_life_stage WHERE parent_rank = #{rank} AND parent_name = #{name} ORDER BY name")
     List<InsectLifeStageDbo> selectByParentName(@Param("rank") String rank, @Param("name") String name);

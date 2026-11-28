@@ -248,19 +248,14 @@ Quick-reference constraints:
 - Cross-domain joins are prohibited; cross-domain FK enforcement is deferred to the RDBMS layer
 - Each repository manages its own secondary indexes. No cross-repository queries within a
   sub-context. No cross-sub-context repository access.
-- **A read observes what it returns, and never throws on it.** A repository read is a producer
-  (ADR-017): an invalid entity read from storage is counted and handed to the consumer, which
-  decides whether the invalid aspects matter to it. Each domain-specific read takes one
-  `MethodObserver m = observer().forMethod("getByX")`, validates its arguments through it, and
-  ends `m.state(s -> s.observableCollection(result, "result")).observe(Level.WARN)` (an
-  `Optional` read uses `namedEntityOrNull(result.orElse(null), "result")`). The inherited
-  `getByName` / `getByEntityNameSet` / `getPage` already do this in `AbstractEntityRepository`,
-  scoped to the concrete adapter class. Rdbms adapters and mocks both observe. Reference:
-  `InsectFeatureAssignmentEntityRepositoryRdbms`. A read returning names rather than entities observes them with
-  `entityNameCollection(result, "result")` (`DepictionEntityRepositoryRdbms.getAllDepictedCompoundNames`).
-  A no-argument read takes its `MethodObserver` all the same
-  (`UsageAlertEntityRepositoryRdbms.getUnsent`). Rolled out in every domain with
-  repositories.
+- **A read checks its arguments and hands on what it read, unobserved and never thrown on.** A
+  repository read is a producer (ADR-017): an invalid entity read from storage is handed to the
+  consumer, which observes it and decides whether the invalid aspects matter to it (J4 in
+  `docs/observability-standards.md`). Each domain-specific read checks its arguments with
+  `observer().arguments("getByX", ...).throwWhenInvalid()` and returns the result. Reference:
+  `InsectLifeStageEntityRepositoryRdbms.getByParentName`. Decided 2026-11-27; the older reads
+  that still end in `state(... "result").observe(Level.WARN)` (`AbstractEntityRepository`'s
+  inherited reads and most domain reads) are removed in a separate sweep.
 - **Fan-out must batch — never per-element in a loop.** Calling a repository or query once
   per element of a prior result (`for` / `stream().map` / `computeIfAbsent` / recursive
   descent) is an N+1 that scales with catalog size and degrades production; it passes on

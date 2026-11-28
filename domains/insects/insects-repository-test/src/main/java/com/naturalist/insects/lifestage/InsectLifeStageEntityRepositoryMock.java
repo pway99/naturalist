@@ -5,8 +5,6 @@ import com.naturalist.data.MockDomainService;
 import com.naturalist.data.NaturalistDatabase;
 import com.naturalist.insects.InsectRankName;
 import com.naturalist.insects.LifeStageName;
-import com.naturalist.observability.Level;
-import com.naturalist.observability.MethodObserver;
 
 import java.util.List;
 
@@ -21,13 +19,10 @@ public class InsectLifeStageEntityRepositoryMock
 
     @Override
     public List<LifeStage> getByParentName(InsectRankName parentName) {
-        MethodObserver getByParentName = observer().forMethod("getByParentName");
-        getByParentName.arguments(i -> i.identifier(parentName, "parentName"))
+        observer().arguments("getByParentName", i -> i.identifier(parentName, "parentName"))
                 .throwWhenInvalid();
-        List<LifeStage> result = testEntitySource().entityStream()
+        return testEntitySource().entityStream()
                 .filter(stage -> parentName.equals(stage.parentName()))
                 .toList();
-        getByParentName.state(s -> s.observableCollection(result, "result")).observe(Level.WARN);
-        return result;
     }
 }

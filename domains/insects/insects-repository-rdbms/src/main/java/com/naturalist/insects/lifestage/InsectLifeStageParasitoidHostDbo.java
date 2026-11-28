@@ -15,16 +15,21 @@ import java.util.function.Consumer;
         entity = LifeStage.class)
 final class InsectLifeStageParasitoidHostDbo implements Dbo {
     String lifeStageName;
-    int ordinal;
+    Integer ordinal;
     String speciesName;
 
-    static InsectLifeStageParasitoidHostDbo from(String lifeStageName, int ordinal, InsectSpeciesName species) {
+    private static final Observer observer = Observer.forClass(InsectLifeStageParasitoidHostDbo.class);
+
+    static InsectLifeStageParasitoidHostDbo from(String lifeStageName, Integer ordinal, InsectSpeciesName species) {
+        observer.arguments("from", i -> i
+                .kebabFormat(lifeStageName, "lifeStageName")
+                .atLeast(ordinal, 0, "ordinal")
+                .entityName(species, "species"))
+                .throwWhenInvalid();
         InsectLifeStageParasitoidHostDbo d = new InsectLifeStageParasitoidHostDbo();
         d.lifeStageName = lifeStageName;
         d.ordinal = ordinal;
         d.speciesName = species.value();
-        Observer.forClass(InsectLifeStageParasitoidHostDbo.class)
-                .state("from", i -> i.observable(d, "dbo")).throwWhenInvalid();
         return d;
     }
 
@@ -34,8 +39,10 @@ final class InsectLifeStageParasitoidHostDbo implements Dbo {
 
     @Override
     public Consumer<? extends Constraints> invariants() {
-        return c -> c.notNull(lifeStageName, "lifeStageName").kebabFormat(lifeStageName, "lifeStageName")
-                .notNull(speciesName, "speciesName").kebabFormat(speciesName, "speciesName")
+        return c -> c
+                .kebabFormat(lifeStageName, "lifeStageName")
+                .atLeast(ordinal, 0, "ordinal")
+                .kebabFormat(speciesName, "speciesName")
                 .maxLength(speciesName, 96, "speciesName");
     }
 }

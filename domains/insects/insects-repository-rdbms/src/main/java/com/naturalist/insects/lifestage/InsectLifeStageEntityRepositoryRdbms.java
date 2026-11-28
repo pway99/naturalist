@@ -9,9 +9,8 @@ import com.naturalist.infrastructure.DomainService;
 import com.naturalist.insects.InsectRankName;
 import com.naturalist.insects.InsectSpeciesName;
 import com.naturalist.insects.LifeStageName;
-import com.naturalist.observability.Level;
-import com.naturalist.observability.MethodObserver;
 import com.naturalist.plants.PlantSpeciesName;
+import org.apache.commons.collections4.CollectionUtils;
 
 import java.util.List;
 import java.util.Map;
@@ -38,6 +37,10 @@ class InsectLifeStageEntityRepositoryRdbms
 
     InsectLifeStageEntityRepositoryRdbms(InsectLifeStageMapper mapper,
                                          InsectLifeStageTransaction transaction) {
+        observer().arguments("constructor", i -> i
+                .notNull(mapper, "mapper")
+                .notNull(transaction, "transaction"))
+                .throwWhenInvalid();
         this.mapper = mapper;
         this.transaction = transaction;
     }
@@ -46,7 +49,7 @@ class InsectLifeStageEntityRepositoryRdbms
     protected Optional<LifeStage> doGetByName(LifeStageName name) {
         InsectLifeStageDbo dbo = mapper.selectByName(name.value());
         if (dbo == null) return Optional.empty();
-        return Optional.of(assemble(List.of(dbo)).get(0));
+        return Optional.of(assemble(List.of(dbo)).getFirst());
     }
 
     @Override
@@ -94,16 +97,13 @@ class InsectLifeStageEntityRepositoryRdbms
 
     @Override
     public List<LifeStage> getByParentName(InsectRankName parentName) {
-        MethodObserver getByParentName = observer().forMethod("getByParentName");
-        getByParentName.arguments(i -> i.identifier(parentName, "parentName"))
+        observer().arguments("getByParentName", i -> i.identifier(parentName, "parentName"))
                 .throwWhenInvalid();
-        List<LifeStage> result = assemble(mapper.selectByParentName(parentName.rank().name(), parentName.value()));
-        getByParentName.state(s -> s.observableCollection(result, "result")).observe(Level.WARN);
-        return result;
+        return assemble(mapper.selectByParentName(parentName.rank().name(), parentName.value()));
     }
 
     private List<LifeStage> assemble(List<InsectLifeStageDbo> parents) {
-        if (parents.isEmpty()) return List.of();
+        if (CollectionUtils.isEmpty(parents)) return List.of();
         Set<String> names = parents.stream().map(p -> p.name).collect(Collectors.toSet());
 
         Map<String, List<StagePhenology.ActivityWindow>> windows = mapper.selectWindows(names).stream()

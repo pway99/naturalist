@@ -7,6 +7,7 @@ import com.naturalist.persistence.Dbo;
 import com.naturalist.persistence.DboSchema;
 import com.naturalist.persistence.Fk;
 
+import java.util.Arrays;
 import java.util.function.Consumer;
 
 /** Child row for one {@link HabitatZone} of a life stage's habitat profile. Carries the life stage NAME. */
@@ -17,22 +18,34 @@ final class InsectLifeStageHabitatZoneDbo implements Dbo {
     String lifeStageName;
     String zone;
 
+    private static final Observer observer = Observer.forClass(InsectLifeStageHabitatZoneDbo.class);
+
     static InsectLifeStageHabitatZoneDbo from(String lifeStageName, HabitatZone zone) {
+        observer.arguments("from", i -> i
+                .kebabFormat(lifeStageName, "lifeStageName")
+                .notNull(zone, "zone"))
+                .throwWhenInvalid();
         InsectLifeStageHabitatZoneDbo d = new InsectLifeStageHabitatZoneDbo();
         d.lifeStageName = lifeStageName;
         d.zone = zone.name();
-        Observer.forClass(InsectLifeStageHabitatZoneDbo.class)
-                .state("from", i -> i.observable(d, "dbo")).throwWhenInvalid();
         return d;
     }
 
     HabitatZone toZone() {
-        return HabitatZone.valueOf(zone);
+        return Arrays.stream(HabitatZone.values()).filter(z -> z.name().equals(zone)).findFirst().orElse(null);
     }
 
     @Override
     public Consumer<? extends Constraints> invariants() {
-        return c -> c.notNull(lifeStageName, "lifeStageName").kebabFormat(lifeStageName, "lifeStageName")
-                .notBlank(zone, "zone").maxLength(zone, 24, "zone");
+        return c -> c
+                .kebabFormat(lifeStageName, "lifeStageName")
+                .notBlank(zone, "zone")
+                .maxLength(zone, 24, "zone")
+                .isTrue(isHabitatZone(zone), "isHabitatZone");
+    }
+
+    /** Whether {@code value} is the name of a {@link HabitatZone} constant; null is not. */
+    private static boolean isHabitatZone(String value) {
+        return value != null && Arrays.stream(HabitatZone.values()).anyMatch(v -> v.name().equals(value));
     }
 }

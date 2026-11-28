@@ -15,15 +15,21 @@ import java.util.function.Consumer;
         entity = LifeStage.class)
 final class InsectLifeStageNectarSourceDbo implements Dbo {
     String lifeStageName;
-    int ordinal;
+    Integer ordinal;
     String plantName;
 
-    static InsectLifeStageNectarSourceDbo from(String lifeStageName, int ordinal, PlantSpeciesName plant) {
+    private static final Observer observer = Observer.forClass(InsectLifeStageNectarSourceDbo.class);
+
+    static InsectLifeStageNectarSourceDbo from(String lifeStageName, Integer ordinal, PlantSpeciesName plant) {
+        observer.arguments("from", i -> i
+                .kebabFormat(lifeStageName, "lifeStageName")
+                .atLeast(ordinal, 0, "ordinal")
+                .entityName(plant, "plant"))
+                .throwWhenInvalid();
         InsectLifeStageNectarSourceDbo d = new InsectLifeStageNectarSourceDbo();
         d.lifeStageName = lifeStageName;
         d.ordinal = ordinal;
         d.plantName = plant.value();
-        Observer.forClass(InsectLifeStageNectarSourceDbo.class).state("from", i -> i.observable(d, "dbo")).throwWhenInvalid();
         return d;
     }
 
@@ -33,7 +39,10 @@ final class InsectLifeStageNectarSourceDbo implements Dbo {
 
     @Override
     public Consumer<? extends Constraints> invariants() {
-        return c -> c.notNull(lifeStageName, "lifeStageName").kebabFormat(lifeStageName, "lifeStageName")
-                .notNull(plantName, "plantName").kebabFormat(plantName, "plantName").maxLength(plantName, 96, "plantName");
+        return c -> c
+                .kebabFormat(lifeStageName, "lifeStageName")
+                .atLeast(ordinal, 0, "ordinal")
+                .kebabFormat(plantName, "plantName")
+                .maxLength(plantName, 96, "plantName");
     }
 }

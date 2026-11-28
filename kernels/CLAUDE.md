@@ -400,10 +400,9 @@ ends up scoped to a method that no longer exists. Reference: `AccountCommandImpl
 `observer.arguments("insert", i -> i.namedEntity(entity, "entity")).throwWhenInvalid()`. Insertion is an
 argument-validation site: the producer refuses bad input at its boundary. For method-body observation of *produced*
 state, the producer uses `.observe()` (metrics only) and hands the value to the consumer, which chooses the terminal
-operation. See ADR-017's *Producer vs. consumer* section. Repository reads are the canonical producer:
-`AbstractEntityRepository`'s inherited reads observe their result via `forMethod(...).state(...)` at `WARN` and return
-it, scoped to the concrete adapter (`forClass(getClass())`), and each domain-specific read does the same through its
-own `MethodObserver` (`domains/CLAUDE.md`, Repository Architecture). Use `@Nullable` from JSpecify (`org.jspecify`) for nullable
+operation. See ADR-017's *Producer vs. consumer* section. Repository reads are the canonical producer: they check
+their arguments and return what they read without observing it, and the consumer observes it (`domains/CLAUDE.md`,
+Repository Architecture; decided 2026-11-27, with the inherited reads' old result observation still to be removed). Use `@Nullable` from JSpecify (`org.jspecify`) for nullable
 field documentation.
 
 ## Testing Observables

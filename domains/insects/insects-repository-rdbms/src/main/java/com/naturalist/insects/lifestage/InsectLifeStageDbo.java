@@ -5,16 +5,24 @@ import com.naturalist.habitat.HabitatProfile;
 import com.naturalist.habitat.LightRegime;
 import com.naturalist.habitat.MoistureRegime;
 import com.naturalist.habitat.VerticalLayer;
+import com.naturalist.insects.InsectFamilyName;
+import com.naturalist.insects.InsectGenusName;
+import com.naturalist.insects.InsectOrderName;
 import com.naturalist.insects.InsectRankName;
+import com.naturalist.insects.InsectSpeciesName;
+import com.naturalist.insects.InsectSubspeciesName;
 import com.naturalist.insects.LifeStageName;
 import com.naturalist.observability.Constraints;
+import com.naturalist.observability.MethodObserver;
 import com.naturalist.observability.Observer;
 import com.naturalist.persistence.Dbo;
 import com.naturalist.persistence.DboSchema;
 import com.naturalist.plants.PlantSpeciesName;
 import com.naturalist.taxonomy.LinealRank;
 
+import java.util.Arrays;
 import java.util.List;
+import java.util.Objects;
 import java.util.Set;
 import java.util.function.Consumer;
 
@@ -67,31 +75,36 @@ final class InsectLifeStageDbo implements Dbo {
     String descriptionSecondary;
     String descriptionUniversity;
 
-    static InsectLifeStageDbo from(LifeStage s) {
+    private static final Observer observer = Observer.forClass(InsectLifeStageDbo.class);
+
+    static InsectLifeStageDbo from(LifeStage stage) {
+        observer.arguments("from", i -> i
+                .namedEntity(stage, "stage"))
+                .throwWhenInvalid();
         InsectLifeStageDbo d = new InsectLifeStageDbo();
-        d.name = s.name().value();
-        d.stageKind = s.kind().name();
-        d.parentRank = s.parentName().rank().name();
-        d.parentName = s.parentName().value();
-        d.phenologyNotes = s.phenology().notes();
-        StageHabitat habitat = s.habitat();
+        d.name = stage.name().value();
+        d.stageKind = stage.kind().name();
+        d.parentRank = stage.parentName().rank().name();
+        d.parentName = stage.parentName().value();
+        d.phenologyNotes = stage.phenology().notes();
+        StageHabitat habitat = stage.habitat();
         HabitatProfile profile = habitat.profile();
         d.habitatMoisture = profile.moisture() == null ? null : profile.moisture().name();
         d.habitatLight = profile.light() == null ? null : profile.light().name();
         d.habitatSubstrate = habitat.substrate();
         d.habitatMicroclimate = habitat.microclimate();
         d.habitatSpatialNotes = habitat.spatialNotes();
-        StageChemistryRole chem = s.chemistryRole();
+        StageChemistryRole chem = stage.chemistryRole();
         if (chem != null) {
             d.chemistryRole = chem.role().name();
             d.chemistryNotes = chem.notes();
         }
-        Description desc = s.description();
+        Description desc = stage.description();
         d.descriptionPreschool = desc.preschool();
         d.descriptionElementary = desc.elementary();
         d.descriptionSecondary = desc.secondary();
         d.descriptionUniversity = desc.university();
-        switch (s) {
+        switch (stage) {
             case EggStage e -> {
                 d.eggColorProgression = e.colorProgression();
                 d.eggLayingPattern = e.layingPattern();
@@ -132,9 +145,6 @@ final class InsectLifeStageDbo implements Dbo {
                 d.adultLifespan = a.lifespan();
             }
         }
-        Observer.forClass(InsectLifeStageDbo.class)
-                .state("from", i -> i.observable(d, "dbo"))
-                .throwWhenInvalid();
         return d;
     }
 
@@ -142,22 +152,33 @@ final class InsectLifeStageDbo implements Dbo {
                        Set<com.naturalist.habitat.HabitatZone> zones,
                        Set<VerticalLayer> layers,
                        List<PlantSpeciesName> hostPlants,
-                       List<com.naturalist.insects.InsectSpeciesName> parasitoidHosts,
+                       List<InsectSpeciesName> parasitoidHosts,
                        List<PlantSpeciesName> nectarSources) {
-        OBSERVER.state("toEntity", s -> s
-                .isTrue(isStageKind(stageKind), "stageKind"))
+        MethodObserver methodObserver = observer.forMethod("toEntity");
+        methodObserver.arguments(s -> s
+                        .notNull(windows, "windows")
+                        .notNull(zones, "zones")
+                        .notNull(layers, "layers")
+                        .notNull(hostPlants, "hostPlants")
+                        .notNull(parasitoidHosts, "parasitoidHosts")
+                        .notNull(nectarSources, "nectarSources")
+        ).throwWhenInvalid();
+
+        methodObserver.state(s -> s
+                .isTrue(isStageKind(stageKind), "isStageKind"))
                 .throwWhenInvalid();
+
         LifeStageName lsName = LifeStageName.of(name);
-        InsectRankName parent = InsectRankName.of(parentName, LinealRank.valueOf(parentRank));
+        InsectRankName parent = parentRankName();
         StagePhenology phenology = new StagePhenology(windows, phenologyNotes);
         HabitatProfile profile = new HabitatProfile(
                 zones,
-                habitatMoisture == null ? null : MoistureRegime.valueOf(habitatMoisture),
-                habitatLight == null ? null : LightRegime.valueOf(habitatLight),
+                constantNamed(MoistureRegime.values(), habitatMoisture),
+                constantNamed(LightRegime.values(), habitatLight),
                 layers.isEmpty() ? null : layers);
         StageHabitat habitat = new StageHabitat(profile, habitatSubstrate, habitatMicroclimate, habitatSpatialNotes);
         StageChemistryRole chem = chemistryRole == null ? null
-                : new StageChemistryRole(StageChemistryRole.Role.valueOf(chemistryRole), chemistryNotes);
+                : new StageChemistryRole(constantNamed(StageChemistryRole.Role.values(), chemistryRole), chemistryNotes);
         Description description = new Description(
                 descriptionPreschool, descriptionElementary, descriptionSecondary, descriptionUniversity);
 
@@ -165,46 +186,70 @@ final class InsectLifeStageDbo implements Dbo {
             case "EGG" -> new EggStage(lsName, parent, phenology, habitat, chem, description,
                     eggColorProgression, eggLayingPattern, eggAdaptiveSignificance);
             case "LARVA" -> new LarvaStage(lsName, parent, phenology, habitat, chem, description,
-                    larvaFeedingStrategy == null ? null : LarvaStage.FeedingStrategy.valueOf(larvaFeedingStrategy),
+                    constantNamed(LarvaStage.FeedingStrategy.values(), larvaFeedingStrategy),
                     hostPlants, parasitoidHosts, larvaRemarkableBehavior, larvaInstarProgression);
             case "PUPA" -> new PupaStage(lsName, parent, phenology, habitat, chem, description,
                     pupaAppearance, diapauseRegulation(), pupaAdaptiveSignificance);
             case "ADULT" -> new AdultStage(lsName, parent, phenology, habitat, chem, description,
-                    adultFeedingHabit == null ? null : AdultStage.FeedingHabit.valueOf(adultFeedingHabit),
+                    constantNamed(AdultStage.FeedingHabit.values(), adultFeedingHabit),
                     nectarSources, adultEcologicalRole, adultLifespan);
             default -> throw new IllegalStateException("unreachable: " + stageKind);
         };
     }
 
+    /**
+     * The parent's typed name, or null when {@code parentRank} names no rank {@link InsectRankName} accepts.
+     * Never throws: an invalid slug is handed on inside the name for the consumer to observe.
+     */
+    private InsectRankName parentRankName() {
+        LinealRank rank = constantNamed(LinealRank.values(), parentRank);
+        if (rank == null) return null;
+        return switch (rank) {
+            case ORDER -> InsectOrderName.of(parentName);
+            case FAMILY -> InsectFamilyName.of(parentName);
+            case GENUS -> InsectGenusName.of(parentName);
+            case SPECIES -> InsectSpeciesName.of(parentName);
+            case SUBSPECIES -> InsectSubspeciesName.of(parentName);
+            case KINGDOM, PHYLUM, CLASS -> null;
+        };
+    }
+
     private PupaStage.DiapauseRegulation diapauseRegulation() {
-        if (diapauseKind == null) return null;
-        OBSERVER.state("diapauseRegulation", s -> s
-                .isTrue(isDiapauseKind(diapauseKind), "diapauseKind"))
-                .throwWhenInvalid();
+        if (!isDiapauseKind(diapauseKind)) return null;
         return switch (diapauseKind) {
             case "PHOTOPERIOD" -> new PupaStage.PhotoperiodRegulated(diapauseFieldA, diapauseFieldB);
             case "FOOD_WATER" -> new PupaStage.FoodWaterContentRegulated(diapauseFieldA, diapauseFieldB);
             case "TEMPERATURE" -> new PupaStage.TemperatureRegulated(diapauseFieldA, diapauseFieldB);
             case "NON_DIAPAUSING" -> new PupaStage.NonDiapausing();
-            default -> throw new IllegalStateException("unreachable: " + diapauseKind);
+            default -> null;
         };
     }
 
     @Override
     public Consumer<? extends Constraints> invariants() {
         return c -> c
-                .notNull(name, "name").kebabFormat(name, "name").maxLength(name, 80, "name")
-                .notBlank(stageKind, "stageKind").maxLength(stageKind, 16, "stageKind")
-                .notBlank(parentRank, "parentRank").maxLength(parentRank, 16, "parentRank")
-                .notNull(parentName, "parentName").kebabFormat(parentName, "parentName")
+                .kebabFormat(name, "name")
+                .maxLength(name, 80, "name")
+                .notBlank(stageKind, "stageKind")
+                .maxLength(stageKind, 16, "stageKind")
+                .isTrue(isStageKind(stageKind), "isStageKind")
+                .isTrue(permitColumnsMatchStageKind(), "permitColumnsMatchStageKind")
+                .whenNotNull(diapauseKind, k -> k.isTrue(isDiapauseKind(diapauseKind), "isDiapauseKind"))
+                .notBlank(parentRank, "parentRank")
+                .maxLength(parentRank, 16, "parentRank")
+                .isTrue(isInsectRank(parentRank), "isInsectRank")
+                .whenNotNull(habitatMoisture, m -> m.isTrue(isMoistureRegime(habitatMoisture), "isMoistureRegime"))
+                .whenNotNull(habitatLight, l -> l.isTrue(isLightRegime(habitatLight), "isLightRegime"))
+                .whenNotNull(chemistryRole, r -> r.isTrue(isChemistryRole(chemistryRole), "isChemistryRole"))
+                .whenNotNull(larvaFeedingStrategy, f -> f.isTrue(isFeedingStrategy(larvaFeedingStrategy), "isFeedingStrategy"))
+                .whenNotNull(adultFeedingHabit, f -> f.isTrue(isFeedingHabit(adultFeedingHabit), "isFeedingHabit"))
+                .kebabFormat(parentName, "parentName")
                 .maxLength(parentName, 96, "parentName")
                 .notBlank(descriptionPreschool, "descriptionPreschool")
                 .notBlank(descriptionElementary, "descriptionElementary")
                 .notBlank(descriptionSecondary, "descriptionSecondary")
                 .notBlank(descriptionUniversity, "descriptionUniversity");
     }
-
-    private static final Observer OBSERVER = Observer.forClass(InsectLifeStageDbo.class);
 
     /** Whether {@code kind} names one of the four life stage kinds this row can hold; null does not. */
     private static boolean isStageKind(String kind) {
@@ -220,5 +265,63 @@ final class InsectLifeStageDbo implements Dbo {
             case "PHOTOPERIOD", "FOOD_WATER", "TEMPERATURE", "NON_DIAPAUSING" -> true;
             default -> false;
         };
+    }
+
+    /** Whether {@code value} names one of the five ranks {@link InsectRankName} accepts; null does not. */
+    private static boolean isInsectRank(String value) {
+        return Arrays.stream(LinealRank.values())
+                .filter(rank -> rank.name().equals(value))
+                .anyMatch(InsectRankName::isInsectRank);
+    }
+
+    /**
+     * Whether every permit-specific column that is set belongs to this row's {@code stageKind}: the
+     * single table holds all four permits, and a column of another kind would be silently dropped by
+     * {@link #toEntity}.
+     */
+    private boolean permitColumnsMatchStageKind() {
+        boolean egg = anySet(eggColorProgression, eggLayingPattern, eggAdaptiveSignificance);
+        boolean larva = anySet(larvaFeedingStrategy, larvaRemarkableBehavior, larvaInstarProgression);
+        boolean pupa = anySet(pupaAppearance, pupaAdaptiveSignificance, diapauseKind, diapauseFieldA,
+                diapauseFieldB);
+        boolean adult = anySet(adultFeedingHabit, adultEcologicalRole, adultLifespan);
+        return (!egg || "EGG".equals(stageKind))
+                && (!larva || "LARVA".equals(stageKind))
+                && (!pupa || "PUPA".equals(stageKind))
+                && (!adult || "ADULT".equals(stageKind));
+    }
+
+    private static boolean anySet(String... columns) {
+        return Arrays.stream(columns).anyMatch(Objects::nonNull);
+    }
+
+    private static boolean isMoistureRegime(String value) {
+        return namesConstant(MoistureRegime.values(), value);
+    }
+
+    private static boolean isLightRegime(String value) {
+        return namesConstant(LightRegime.values(), value);
+    }
+
+    private static boolean isChemistryRole(String value) {
+        return namesConstant(StageChemistryRole.Role.values(), value);
+    }
+
+    private static boolean isFeedingStrategy(String value) {
+        return namesConstant(LarvaStage.FeedingStrategy.values(), value);
+    }
+
+    private static boolean isFeedingHabit(String value) {
+        return namesConstant(AdultStage.FeedingHabit.values(), value);
+    }
+
+    /** Whether {@code value} is the name of one of {@code constants}; null is not. */
+    private static boolean namesConstant(Enum<?>[] constants, String value) {
+        return constantNamed(constants, value) != null;
+    }
+
+    /** The constant of {@code constants} named {@code value}, or null when none is; null names none. Never throws. */
+    private static <E extends Enum<?>> E constantNamed(E[] constants, String value) {
+        return Arrays.stream(constants).filter(e -> e.name().equals(value)).findFirst().orElse(null);
     }
 }
